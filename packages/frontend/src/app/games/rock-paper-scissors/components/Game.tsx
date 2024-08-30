@@ -44,7 +44,7 @@ export default function Game({ tier }: Props) {
       season_id: "season1",
       user_id: "sneakysensei",
       game_id: "game1",
-      tier,
+      tier_id: tier,
     });
 
     return () => {
