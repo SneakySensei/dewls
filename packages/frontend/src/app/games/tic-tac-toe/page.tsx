@@ -1,11 +1,24 @@
-"use client";
-import { io } from "socket.io-client";
-
-import { useEffect } from "react";
+import { ComponentProps, useReducer, useState } from "react";
+import MainMenu from "./components/MainMenu";
+import Game from "./components/Game";
 
 export default function TicTacToe() {
-  useEffect(() => {
-    const socket = io("localhost:8080", { withCredentials: true });
-  }, []);
-  return <main>page</main>;
+  const [screen, setScreen] = useState<"main-menu" | "game">("main-menu");
+
+  // const { state, dispatch } = useReducer((state, action) => {}, {
+  //   gameState:
+  //   round: 0,
+  //   player1: { currentMove: "stone" },
+  // });
+
+  const handleJoin: ComponentProps<typeof MainMenu>["onJoin"] = (tier) => {
+    setScreen("game");
+  };
+
+  switch (screen) {
+    case "main-menu":
+      return <MainMenu onJoin={handleJoin} />;
+    case "game":
+      return <Game />;
+  }
 }

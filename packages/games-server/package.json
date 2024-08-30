@@ -18,9 +18,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "common": "workspace:*",
         "dotenv": "^16.4.5",
         "express": "^4.19.2",
-        "game-metadata": "workspace:*",
         "redis": "^4.7.0",
         "socket.io": "^4.7.5"
     },

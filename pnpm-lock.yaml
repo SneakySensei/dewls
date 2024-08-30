@@ -8,8 +8,13 @@ importers:
 
   .: {}
 
+  packages/common: {}
+
   packages/frontend:
     dependencies:
+      common:
+        specifier: workspace:*
+        version: link:../common
       next:
         specifier: 14.2.7
         version: 14.2.7(react-dom@18.3.1)(react@18.3.1)
@@ -48,19 +53,17 @@ importers:
         specifier: ^5
         version: 5.5.4
 
-  packages/game-metadata: {}
-
   packages/games-server:
     dependencies:
+      common:
+        specifier: workspace:*
+        version: link:../common
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
       express:
         specifier: ^4.19.2
         version: 4.19.2
-      game-metadata:
-        specifier: workspace:*
-        version: link:../game-metadata
       socket.io:
         specifier: ^4.7.5
         version: 4.7.5
