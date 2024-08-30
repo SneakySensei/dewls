@@ -4,8 +4,10 @@ import cors from "cors";
 import "dotenv/config";
 import type { Express, NextFunction, Request, Response } from "express";
 import express, { Router } from "express";
+import { createServer } from "node:http";
 
 const app: Express = express();
+const server = createServer(app);
 app.use(cors());
 app.use(express.json());
 
@@ -58,11 +60,11 @@ app.use(
 
 (async () => {
     try {
-        await Promise.all([WSService.init(app)]);
+        await Promise.all([WSService.init(server)]);
         const env: string = process.env.NODE_ENV || "development";
         if (env !== "test") {
             const port: number = +(process.env.PORT || 7990);
-            app.listen(port, () => {
+            server.listen(port, () => {
                 console.info(
                     `Server listening on Port ${port} in the ${env} environment`
                 );
