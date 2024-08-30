@@ -1,9 +1,12 @@
-import { type Express } from "express";
-import { createServer, Server } from "node:http";
+import { Server } from "node:http";
 import { Server as WSServer } from "socket.io";
 
 export class WSService {
     private static ioConnection: WSServer;
+    private static gamesNamespaces: string[] = [
+        "/tic-tac-toe",
+        "/stone-paper-scissors",
+    ];
 
     public static async init(server: Server) {
         this.ioConnection = new WSServer(server, {
@@ -14,9 +17,13 @@ export class WSService {
             },
         });
 
-        this.ioConnection.on("connection", (socket) => {
-            console.log("a user connected!");
-        });
+        for (const gameNamespace of this.gamesNamespaces) {
+            this.ioConnection
+                .of(`/game/${gameNamespace}`)
+                .on("connection", (socket) => {
+                    console.log("a user connected!");
+                });
+        }
 
         console.info(`WSService initialized successfully!`);
     }
