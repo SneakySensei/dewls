@@ -20,7 +20,8 @@
     "dependencies": {
         "dotenv": "^16.4.5",
         "express": "^4.19.2",
-        "socket.io": "^4.7.5"
+        "socket.io": "^4.7.5",
+        "game-metadata": "workspace:*"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^4.3.0",
