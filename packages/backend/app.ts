@@ -1,5 +1,4 @@
-import { RedisService, WSService } from "./services";
-// import { AxiosError } from "axios";
+import { RedisService, SupabaseService, WSService } from "./services";
 import cors from "cors";
 import "dotenv/config";
 import type { Express, NextFunction, Request, Response } from "express";
@@ -31,21 +30,12 @@ app.use("*", (_req: Request, res: Response) => {
 });
 
 app.use(
-    (
-        err: // AxiosError |
-        Error | any,
-        _req: Request,
-        res: Response,
-        _next: NextFunction
-    ) => {
+    (err: Error | any, _req: Request, res: Response, _next: NextFunction) => {
         const now: Date = new Date();
         const _code = err.errorCode || err.error_code || err.code;
         const code: number =
             typeof _code === "number" && !isNaN(_code) ? _code : 500;
         const message: string =
-            // err instanceof AxiosError
-            //     ? err.response?.data?.message || err.message
-            // :
             err.reason ||
             err.error_message ||
             err.message ||
@@ -55,18 +45,22 @@ app.use(
             success: false,
             message,
         });
-    }
+    },
 );
 
 (async () => {
     try {
-        await Promise.all([RedisService.init(), WSService.init(server)]);
+        await Promise.all([
+            SupabaseService.init(),
+            RedisService.init(),
+            WSService.init(server),
+        ]);
         const env: string = process.env.NODE_ENV || "development";
         if (env !== "test") {
             const port: number = +(process.env.PORT || 7990);
             server.listen(port, () => {
                 console.info(
-                    `Server listening on Port ${port} in the ${env} environment`
+                    `Server listening on Port ${port} in the ${env} environment`,
                 );
             });
         }
