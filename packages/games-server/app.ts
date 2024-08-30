@@ -1,4 +1,5 @@
 import { RedisService, WSService } from "./services";
+import { GAME_NAMESPACES } from "common";
 // import { AxiosError } from "axios";
 import cors from "cors";
 import "dotenv/config";
@@ -75,6 +76,13 @@ app.use(
         process.exit(1);
     }
 })();
+
+WSService.getIOServer(GAME_NAMESPACES.STONE_PAPER_SCISSORS).on(
+    "waiting",
+    (a) => {
+        console.log(a);
+    }
+);
 
 process.on("SIGINT", () => {
     process.exit(0);

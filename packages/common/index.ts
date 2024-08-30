@@ -6,5 +6,5 @@ export enum GAME_NAMESPACES {
 export enum TIERS {
   ALPHA = "ALPHA",
   BETA = "BETA",
-  GAAMA = "GAAMA"
+  GAAMA = "GAAMA",
 }

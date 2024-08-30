@@ -2,6 +2,7 @@ import { useEffect, useReducer } from "react";
 import { Manager } from "socket.io-client";
 
 import { MappedUser } from "@/utils/types";
+import { GAME_NAMESPACES } from "common";
 
 export type Moves = "rock" | "paper" | "scissors";
 
@@ -32,7 +33,10 @@ export default function Game() {
   } as GameState);
 
   useEffect(() => {
-    const socket = socketManager.socket("tic-tac-toe");
+    const socket = socketManager.socket(
+      `/${GAME_NAMESPACES.STONE_PAPER_SCISSORS}`
+    );
+    socket.on;
     socket.emit("waiting", { sessionId: "session1", userId: "sneakysensei" });
   }, []);
   return (

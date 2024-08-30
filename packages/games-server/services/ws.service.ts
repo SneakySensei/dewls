@@ -4,7 +4,6 @@ import { Server as WSServer } from "socket.io";
 
 export class WSService {
     private static ioConnection: WSServer;
-    private static gameNamespacesPrefix: string = "/game";
 
     public static async init(server: Server) {
         this.ioConnection = new WSServer(server, {
@@ -16,11 +15,9 @@ export class WSService {
         });
 
         for (const gameNamespace of Object.values(GAME_NAMESPACES)) {
-            this.ioConnection
-                .of(`/${this.gameNamespacesPrefix}/${gameNamespace}`)
-                .on("connection", (socket) => {
-                    console.log("a user connected!");
-                });
+            this.ioConnection.of(gameNamespace).on("connection", (socket) => {
+                console.log("a user connected!");
+            });
         }
 
         console.info(`WSService initialized successfully!`);
@@ -29,8 +26,6 @@ export class WSService {
     public static getIOServer(
         namespace: GAME_NAMESPACES | `${GAME_NAMESPACES}`
     ) {
-        return this.ioConnection.of(
-            `/${this.gameNamespacesPrefix}/${namespace}`
-        );
+        return this.ioConnection.of(`/${namespace}`);
     }
 }

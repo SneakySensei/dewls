@@ -1,3 +1,5 @@
+"use client";
+
 import { ComponentProps, useState } from "react";
 import MainMenu from "./components/MainMenu";
 import Game from "./components/Game";
