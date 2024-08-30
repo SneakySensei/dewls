@@ -1,19 +1,19 @@
-import { createClient } from "redis";
+import Redis from "ioredis";
 
 export class RedisService {
-    private static client: ReturnType<typeof createClient>;
+    private static client: Redis;
 
     public static async init() {
-        this.client = createClient({});
+        if (!process.env.REDIS_URL) {
+            throw Error("Missing env variables");
+        }
 
-        this.client.on("error", (err) =>
-            console.error("Redis Client Error", err)
-        );
+        this.client = new Redis(process.env.REDIS_URL);
 
         console.info(`RedisService initialized successfully!`);
     }
 
-    public static async getRedisClient() {
+    public static getRedisClient(): Redis {
         return this.client;
     }
 }
