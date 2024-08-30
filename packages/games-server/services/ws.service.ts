@@ -23,9 +23,9 @@ export class WSService {
         console.info(`WSService initialized successfully!`);
     }
 
-    public static getIOServer(
-        namespace: GAME_NAMESPACES | `${GAME_NAMESPACES}`
-    ) {
-        return this.ioConnection.of(`/${namespace}`);
-    }
+    // public static getIOServer(
+    //     namespace: GAME_NAMESPACES | `${GAME_NAMESPACES}`
+    // ) {
+    //     return this.ioConnection.of(`/${namespace}`);
+    // }
 }
