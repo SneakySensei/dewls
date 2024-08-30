@@ -13,5 +13,7 @@ export class WSService {
         this.ioConnection.on("connection", (socket) => {
             console.log("a user connected!");
         });
+
+        console.info(`WSService initialized successfully!`);
     }
 }
