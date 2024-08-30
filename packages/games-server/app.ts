@@ -1,4 +1,4 @@
-import { WSService } from "./services";
+import { RedisService, WSService } from "./services";
 // import { AxiosError } from "axios";
 import cors from "cors";
 import "dotenv/config";
@@ -60,7 +60,7 @@ app.use(
 
 (async () => {
     try {
-        await Promise.all([WSService.init(server)]);
+        await Promise.all([RedisService.init(), WSService.init(server)]);
         const env: string = process.env.NODE_ENV || "development";
         if (env !== "test") {
             const port: number = +(process.env.PORT || 7990);

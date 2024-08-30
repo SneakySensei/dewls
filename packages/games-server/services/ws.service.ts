@@ -1,12 +1,10 @@
+import { GAME_NAMESPACES } from "../utils/constants";
 import { Server } from "node:http";
 import { Server as WSServer } from "socket.io";
 
 export class WSService {
     private static ioConnection: WSServer;
-    private static gamesNamespaces: string[] = [
-        "/tic-tac-toe",
-        "/stone-paper-scissors",
-    ];
+    private static gameNamespacesPrefix: string = "/game";
 
     public static async init(server: Server) {
         this.ioConnection = new WSServer(server, {
@@ -17,14 +15,22 @@ export class WSService {
             },
         });
 
-        for (const gameNamespace of this.gamesNamespaces) {
+        for (const gameNamespace of Object.values(GAME_NAMESPACES)) {
             this.ioConnection
-                .of(`/game/${gameNamespace}`)
+                .of(`/${this.gameNamespacesPrefix}/${gameNamespace}`)
                 .on("connection", (socket) => {
                     console.log("a user connected!");
                 });
         }
 
         console.info(`WSService initialized successfully!`);
+    }
+
+    public static async getIOServer(
+        namespace: GAME_NAMESPACES | `${GAME_NAMESPACES}`
+    ) {
+        return this.ioConnection.of(
+            `/${this.gameNamespacesPrefix}/${namespace}`
+        );
     }
 }
