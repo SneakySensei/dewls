@@ -1,4 +1,4 @@
-import { GAME_NAMESPACES } from "../utils/constants";
+import { GAME_NAMESPACES } from "common";
 import { Server } from "node:http";
 import { Server as WSServer } from "socket.io";
 
@@ -26,7 +26,7 @@ export class WSService {
         console.info(`WSService initialized successfully!`);
     }
 
-    public static async getIOServer(
+    public static getIOServer(
         namespace: GAME_NAMESPACES | `${GAME_NAMESPACES}`
     ) {
         return this.ioConnection.of(
