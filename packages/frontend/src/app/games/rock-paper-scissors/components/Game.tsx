@@ -25,7 +25,7 @@ const reducer = (state: GameState, action: Action): GameState => {
   }
 };
 
-const socketManager = new Manager("localhost:8080", { withCredentials: true });
+const socketManager = new Manager("localhost:8000", { withCredentials: true });
 export default function Game() {
   const [gameState, dispatch] = useReducer(reducer, {
     state: "waitingForPlayers",
