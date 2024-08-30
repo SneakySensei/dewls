@@ -3,6 +3,7 @@
 import { ComponentProps, useState } from "react";
 import MainMenu from "./components/MainMenu";
 import Game from "./components/Game";
+import { TIERS } from "common";
 
 export default function TicTacToe() {
   const [screen, setScreen] = useState<"main-menu" | "game">("main-menu");
@@ -15,6 +16,6 @@ export default function TicTacToe() {
     case "main-menu":
       return <MainMenu onJoin={handleJoin} />;
     case "game":
-      return <Game />;
+      return <Game tier={TIERS.ALPHA} />;
   }
 }
