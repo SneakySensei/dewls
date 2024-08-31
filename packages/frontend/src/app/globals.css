@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer base {
+  .text-display-1,
+  .text-display-2,
+  .text-display-3 {
+    @apply font-display;
+  }
 }
 
 @layer utilities {

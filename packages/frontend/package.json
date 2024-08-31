@@ -10,7 +10,9 @@
     "types:database": "npx supabase login --token $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_ACCESS_TOKEN)') && npx supabase gen types --lang=typescript --project-id $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_PROJECT_ID)') > src/utils/types/database.types.ts"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "common": "workspace:*",
+    "framer-motion": "^11.3.31",
     "next": "14.2.7",
     "react": "^18",
     "react-dom": "^18",

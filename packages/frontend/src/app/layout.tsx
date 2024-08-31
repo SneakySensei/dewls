@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Big_Shoulders_Display, Inter } from "next/font/google";
 import "./globals.css";
+import clsx from "clsx";
+import Footer from "./components/footer";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  weight: ["400", "500", "600"],
+});
+const bigShouldersDisplay = Big_Shoulders_Display({
+  subsets: ["latin"],
+  variable: "--font-big-shoulders",
+  weight: "700",
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +27,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body
+        className={clsx(
+          inter.variable,
+          bigShouldersDisplay.variable,
+          "min-h-screen mx-auto font-sans max-w-lg bg-neutral-800 flex flex-col"
+        )}
+      >
+        <div className="flex-1 min-h-0">{children}</div>
+        <Footer />
+      </body>
     </html>
   );
 }
