@@ -53,7 +53,7 @@ export const RockPaperScissorsRoutes = (socket: Socket) => {
             console.info(logId, `user joined ${roomId}`);
 
             socket.emit("created-room", {
-                roomId,
+                roomJoined: true,
             });
             console.info(logId, `sent room id ${roomId}`);
         },
