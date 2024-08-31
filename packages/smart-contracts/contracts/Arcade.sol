@@ -16,7 +16,7 @@ interface IERC20 {
     function balanceOf(address account) external view returns (uint256);
 }
 
-contract ArcadeGamePlatform {
+contract Arcade {
     address public owner;
     uint256 public rewardPool;
     uint256 private ownerPool;
