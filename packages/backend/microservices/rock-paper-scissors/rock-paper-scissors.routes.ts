@@ -6,9 +6,10 @@ import {
 import {
     addPlayer2ToGame,
     createGame,
+    setWinnerToGame,
 } from "../played-games/played-games.service";
 import { RockPaperScissors } from "common";
-import { Namespace, type Socket } from "socket.io";
+import { type Namespace, type Socket } from "socket.io";
 
 export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     const RedisClient = RedisService.getRedisClient();
@@ -138,20 +139,14 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     await RedisClient.hgetall(room_id),
                 );
 
+            let updateGameState: boolean = true;
+
             if (gameState.player1.user_id === user_id) {
-                if (
-                    (
-                        gameState.player1 as RockPaperScissors.IdlePlayerServerState
-                    ).currentMove === null
-                ) {
+                if (gameState.player1.currentMove === null) {
                     gameState.player1.currentMove = move;
                 }
             } else if (gameState.player2.user_id === user_id) {
-                if (
-                    (
-                        gameState.player2 as RockPaperScissors.IdlePlayerServerState
-                    ).currentMove === null
-                ) {
+                if (gameState.player2.currentMove === null) {
                     gameState.player2.currentMove = move;
                 }
             } else {
@@ -162,46 +157,74 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
             if (
                 gameState.player1.currentScore < RockPaperScissors.winScore &&
-                gameState.player2.currentScore < RockPaperScissors.winScore
+                gameState.player2.currentScore < RockPaperScissors.winScore &&
+                gameState.player1.currentMove &&
+                gameState.player2.currentMove
             ) {
                 if (
-                    gameState.player1.currentMove &&
+                    gameState.player1.currentMove ===
                     gameState.player2.currentMove
                 ) {
-                    if (
-                        gameState.player1.currentMove ===
-                        gameState.player2.currentMove
-                    ) {
-                        gameState.winner_id = null;
-                    } else if (
-                        (gameState.player1.currentMove === "rock" &&
-                            gameState.player2.currentMove === "scissors") ||
-                        (gameState.player1.currentMove === "paper" &&
-                            gameState.player2.currentMove === "rock") ||
-                        (gameState.player1.currentMove === "scissors" &&
-                            gameState.player2.currentMove === "paper")
-                    ) {
-                        gameState.winner_id = gameState.player1.user_id;
-                        gameState.player1.currentScore =
-                            gameState.player1.currentScore + 1;
-                    } else {
-                        gameState.winner_id = gameState.player2.user_id;
-                        gameState.player2.currentScore =
-                            gameState.player2.currentScore + 1;
-                    }
+                    gameState.winner_id = null;
+                } else if (
+                    (gameState.player1.currentMove === "rock" &&
+                        gameState.player2.currentMove === "scissors") ||
+                    (gameState.player1.currentMove === "paper" &&
+                        gameState.player2.currentMove === "rock") ||
+                    (gameState.player1.currentMove === "scissors" &&
+                        gameState.player2.currentMove === "paper")
+                ) {
+                    gameState.winner_id = gameState.player1.user_id;
+                    gameState.player1.currentScore =
+                        gameState.player1.currentScore + 1;
                 } else {
-                    // ? which event to emit to let the other player know first player has made a move
+                    gameState.winner_id = gameState.player2.user_id;
+                    gameState.player2.currentScore =
+                        gameState.player2.currentScore + 1;
                 }
-            } else {
-                // TODO: emit game end with winner and clear hmap
+
+                if (
+                    gameState.player1.currentScore <
+                        RockPaperScissors.winScore &&
+                    gameState.player2.currentScore < RockPaperScissors.winScore
+                ) {
+                    const roundEndEvent: RockPaperScissors.RoundEndEvent = {
+                        type: "round-end",
+                        payload: gameState,
+                    };
+                    io.to(room_id).emit(
+                        roundEndEvent.type,
+                        roundEndEvent.payload,
+                    );
+                } else {
+                    await setWinnerToGame(room_id, gameState.winner_id);
+
+                    await RedisClient.hdel(room_id);
+
+                    const gameEndEvent: RockPaperScissors.GameEndEvent = {
+                        type: "game-end",
+                        payload:
+                            gameState as RockPaperScissors.GameEndEvent["payload"],
+                    };
+                    io.to(room_id).emit(
+                        gameEndEvent.type,
+                        gameEndEvent.payload,
+                    );
+                    updateGameState = false;
+                }
+
+                gameState.player1.currentMove = null;
+                gameState.player2.currentMove = null;
             }
 
-            await RedisClient.hset(
-                room_id,
-                stringifyObjectValues<RockPaperScissors.ServerGameState>(
-                    gameState,
-                ),
-            );
+            if (updateGameState) {
+                await RedisClient.hset(
+                    room_id,
+                    stringifyObjectValues<RockPaperScissors.ServerGameState>(
+                        gameState,
+                    ),
+                );
+            }
         },
     );
 };

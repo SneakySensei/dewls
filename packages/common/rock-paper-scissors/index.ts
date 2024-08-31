@@ -37,8 +37,8 @@ export type GameStartEvent = {
   type: "game-start";
   payload: {
     round: 0;
-    player1: IdlePlayerServerState;
-    player2: IdlePlayerServerState;
+    player1: PlayerServerState;
+    player2: PlayerServerState;
   };
 };
 
@@ -47,8 +47,8 @@ export type RoundEndEvent = {
   payload: {
     round: number;
     winner_id: string | null;
-    player1: MovedPlayerServerState;
-    player2: MovedPlayerServerState;
+    player1: PlayerServerState;
+    player2: PlayerServerState;
   };
 };
 
@@ -57,8 +57,8 @@ export type GameEndEvent = {
   payload: {
     round: number;
     winner_id: string;
-    player1: MovedPlayerServerState;
-    player2: MovedPlayerServerState;
+    player1: PlayerServerState;
+    player2: PlayerServerState;
   };
 };
 
@@ -71,18 +71,12 @@ export type SERVER_EVENTS =
 export type ServerGameState = {
   round: number;
   winner_id: string | null;
-  player1: IdlePlayerServerState | MovedPlayerServerState;
-  player2: IdlePlayerServerState | MovedPlayerServerState;
+  player1: PlayerServerState;
+  player2: PlayerServerState;
 };
 
-export type IdlePlayerServerState = {
-  currentMove: null;
-  currentScore: number;
-  user_id: string;
-};
-
-export type MovedPlayerServerState = {
-  currentMove: Move;
+export type PlayerServerState = {
+  currentMove: Move | null;
   currentScore: number;
   user_id: string;
 };

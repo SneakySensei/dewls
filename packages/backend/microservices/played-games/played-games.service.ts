@@ -29,7 +29,7 @@ export const createGame = async (
 };
 
 export const addPlayer2ToGame = async (
-    game_id: MappedPlayedGame["game_id"],
+    played_game_id: MappedPlayedGame["played_game_id"],
     player_2_id: MappedPlayedGame["player_2_id"],
 ) => {
     const { data, error } = await SupabaseService.getSupabase()
@@ -37,7 +37,28 @@ export const addPlayer2ToGame = async (
         .update({
             player_2_id,
         })
-        .eq("game_id", game_id)
+        .eq("played_game_id", played_game_id)
+        .select();
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }
+
+    return data;
+};
+
+export const setWinnerToGame = async (
+    played_game_id: MappedPlayedGame["played_game_id"],
+    winner_id: MappedPlayedGame["winner_id"],
+) => {
+    const { data, error } = await SupabaseService.getSupabase()
+        .from("played_games")
+        .update({
+            winner_id,
+            is_active: false,
+        })
+        .eq("played_game_id", played_game_id)
         .select();
 
     if (error) {
