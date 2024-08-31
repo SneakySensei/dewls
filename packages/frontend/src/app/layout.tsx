@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Big_Shoulders_Display, Inter } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
-import Footer from "./components/Footer";
+import Footer from "./components/footer";
 
 const inter = Inter({
   subsets: ["latin"],

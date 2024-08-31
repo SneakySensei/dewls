@@ -111,7 +111,7 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
             state: "roundEnd",
             round,
             player: { ...player, currentMove: player.currentMove },
-            enemy: { ...enemy, currentMove: player.currentMove },
+            enemy: { ...enemy, currentMove: enemy.currentMove },
             winner_id,
           };
         }
@@ -146,7 +146,7 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
             state: "gameEnd",
             round,
             player: { ...player, currentMove: player.currentMove },
-            enemy: { ...enemy, currentMove: player.currentMove },
+            enemy: { ...enemy, currentMove: enemy.currentMove },
             winner_id,
           };
         }
@@ -188,9 +188,9 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
       "round-end" satisfies RockPaperScissors.RoundEndEvent["type"],
       (payload: RockPaperScissors.RoundEndEvent["payload"]) => {
         dispatch({ type: "round-end", payload });
-        setTimeout(() => {
-          dispatch({ type: "next-round" });
-        }, 5000);
+        // setTimeout(() => {
+        //   dispatch({ type: "next-round" });
+        // }, 5000);
       }
     );
     socket.current.on(
@@ -230,6 +230,8 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
     };
     socket.current.emit(moveEvent.type, moveEvent.payload);
   };
+
+  console.log(gameState);
 
   return (
     <main className="h-full flex flex-col bg-neutral-100">
