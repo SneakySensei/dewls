@@ -65,6 +65,8 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
             } else {
                 console.info(logId, `room found for room key ${roomKey}`);
 
+                // TODO: fix self joining room
+
                 await addPlayer2ToGame(roomId, user_id);
 
                 await RedisClient.hset(
@@ -183,8 +185,6 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                         gameState.player2.currentScore + 1;
                 }
 
-                gameState.round = gameState.round + 1;
-
                 if (
                     gameState.player1.currentScore <
                         RockPaperScissors.winScore &&
@@ -201,7 +201,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                 } else {
                     await setWinnerToGame(room_id, gameState.winner_id);
 
-                    await RedisClient.hdel(room_id);
+                    await RedisClient.del(room_id);
 
                     const gameEndEvent: RockPaperScissors.GameEndEvent = {
                         type: "game-end",
@@ -218,6 +218,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                 gameState.player1.currentMove = null;
                 gameState.player2.currentMove = null;
                 gameState.winner_id = null;
+                gameState.round = gameState.round + 1;
             }
 
             if (updateGameState) {
