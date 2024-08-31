@@ -1,7 +1,7 @@
 import { RockPaperScissorsRoutes } from "../microservices/rock-paper-scissors/rock-paper-scissors.routes";
 import { GAME_NAMESPACES } from "common";
 import { Server } from "node:http";
-import { Namespace, type Socket, Server as WSServer } from "socket.io";
+import { type Namespace, type Socket, Server as WSServer } from "socket.io";
 
 export class WSService {
     private static ioConnection: WSServer;

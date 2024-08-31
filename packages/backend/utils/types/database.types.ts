@@ -78,6 +78,7 @@ export type Database = {
           description: string
           game_id: string
           icon_image: string
+          max_occupancy: number
           name: string
           slug: string
         }
@@ -87,6 +88,7 @@ export type Database = {
           description: string
           game_id?: string
           icon_image: string
+          max_occupancy?: number
           name: string
           slug: string
         }
@@ -96,6 +98,7 @@ export type Database = {
           description?: string
           game_id?: string
           icon_image?: string
+          max_occupancy?: number
           name?: string
           slug?: string
         }

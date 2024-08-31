@@ -27,3 +27,23 @@ export const createGame = async (
 
     return data;
 };
+
+export const addPlayer2ToGame = async (
+    game_id: MappedPlayedGame["game_id"],
+    player_2_id: MappedPlayedGame["player_2_id"],
+) => {
+    const { data, error } = await SupabaseService.getSupabase()
+        .from("played_games")
+        .update({
+            player_2_id,
+        })
+        .eq("game_id", game_id)
+        .select();
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }
+
+    return data;
+};
