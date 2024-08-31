@@ -49,7 +49,7 @@ export type GameState =
 export default function Game({ tier, user_id: player_user_id }: Props) {
   const reducer = (
     gameState: GameState,
-    action: RockPaperScissors.SERVER_EVENTS
+    action: RockPaperScissors.SERVER_EVENTS | { type: "next-round" }
   ): GameState => {
     switch (action.type) {
       case "player-joined": {
@@ -117,6 +117,19 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
         }
         break;
       }
+      case "next-round": {
+        if (gameState.state === "roundEnd") {
+          return {
+            state: "ongoingRound",
+            round: gameState.round + 1,
+            enemy: { ...gameState.enemy, currentMove: "rock" },
+            player: { ...gameState.player, currentMove: "rock" },
+            room_id: gameState.room_id,
+          };
+        }
+
+        break;
+      }
       case "game-end": {
         const { player1, player2, round, winner_id } = action.payload;
 
@@ -175,6 +188,9 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
       "round-end" satisfies RockPaperScissors.RoundEndEvent["type"],
       (payload: RockPaperScissors.RoundEndEvent["payload"]) => {
         dispatch({ type: "round-end", payload });
+        setTimeout(() => {
+          dispatch({ type: "next-round" });
+        }, 5000);
       }
     );
     socket.current.on(
