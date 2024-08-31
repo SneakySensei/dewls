@@ -1,7 +1,8 @@
 import { useEffect, useReducer } from "react";
-import { Manager } from "socket.io-client";
 
 import { MappedUser } from "@/utils/types";
+import { GAME_NAMESPACES, TIERS } from "common";
+import { getSocketManager } from "@/utils/websockets";
 
 export type Moves = "rock" | "paper" | "scissors";
 
@@ -24,26 +25,47 @@ const reducer = (state: GameState, action: Action): GameState => {
   }
 };
 
-const socketManager = new Manager("localhost:8080", { withCredentials: true });
-export default function Game() {
+type Props = {
+  tier: TIERS;
+};
+
+export default function Game({ tier }: Props) {
   const [gameState, dispatch] = useReducer(reducer, {
     state: "waitingForPlayers",
     round: 0,
   } as GameState);
 
   useEffect(() => {
-    const socket = socketManager.socket("tic-tac-toe");
-    socket.emit("waiting", { sessionId: "session1", userId: "sneakysensei" });
+    const socketManager = getSocketManager();
+    const socket = socketManager.socket(
+      `/${GAME_NAMESPACES.STONE_PAPER_SCISSORS}`
+    );
+    socket.emit("waiting", {
+      season_id: "season1",
+      user_id: "sneakysensei",
+      game_id: "game1",
+      tier_id: tier,
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
   return (
     <main className="h-full flex">
       <section className="flex-1 min-h-0">
-        <button></button>
-        <button></button>
-        <button></button>
+        <h1>Player 1</h1>
+        <button>Rock</button>
+        <button>Paper</button>
+        <button>Scissor</button>
       </section>
       <hr className="border-black" />
-      <section className="flex-1 min-h-0"></section>
+      <section className="flex-1 min-h-0">
+        <h1>Player 2</h1>
+        <button>Rock</button>
+        <button>Paper</button>
+        <button>Scissor</button>
+      </section>
     </main>
   );
 }

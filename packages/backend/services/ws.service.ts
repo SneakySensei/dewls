@@ -1,10 +1,16 @@
+import { RockPaperScissorsRoutes } from "../microservices/rock-paper-scissors/rock-paper-scissors.routes";
 import { GAME_NAMESPACES } from "common";
 import { Server } from "node:http";
-import { Server as WSServer } from "socket.io";
+import { type Socket, Server as WSServer } from "socket.io";
 
 export class WSService {
     private static ioConnection: WSServer;
-    private static gameNamespacesPrefix: string = "/game";
+    private static socketRoutes: {
+        [namespace in GAME_NAMESPACES]: (socket: Socket) => void;
+    } = {
+        [GAME_NAMESPACES.STONE_PAPER_SCISSORS]: RockPaperScissorsRoutes,
+        [GAME_NAMESPACES.TIC_TAC_TOE]: RockPaperScissorsRoutes,
+    };
 
     public static async init(server: Server) {
         this.ioConnection = new WSServer(server, {
@@ -17,20 +23,10 @@ export class WSService {
 
         for (const gameNamespace of Object.values(GAME_NAMESPACES)) {
             this.ioConnection
-                .of(`/${this.gameNamespacesPrefix}/${gameNamespace}`)
-                .on("connection", (socket) => {
-                    console.log("a user connected!");
-                });
+                .of(`/${gameNamespace}`)
+                .on("connection", this.socketRoutes[gameNamespace]);
         }
 
         console.info(`WSService initialized successfully!`);
-    }
-
-    public static getIOServer(
-        namespace: GAME_NAMESPACES | `${GAME_NAMESPACES}`
-    ) {
-        return this.ioConnection.of(
-            `/${this.gameNamespacesPrefix}/${namespace}`
-        );
     }
 }
