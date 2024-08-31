@@ -10,9 +10,11 @@
     "types:database": "npx supabase login --token $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_ACCESS_TOKEN)') && npx supabase gen types --lang=typescript --project-id $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_PROJECT_ID)') > src/utils/types/database.types.ts"
   },
   "dependencies": {
+    "@ethsign/sp-sdk": "^0.7.2",
     "@web3auth/base": "^8.12.4",
     "@web3auth/ethereum-provider": "^8.12.4",
     "@web3auth/modal": "^8.12.7",
+    "@web3auth/wallet-services-plugin": "^8.12.5",
     "clsx": "^2.1.1",
     "common": "workspace:*",
     "ethers": "^6.13.2",

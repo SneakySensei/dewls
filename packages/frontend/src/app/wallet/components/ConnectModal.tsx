@@ -2,6 +2,7 @@
 
 import { web3auth } from "@/utils/store/web3auth.store";
 import { IProvider } from "@web3auth/base";
+import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
 export const ConnectModal: React.FC = () => {
@@ -10,14 +11,30 @@ export const ConnectModal: React.FC = () => {
 
   const login = async () => {
     const web3authProvider = await web3auth.connect();
+
     setProvider(web3authProvider);
     if (web3auth.connected) {
       setLoggedIn(true);
+      //   const signProtocolClient = new SignProtocolClient(SpMode.OnChain, {
+      //     chain: EvmChains.arbitrumSepolia,
+      //     walletClient: web3auth
+      //   });
+      //   const createSchemaRes = await signProtocolClient.createSchema({
+      //     name: "xxx",
+      //     data: [{ name: "name", type: "string" }],
+      //   });
+      //   console.log(createSchemaRes);
     }
   };
 
   const getUserInfo = async () => {
     const user = await web3auth.getUserInfo();
+    if (provider) {
+      const wallet_address = new ethers.BrowserProvider(provider);
+      const wallet = (await wallet_address.getSigner()).address;
+
+      console.log(wallet);
+    }
     console.log(user);
   };
 
