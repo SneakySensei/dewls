@@ -79,6 +79,7 @@ export type Database = {
           game_id: string
           icon_image: string
           name: string
+          slug: string
         }
         Insert: {
           cover_image: string
@@ -87,6 +88,7 @@ export type Database = {
           game_id?: string
           icon_image: string
           name: string
+          slug: string
         }
         Update: {
           cover_image?: string
@@ -95,12 +97,12 @@ export type Database = {
           game_id?: string
           icon_image?: string
           name?: string
+          slug?: string
         }
         Relationships: []
       }
       played_games: {
         Row: {
-          chain_id: number
           created_at: string
           game_id: string
           game_tier_id: string
@@ -112,7 +114,6 @@ export type Database = {
           winner_id: string | null
         }
         Insert: {
-          chain_id: number
           created_at?: string
           game_id?: string
           game_tier_id?: string
@@ -124,7 +125,6 @@ export type Database = {
           winner_id?: string | null
         }
         Update: {
-          chain_id?: number
           created_at?: string
           game_id?: string
           game_tier_id?: string

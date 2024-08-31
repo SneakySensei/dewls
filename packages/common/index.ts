@@ -1,6 +1,8 @@
+import { RockPaperScissors } from "./rock-paper-scissors";
+
 export enum GAME_NAMESPACES {
-  TIC_TAC_TOE = "tic-tac-toe",
-  STONE_PAPER_SCISSORS = "stone-paper-scissors",
+  // TIC_TAC_TOE = "tic-tac-toe",
+  ROCK_PAPER_SCISSORS = "rock-paper-scissors",
 }
 
 export enum TIERS {
@@ -8,3 +10,7 @@ export enum TIERS {
   BETA = "BETA",
   GAAMA = "GAAMA",
 }
+
+export const GAMES = {
+  [GAME_NAMESPACES.ROCK_PAPER_SCISSORS]: RockPaperScissors,
+};

@@ -6,12 +6,10 @@ export const createGame = async (
     season_id: MappedPlayedGame["season_id"],
     game_id: MappedPlayedGame["game_id"],
     game_tier_id: MappedPlayedGame["game_tier_id"],
-    chain_id: MappedPlayedGame["chain_id"],
 ) => {
     const { data, error } = await SupabaseService.getSupabase()
         .from("played_games")
         .insert({
-            chain_id,
             season_id,
             game_id,
             game_tier_id,

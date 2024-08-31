@@ -8,8 +8,7 @@ export class WSService {
     private static socketRoutes: {
         [namespace in GAME_NAMESPACES]: (socket: Socket) => void;
     } = {
-        [GAME_NAMESPACES.STONE_PAPER_SCISSORS]: RockPaperScissorsRoutes,
-        [GAME_NAMESPACES.TIC_TAC_TOE]: RockPaperScissorsRoutes,
+        [GAME_NAMESPACES.ROCK_PAPER_SCISSORS]: RockPaperScissorsRoutes,
     };
 
     public static async init(server: Server) {

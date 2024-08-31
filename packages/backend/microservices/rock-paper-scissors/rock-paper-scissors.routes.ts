@@ -6,7 +6,6 @@ export const RockPaperScissorsRoutes = (socket: Socket) => {
     socket.on(
         "waiting",
         async ({
-            chain_id,
             game_id,
             season_id,
             tier_id,
@@ -16,7 +15,6 @@ export const RockPaperScissorsRoutes = (socket: Socket) => {
             game_id: string;
             user_id: string;
             tier_id: string;
-            chain_id: number;
         }) => {
             const redisClient = RedisService.getRedisClient();
             const roomKey: string = `${game_id}::${tier_id}`;
@@ -33,7 +31,6 @@ export const RockPaperScissorsRoutes = (socket: Socket) => {
                     season_id,
                     game_id,
                     tier_id,
-                    chain_id,
                 );
 
                 roomId = played_game_id;

@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react";
 
 import { MappedUser } from "@/utils/types";
-import { GAME_NAMESPACES, TIERS } from "common";
+import { GAME_NAMESPACES, GAMES, TIERS } from "common";
 import { getSocketManager } from "@/utils/websockets";
 
 export type Moves = "rock" | "paper" | "scissors";
@@ -38,12 +38,12 @@ export default function Game({ tier }: Props) {
   useEffect(() => {
     const socketManager = getSocketManager();
     const socket = socketManager.socket(
-      `/${GAME_NAMESPACES.STONE_PAPER_SCISSORS}`
+      `/${GAME_NAMESPACES.ROCK_PAPER_SCISSORS}`
     );
     socket.emit("waiting", {
       season_id: "season1",
       user_id: "sneakysensei",
-      game_id: "game1",
+      game_id: GAMES[GAME_NAMESPACES.ROCK_PAPER_SCISSORS].gameId,
       tier_id: tier,
     });
 
@@ -51,6 +51,7 @@ export default function Game({ tier }: Props) {
       socket.disconnect();
     };
   }, []);
+
   return (
     <main className="h-full flex">
       <section className="flex-1 min-h-0">

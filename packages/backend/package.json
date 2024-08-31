@@ -9,7 +9,7 @@
         "lint": "eslint .",
         "pretty": "prettier . --write",
         "start": "node ./dist/app.js",
-        "types:database": "npx supabase login --token $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_ACCESS_TOKEN)') && npx supabase gen types --lang=typescript --project-id $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_PROJECT_ID)') > utils/types/database.types.ts",
+        "types:database": "npx supabase login --token sbp_c0daa4d3c34a96b956b7bf1c1fc4be41e7c362e5 && npx supabase gen types --lang=typescript --project-id syuzrhxfoltipqqmaihr > utils/types/database.types.ts",
         "types": "pnpm run types:database"
     },
     "engines": {
