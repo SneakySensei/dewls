@@ -183,6 +183,8 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                         gameState.player2.currentScore + 1;
                 }
 
+                gameState.round = gameState.round + 1;
+
                 if (
                     gameState.player1.currentScore <
                         RockPaperScissors.winScore &&
@@ -215,6 +217,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
                 gameState.player1.currentMove = null;
                 gameState.player2.currentMove = null;
+                gameState.winner_id = null;
             }
 
             if (updateGameState) {
