@@ -7,28 +7,20 @@ import {
     addPlayer2ToGame,
     createGame,
 } from "../played-games/played-games.service";
-import {
-    IdlePlayerServerState,
-    MoveEvent,
-    winScore,
-    type GameStartEvent,
-    type JoinEvent,
-    type PlayerJoinedEvent,
-    type ServerGameState,
-} from "common/rock-paper-scissors";
+import { RockPaperScissors } from "common";
 import { Namespace, type Socket } from "socket.io";
 
 export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     const RedisClient = RedisService.getRedisClient();
 
     socket.on(
-        "join" as JoinEvent["type"],
+        "join" as RockPaperScissors.JoinEvent["type"],
         async ({
             game_id,
             season_id,
             tier_id,
             user_id,
-        }: JoinEvent["payload"]) => {
+        }: RockPaperScissors.JoinEvent["payload"]) => {
             const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
             const logId: string = `[${season_id}][${game_id}][${tier_id}][${user_id}]`;
 
@@ -55,7 +47,9 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
                 await RedisClient.hset(
                     roomId,
-                    stringifyObjectValues<Omit<ServerGameState, "player2">>({
+                    stringifyObjectValues<
+                        Omit<RockPaperScissors.ServerGameState, "player2">
+                    >({
                         winner_id: null,
                         round: 0,
                         player1: {
@@ -74,7 +68,9 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
                 await RedisClient.hset(
                     roomId,
-                    stringifyObjectValues<Pick<ServerGameState, "player2">>({
+                    stringifyObjectValues<
+                        Pick<RockPaperScissors.ServerGameState, "player2">
+                    >({
                         player2: {
                             user_id,
                             currentMove: null,
@@ -89,7 +85,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
             socket.join(roomId);
             console.info(logId, `user joined ${roomId}`);
 
-            const playerJoinedEvent: PlayerJoinedEvent = {
+            const playerJoinedEvent: RockPaperScissors.PlayerJoinedEvent = {
                 type: "player-joined",
                 payload: {
                     room_id: roomId,
@@ -102,14 +98,14 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
             );
 
             const { player1, player2, round } =
-                parseStringifiedValues<ServerGameState>(
+                parseStringifiedValues<RockPaperScissors.ServerGameState>(
                     await RedisClient.hgetall(roomId),
                 );
 
             if (player1 && player2) {
                 console.info(logId, `starting game ${roomId}`);
 
-                const gameStartEvent: GameStartEvent = {
+                const gameStartEvent: RockPaperScissors.GameStartEvent = {
                     type: "game-start",
                     payload: {
                         player1: {
@@ -131,23 +127,30 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     );
 
     socket.on(
-        "move" as MoveEvent["type"],
-        async ({ move, room_id, user_id }: MoveEvent["payload"]) => {
-            const gameState = parseStringifiedValues<ServerGameState>(
-                await RedisClient.hgetall(room_id),
-            );
+        "move" as RockPaperScissors.MoveEvent["type"],
+        async ({
+            move,
+            room_id,
+            user_id,
+        }: RockPaperScissors.MoveEvent["payload"]) => {
+            const gameState =
+                parseStringifiedValues<RockPaperScissors.ServerGameState>(
+                    await RedisClient.hgetall(room_id),
+                );
 
             if (gameState.player1.user_id === user_id) {
                 if (
-                    (gameState.player1 as IdlePlayerServerState).currentMove ===
-                    null
+                    (
+                        gameState.player1 as RockPaperScissors.IdlePlayerServerState
+                    ).currentMove === null
                 ) {
                     gameState.player1.currentMove = move;
                 }
             } else if (gameState.player2.user_id === user_id) {
                 if (
-                    (gameState.player2 as IdlePlayerServerState).currentMove ===
-                    null
+                    (
+                        gameState.player2 as RockPaperScissors.IdlePlayerServerState
+                    ).currentMove === null
                 ) {
                     gameState.player2.currentMove = move;
                 }
@@ -158,8 +161,8 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
             }
 
             if (
-                gameState.player1.currentScore < winScore &&
-                gameState.player2.currentScore < winScore
+                gameState.player1.currentScore < RockPaperScissors.winScore &&
+                gameState.player2.currentScore < RockPaperScissors.winScore
             ) {
                 if (
                     gameState.player1.currentMove &&
@@ -195,7 +198,9 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
             await RedisClient.hset(
                 room_id,
-                stringifyObjectValues<ServerGameState>(gameState),
+                stringifyObjectValues<RockPaperScissors.ServerGameState>(
+                    gameState,
+                ),
             );
         },
     );
