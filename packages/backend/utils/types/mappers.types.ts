@@ -1,7 +1,5 @@
 import { type Database } from "./database.types";
 
-export type MappedConnectedWallet =
-    Database["public"]["Tables"]["connected_wallets"]["Row"];
 export type MappedGameTier = Database["public"]["Tables"]["game_tiers"]["Row"];
 export type MappedGame = Database["public"]["Tables"]["games"]["Row"];
 export type MappedPlayedGame =
