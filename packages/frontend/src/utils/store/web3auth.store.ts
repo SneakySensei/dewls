@@ -8,7 +8,7 @@ const privateKeyProvider = new EthereumPrivateKeyProvider({
 });
 
 const web3auth = new Web3Auth({
-  clientId: process.env.NEXT_PUBLIC_CLIENT_ID!,
+  clientId: process.env.NEXT_PUBLIC_WEB3_AUTH_CLIENT_ID!,
   web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
   privateKeyProvider,
 });
