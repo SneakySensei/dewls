@@ -10,14 +10,12 @@
     "types:database": "npx supabase login --token $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_ACCESS_TOKEN)') && npx supabase gen types --lang=typescript --project-id $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_PROJECT_ID)') > src/utils/types/database.types.ts"
   },
   "dependencies": {
-<<<<<<< Updated upstream
-    "clsx": "^2.1.1",
-=======
     "@web3auth/base": "^8.12.4",
     "@web3auth/ethereum-provider": "^8.12.4",
     "@web3auth/modal": "^8.12.7",
->>>>>>> Stashed changes
+    "clsx": "^2.1.1",
     "common": "workspace:*",
+    "ethers": "^6.13.2",
     "framer-motion": "^11.3.31",
     "next": "14.2.7",
     "react": "^18",
