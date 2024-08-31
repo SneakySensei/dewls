@@ -9,7 +9,7 @@ export default function MainMenu({ onJoin }: Props) {
       <button onClick={() => onJoin(TIERS_IDS.ALPHA)}>Alpha ($1)</button>
       <button onClick={() => onJoin(TIERS_IDS.ALPHA, true)}>ALPHA ($1)</button>
       <button onClick={() => onJoin(TIERS_IDS.BETA)}>Beta ($3)</button>
-      <button onClick={() => onJoin(TIERS_IDS.GAAMA)}>Gaama ($10)</button>
+      <button onClick={() => onJoin(TIERS_IDS.GAMMA)}>Gaama ($10)</button>
     </main>
   );
 }

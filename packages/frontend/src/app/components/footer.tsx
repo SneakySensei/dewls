@@ -17,6 +17,8 @@ export default function Footer() {
   const isLeaderboardPage = pathname === "/leaderboard";
   const isProfilePage = pathname === "/profile";
 
+  if (!(isGamesListingPage || isLeaderboardPage || isProfilePage)) return <></>;
+
   const profileImage = (
     <div className="size-7 overflow-hidden rounded-full">
       <Image

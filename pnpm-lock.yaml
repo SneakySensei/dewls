@@ -104,6 +104,9 @@ importers:
       next:
         specifier: 14.2.7
         version: 14.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next-cloudinary:
+        specifier: ^6.11.0
+        version: 6.11.0(next@14.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18
         version: 18.3.1
@@ -230,6 +233,21 @@ packages:
   '@babel/types@7.25.6':
     resolution: {integrity: sha512-/l42B1qxpG6RdfYf343Uw1vmDjeNhneUXtzhojE7pDgfpEypmRhI6j1kr17XCVv4Cgl9HdAiQY2x0GwKm7rWCw==}
     engines: {node: '>=6.9.0'}
+
+  '@cloudinary-util/types@1.4.0':
+    resolution: {integrity: sha512-0zWtZ78IlIKS2xrdtPXHCYtLuAbxtlWpNTKb5CGP86wJUCm/r7e12v5xzjcx3tSzY6NlEsnxV88xhp64s834LA==}
+
+  '@cloudinary-util/url-loader@5.9.0':
+    resolution: {integrity: sha512-Jy2nfMwUor/VkjZ05qXSOYQg1lqUJfk1upNhkFdMc/2S2DeveuiNe5kjua1FVbROWoAnAv47qaGSsKwQHWibbA==}
+
+  '@cloudinary-util/util@3.3.2':
+    resolution: {integrity: sha512-Cc0iFxzfl7fcOXuznpeZFGYC885Of/vDgccRDnhTe/8Rf8YKv2PjLtezyo0VgmdA/CpeZy29NCXAsf6liokbwg==}
+
+  '@cloudinary/transformation-builder-sdk@1.15.0':
+    resolution: {integrity: sha512-C0aVBYsflAPP77SJvL4O/nDv6awgypTSNJge++4xjZfX3q4J+ka/wFAlqByUz6IOhZ8/V1OTFvC283YRjkoXzQ==}
+
+  '@cloudinary/url-gen@1.15.0':
+    resolution: {integrity: sha512-bjU67eZxLUgoRy/Plli4TQio7q6P31OYqnEgXxeN9TKXrzr6h0DeEdIUhKI9gy3HkEBWXWWJIPh7j7gkOJPnyA==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -903,6 +921,9 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
+
+  '@tsconfig/recommended@1.0.7':
+    resolution: {integrity: sha512-xiNMgCuoy4mCL4JTywk9XFs5xpRUcKxtWEcMR6FNMtsgewYTIgIR+nvlP4A4iRCAzRsHMnPhvTRrzp4AGcRTEA==}
 
   '@typechain/ethers-v6@0.5.1':
     resolution: {integrity: sha512-F+GklO8jBWlsaVV+9oHaPh5NJdd6rAKN4tklGfInX1Q7h0xPgVLP39Jl3eCulPB5qexI71ZFHwbljx4ZXNfouA==}
@@ -3003,6 +3024,12 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
+  next-cloudinary@6.11.0:
+    resolution: {integrity: sha512-Ip0zpZKsDSemfVdND+kC+tg0QIrEgv1QqdTfD0NiohrqiN6bk4ZNphkZ79O6g1+/0SaQ4hYynVQIJINW1eg/1A==}
+    peerDependencies:
+      next: ^12 || ^13 || ^14 || >=15.0.0-rc
+      react: ^17 || ^18 || >=19.0.0-beta
+
   next@14.2.7:
     resolution: {integrity: sha512-4Qy2aK0LwH4eQiSvQWyKuC7JXE13bIopEQesWE0c/P3uuNRnZCQanI0vsrMLmUQJLAto+A+/8+sve2hd+BQuOQ==}
     engines: {node: '>=18.17.0'}
@@ -4200,6 +4227,9 @@ packages:
   yup@1.4.0:
     resolution: {integrity: sha512-wPbgkJRCqIf+OHyiTBQoJiP5PFuAXaWiJK6AmYkzQAh5/c2K9hzSApBZG5wV9KoKSePF7sAxmNSvh/13YHkFDg==}
 
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
 snapshots:
 
   '@adraffy/ens-normalize@1.10.1': {}
@@ -4291,6 +4321,25 @@ snapshots:
       '@babel/helper-string-parser': 7.24.8
       '@babel/helper-validator-identifier': 7.24.7
       to-fast-properties: 2.0.0
+
+  '@cloudinary-util/types@1.4.0': {}
+
+  '@cloudinary-util/url-loader@5.9.0':
+    dependencies:
+      '@cloudinary-util/types': 1.4.0
+      '@cloudinary-util/util': 3.3.2
+      '@cloudinary/url-gen': 1.15.0
+      zod: 3.23.8
+
+  '@cloudinary-util/util@3.3.2': {}
+
+  '@cloudinary/transformation-builder-sdk@1.15.0':
+    dependencies:
+      '@cloudinary/url-gen': 1.15.0
+
+  '@cloudinary/url-gen@1.15.0':
+    dependencies:
+      '@cloudinary/transformation-builder-sdk': 1.15.0
 
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -5278,6 +5327,8 @@ snapshots:
 
   '@tsconfig/node16@1.0.4': {}
 
+  '@tsconfig/recommended@1.0.7': {}
+
   '@typechain/ethers-v6@0.5.1(ethers@6.13.2)(typechain@8.3.2(typescript@5.5.4))(typescript@5.5.4)':
     dependencies:
       ethers: 6.13.2
@@ -5296,11 +5347,11 @@ snapshots:
 
   '@types/bn.js@4.11.6':
     dependencies:
-      '@types/node': 20.16.2
+      '@types/node': 22.5.1
 
   '@types/bn.js@5.1.5':
     dependencies:
-      '@types/node': 20.16.2
+      '@types/node': 22.5.1
 
   '@types/body-parser@1.19.5':
     dependencies:
@@ -5390,7 +5441,7 @@ snapshots:
 
   '@types/pbkdf2@3.1.2':
     dependencies:
-      '@types/node': 20.16.2
+      '@types/node': 22.5.1
 
   '@types/phoenix@1.6.5': {}
 
@@ -5413,7 +5464,7 @@ snapshots:
 
   '@types/secp256k1@4.0.6':
     dependencies:
-      '@types/node': 20.16.2
+      '@types/node': 22.5.1
 
   '@types/send@0.17.4':
     dependencies:
@@ -6547,7 +6598,7 @@ snapshots:
       eslint: 8.57.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.9.0(eslint@8.57.0)
       eslint-plugin-react: 7.35.0(eslint@8.57.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
@@ -6578,7 +6629,7 @@ snapshots:
       is-bun-module: 1.1.0
       is-glob: 4.0.3
     optionalDependencies:
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0)
     transitivePeerDependencies:
       - '@typescript-eslint/parser'
       - eslint-import-resolver-node
@@ -6596,7 +6647,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3)(eslint@8.57.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-typescript@3.6.3(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.5.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.57.0))(eslint@8.57.0))(eslint@8.57.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -7933,6 +7984,15 @@ snapshots:
 
   neo-async@2.6.2: {}
 
+  next-cloudinary@6.11.0(next@14.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
+    dependencies:
+      '@cloudinary-util/types': 1.4.0
+      '@cloudinary-util/url-loader': 5.9.0
+      '@cloudinary-util/util': 3.3.2
+      '@tsconfig/recommended': 1.0.7
+      next: 14.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+
   next@14.2.7(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 14.2.7
@@ -9262,3 +9322,5 @@ snapshots:
       tiny-case: 1.0.3
       toposort: 2.0.2
       type-fest: 2.19.0
+
+  zod@3.23.8: {}
