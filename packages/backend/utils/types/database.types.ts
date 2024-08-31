@@ -9,44 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      connected_wallets: {
-        Row: {
-          chain_id: number
-          connected_wallet_id: string
-          created_at: string
-          is_primary: boolean
-          nickname: string | null
-          user_id: string
-          wallet_address: string
-        }
-        Insert: {
-          chain_id: number
-          connected_wallet_id: string
-          created_at?: string
-          is_primary?: boolean
-          nickname?: string | null
-          user_id: string
-          wallet_address: string
-        }
-        Update: {
-          chain_id?: number
-          connected_wallet_id?: string
-          created_at?: string
-          is_primary?: boolean
-          nickname?: string | null
-          user_id?: string
-          wallet_address?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "connected_wallets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
       game_tiers: {
         Row: {
           created_at: string
@@ -214,6 +176,7 @@ export type Database = {
           name: string
           profile_photo: string
           user_id: string
+          wallet_address: string
         }
         Insert: {
           created_at?: string
@@ -221,6 +184,7 @@ export type Database = {
           name: string
           profile_photo: string
           user_id?: string
+          wallet_address: string
         }
         Update: {
           created_at?: string
@@ -228,6 +192,7 @@ export type Database = {
           name?: string
           profile_photo?: string
           user_id?: string
+          wallet_address?: string
         }
         Relationships: []
       }
