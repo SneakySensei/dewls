@@ -49,8 +49,8 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
             io.to(roomId).emit("player-joined", {
                 user_id,
-            }),
-                console.info(logId, `sent room id ${roomId}`);
+            });
+            console.info(logId, `sent room id ${roomId}`);
         },
     );
 };

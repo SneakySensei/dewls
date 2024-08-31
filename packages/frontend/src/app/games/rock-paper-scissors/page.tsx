@@ -3,13 +3,13 @@
 import { ComponentProps, useState } from "react";
 import MainMenu from "./components/MainMenu";
 import Game from "./components/Game";
-import { TIERS } from "common";
+import { TIERS_IDS } from "common";
 
 export default function TicTacToe() {
   const [screen, setScreen] = useState<"main-menu" | "game" | "game2">(
     "main-menu"
   );
-  const [tier, setTier] = useState<TIERS>(TIERS.ALPHA);
+  const [tier, setTier] = useState<TIERS_IDS>(TIERS_IDS.ALPHA);
   const handleJoin: ComponentProps<typeof MainMenu>["onJoin"] = (
     tier,
     userTwo

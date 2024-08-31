@@ -1,25 +1,22 @@
 import { useEffect, useReducer } from "react";
 
-import { MappedUser } from "@/utils/types";
-import { GAME_NAMESPACES, GAMES, TIERS } from "common";
+import { RockPaperScissors, TIERS_IDS } from "common";
 import { getSocketManager } from "@/utils/websockets";
 
 type Props = {
   user_id: string;
-  tier: TIERS;
+  tier: TIERS_IDS;
 };
 
 export default function Game({ tier, user_id }: Props) {
   const [gameState, dispatch] = useReducer(reducer, {
-    state: "waitingForPlayers",
-    round: 0,
+    state: "waiting",
+    player: {},
   } as GameState);
 
   useEffect(() => {
     const socketManager = getSocketManager();
-    const socket = socketManager.socket(
-      `/${GAME_NAMESPACES.ROCK_PAPER_SCISSORS}`
-    );
+    const socket = socketManager.socket(`/${RockPaperScissors.slug}`);
     socket.onAny((event, ...args) => {
       console.log("rx event", event, args);
     });
@@ -30,7 +27,7 @@ export default function Game({ tier, user_id }: Props) {
     socket.emit("join", {
       season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
       user_id,
-      game_id: GAMES[GAME_NAMESPACES.ROCK_PAPER_SCISSORS].gameId,
+      game_id: RockPaperScissors.gameId,
       tier_id: tier,
     });
 
@@ -59,22 +56,33 @@ export default function Game({ tier, user_id }: Props) {
   );
 }
 
-export type Moves = "rock" | "paper" | "scissors";
-
-export type GameState = {
-  state: "waitingForPlayers" | "ongoingRound" | "roundEnd" | "gameEnd";
-  round: number;
-  player1?: { currentMove: Moves; currentScore: number } & MappedUser;
-  player2?: { currentMove: Moves; currentScore: number } & MappedUser;
+type PlayerState = {
+  currentMove: RockPaperScissors.Move;
+  currentScore: number;
+  user_id: string;
 };
+export type GameState =
+  | {
+      state: "waiting";
+      player: PlayerState;
+    }
+  | {
+      room_id: string;
+      state: "ongoingRound" | "roundEnd" | "gameEnd";
+      round: number;
+      player: PlayerState;
+      enemy: PlayerState;
+    };
 
-type Action = { type: "join" };
+type Action =
+  | { type: "player-joined"; payload: { room_id: string } }
+  | { type: "enemy-joined"; payload: { user_id: string } };
 
 const reducer = (state: GameState, action: Action): GameState => {
   switch (action.type) {
-    case "join":
-      return state;
+    case "player-joined":
 
+    case "enemy-joined":
     default:
       return state;
   }
