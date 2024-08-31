@@ -22,6 +22,9 @@ export class WSService {
 
         for (const gameNamespace of Object.values(GAME_NAMESPACES)) {
             const scopedIO = this.ioConnection.of(`/${gameNamespace}`);
+            console.info(
+                `WSService connection created for namespace ${gameNamespace}`,
+            );
             scopedIO.on("connection", (socket) =>
                 this.socketRoutes[gameNamespace](socket, scopedIO),
             );

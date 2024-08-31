@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Big_Shoulders_Display, Inter } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
-import Footer from "./components/footer";
+import Footer from "./components/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,10 +31,10 @@ export default function RootLayout({
         className={clsx(
           inter.variable,
           bigShouldersDisplay.variable,
-          "min-h-screen mx-auto font-sans max-w-lg bg-neutral-800 flex flex-col"
+          "h-screen mx-auto font-sans max-w-lg bg-neutral-800 flex flex-col"
         )}
       >
-        <div className="flex-1 min-h-0">{children}</div>
+        <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
         <Footer />
       </body>
     </html>
