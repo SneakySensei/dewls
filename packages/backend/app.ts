@@ -1,4 +1,5 @@
 import { gameTiersRouter } from "./microservices/game-tiers/game-tiers.routes";
+import { usersRouter } from "./microservices/users/users.routes";
 import { RedisService, SupabaseService, WSService } from "./services";
 import cors from "cors";
 import "dotenv/config";
@@ -24,6 +25,7 @@ const v1Router = Router();
 app.use("/api/v1", v1Router);
 
 v1Router.use("/game-tiers", gameTiersRouter);
+v1Router.use("/users", usersRouter);
 
 app.use("*", (_req: Request, res: Response) => {
     res.status(404).json({

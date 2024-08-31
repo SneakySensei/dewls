@@ -15,7 +15,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     const RedisClient = RedisService.getRedisClient();
 
     socket.on(
-        "join" as RockPaperScissors.JoinEvent["type"],
+        "join" satisfies RockPaperScissors.JoinEvent["type"],
         async ({
             game_id,
             season_id,
@@ -128,7 +128,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     );
 
     socket.on(
-        "move" as RockPaperScissors.MoveEvent["type"],
+        "move" satisfies RockPaperScissors.MoveEvent["type"],
         async ({
             move,
             room_id,
