@@ -1,12 +1,12 @@
 import { RockPaperScissorsRoutes } from "../microservices/rock-paper-scissors/rock-paper-scissors.routes";
 import { GAME_NAMESPACES } from "common";
 import { Server } from "node:http";
-import { type Socket, Server as WSServer } from "socket.io";
+import { Namespace, type Socket, Server as WSServer } from "socket.io";
 
 export class WSService {
     private static ioConnection: WSServer;
     private static socketRoutes: {
-        [namespace in GAME_NAMESPACES]: (socket: Socket) => void;
+        [namespace in GAME_NAMESPACES]: (socket: Socket, io: Namespace) => void;
     } = {
         [GAME_NAMESPACES.ROCK_PAPER_SCISSORS]: RockPaperScissorsRoutes,
     };
@@ -21,9 +21,10 @@ export class WSService {
         });
 
         for (const gameNamespace of Object.values(GAME_NAMESPACES)) {
-            this.ioConnection
-                .of(`/${gameNamespace}`)
-                .on("connection", this.socketRoutes[gameNamespace]);
+            const scopedIO = this.ioConnection.of(`/${gameNamespace}`);
+            scopedIO.on("connection", (socket) =>
+                this.socketRoutes[gameNamespace](socket, scopedIO),
+            );
         }
 
         console.info(`WSService initialized successfully!`);

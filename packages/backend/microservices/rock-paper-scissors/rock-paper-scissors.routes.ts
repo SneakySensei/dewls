@@ -1,10 +1,10 @@
 import { RedisService } from "../../services";
 import { createGame } from "./rock-paper-scissors.service";
-import { type Socket } from "socket.io";
+import { Namespace, type Socket } from "socket.io";
 
-export const RockPaperScissorsRoutes = (socket: Socket) => {
+export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     socket.on(
-        "waiting",
+        "join",
         async ({
             game_id,
             season_id,
@@ -35,10 +35,6 @@ export const RockPaperScissorsRoutes = (socket: Socket) => {
 
                 roomId = played_game_id;
 
-                console.info(
-                    logId,
-                    `created room with room id ${roomId} in room key ${roomKey}`,
-                );
                 await redisClient.rpush(roomKey, roomId);
                 console.info(
                     logId,
@@ -48,14 +44,13 @@ export const RockPaperScissorsRoutes = (socket: Socket) => {
                 console.info(logId, `room found for room key ${roomKey}`);
             }
 
-            console.info(logId, `joining room id ${roomId}`);
-            await socket.join(roomId);
+            socket.join(roomId);
             console.info(logId, `user joined ${roomId}`);
 
-            socket.emit("created-room", {
-                roomJoined: true,
-            });
-            console.info(logId, `sent room id ${roomId}`);
+            io.to(roomId).emit("player-joined", {
+                user_id,
+            }),
+                console.info(logId, `sent room id ${roomId}`);
         },
     );
 };
