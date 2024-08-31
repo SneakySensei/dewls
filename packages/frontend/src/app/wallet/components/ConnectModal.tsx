@@ -1,18 +1,18 @@
 "use client";
 
 import { web3auth } from "@/utils/store/web3auth.store";
-import { IProvider } from "@web3auth/base";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 
 export const ConnectModal: React.FC = () => {
-  const [provider, setProvider] = useState<IProvider | null>(null);
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const { provider, setProvider: setProviderContext } = useWeb3AuthContext();
 
   const login = async () => {
     const web3authProvider = await web3auth.connect();
 
-    setProvider(web3authProvider);
+    setProviderContext(web3authProvider);
     if (web3auth.connected) {
       setLoggedIn(true);
       //   const signProtocolClient = new SignProtocolClient(SpMode.OnChain, {
@@ -40,7 +40,7 @@ export const ConnectModal: React.FC = () => {
 
   const logout = async () => {
     await web3auth.logout();
-    setProvider(null);
+    setProviderContext(null);
     setLoggedIn(false);
   };
 
@@ -48,7 +48,7 @@ export const ConnectModal: React.FC = () => {
     const init = async () => {
       try {
         await web3auth.initModal();
-        setProvider(web3auth.provider);
+        setProviderContext(web3auth.provider);
 
         if (web3auth.connected) {
           setLoggedIn(true);

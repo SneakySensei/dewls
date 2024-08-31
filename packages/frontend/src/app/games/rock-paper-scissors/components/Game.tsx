@@ -3,6 +3,9 @@ import { useEffect, useReducer, useRef } from "react";
 import { RockPaperScissors, TIERS_IDS } from "common";
 import { getSocketManager } from "@/utils/websockets";
 import { Socket } from "socket.io-client";
+import { getWalletClient } from "@/utils/functions/ethers";
+import SignClient from "@/utils/store/sign-protocol.store";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 
 type Props = {
   user_id: string;
@@ -47,6 +50,7 @@ export type GameState =
     };
 
 export default function Game({ tier, user_id: player_user_id }: Props) {
+  const { provider } = useWeb3AuthContext();
   const reducer = (
     gameState: GameState,
     action: RockPaperScissors.SERVER_EVENTS | { type: "next-round" }
@@ -135,7 +139,6 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
 
         const player = player1.user_id === player_user_id ? player1 : player2;
         const enemy = player1.user_id !== player_user_id ? player1 : player2;
-
         if (
           gameState.state === "ongoingRound" &&
           player.currentMove &&
@@ -231,7 +234,20 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
     socket.current.emit(moveEvent.type, moveEvent.payload);
   };
 
-  console.log(gameState);
+  const handleAttest = async () => {
+    if (gameState.state !== "gameEnd") return;
+
+    const walletClient = await getWalletClient(provider!);
+    const signClient = new SignClient(walletClient);
+    const attestation = await signClient.attest({
+      game_id: RockPaperScissors.gameId,
+      season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
+      user_id: player_user_id,
+      tier_id: tier,
+      winner_id: player_user_id,
+    });
+    console.log(attestation);
+  };
 
   return (
     <main className="h-full flex flex-col bg-neutral-100">
@@ -263,6 +279,11 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
           "Waiting to player to join..."
         )}
       </section>
+      <hr className="border-black" />
+      {gameState.state === "gameEnd" &&
+        player?.user_id === gameState.winner_id && (
+          <button onClick={handleAttest}>Attest</button>
+        )}
       <pre>{JSON.stringify(gameState, null, 2)}</pre>
     </main>
   );

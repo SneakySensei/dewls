@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Big_Shoulders_Display, Inter } from "next/font/google";
 import "./globals.css";
 import clsx from "clsx";
-import Footer from "./components/footer";
+import Footer from "./components/Footer";
+import { Web3AuthContextProvider } from "@/utils/context/web3auth.context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -34,8 +35,10 @@ export default function RootLayout({
           "h-screen mx-auto font-sans max-w-lg bg-neutral-800 flex flex-col"
         )}
       >
-        <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
-        <Footer />
+        <Web3AuthContextProvider>
+          <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
+          <Footer />
+        </Web3AuthContextProvider>
       </body>
     </html>
   );
