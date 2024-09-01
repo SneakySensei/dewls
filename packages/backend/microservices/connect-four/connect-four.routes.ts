@@ -8,20 +8,21 @@ import {
     createGame,
     setWinnerToGame,
 } from "../played-games/played-games.service";
-import { RockPaperScissors } from "common";
+import { checkTie, checkWinner } from "./connect-four.service";
+import { ConnectFour } from "common";
 import { type Namespace, type Socket } from "socket.io";
 
-export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
+export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
     const RedisClient = RedisService.getRedisClient();
 
     socket.on(
-        "join" satisfies RockPaperScissors.JoinEvent["type"],
+        "join" satisfies ConnectFour.JoinEvent["type"],
         async ({
             game_id,
             season_id,
             tier_id,
             user_id,
-        }: RockPaperScissors.JoinEvent["payload"]) => {
+        }: ConnectFour.JoinEvent["payload"]) => {
             const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
             const logId: string = `[${season_id}][${game_id}][${tier_id}][${user_id}]`;
 
@@ -49,15 +50,15 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                 await RedisClient.hset(
                     roomId,
                     stringifyObjectValues<
-                        Omit<RockPaperScissors.ServerGameState, "player2">
+                        Omit<ConnectFour.ServerGameState, "player2">
                     >({
                         winner_id: null,
-                        round: 0,
+                        active_player: user_id,
                         player1: {
                             user_id,
                             currentMove: null,
-                            currentScore: 0,
                         },
+                        board: ConnectFour.emptyBoard,
                     }),
                 );
 
@@ -72,12 +73,11 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                 await RedisClient.hset(
                     roomId,
                     stringifyObjectValues<
-                        Pick<RockPaperScissors.ServerGameState, "player2">
+                        Pick<ConnectFour.ServerGameState, "player2">
                     >({
                         player2: {
                             user_id,
                             currentMove: null,
-                            currentScore: 0,
                         },
                     }),
                 );
@@ -88,7 +88,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
             socket.join(roomId);
             console.info(logId, `user joined ${roomId}`);
 
-            const playerJoinedEvent: RockPaperScissors.PlayerJoinedEvent = {
+            const playerJoinedEvent: ConnectFour.PlayerJoinedEvent = {
                 type: "player-joined",
                 payload: {
                     room_id: roomId,
@@ -100,30 +100,27 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                 playerJoinedEvent.payload,
             );
 
-            const { player1, player2, round } =
-                parseStringifiedValues<RockPaperScissors.ServerGameState>(
+            const { player1, player2, active_player, board } =
+                parseStringifiedValues<ConnectFour.ServerGameState>(
                     await RedisClient.hgetall(roomId),
                 );
 
             if (player1 && player2) {
                 console.info(logId, `starting game ${roomId}`);
 
-                // Contract call to create game
-
-                const gameStartEvent: RockPaperScissors.GameStartEvent = {
+                const gameStartEvent: ConnectFour.GameStartEvent = {
                     type: "game-start",
                     payload: {
                         player1: {
                             currentMove: null,
-                            currentScore: 0,
                             user_id: player1.user_id,
                         },
                         player2: {
                             currentMove: null,
-                            currentScore: 0,
                             user_id: player2.user_id,
                         },
-                        round: round as 0,
+                        active_player,
+                        board,
                     },
                 };
                 io.to(roomId).emit(gameStartEvent.type, gameStartEvent.payload);
@@ -132,26 +129,32 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     );
 
     socket.on(
-        "move" satisfies RockPaperScissors.MoveEvent["type"],
+        "move" satisfies ConnectFour.MoveEvent["type"],
         async ({
             move,
             room_id,
             user_id,
-        }: RockPaperScissors.MoveEvent["payload"]) => {
+        }: ConnectFour.MoveEvent["payload"]) => {
             const gameState =
-                parseStringifiedValues<RockPaperScissors.ServerGameState>(
+                parseStringifiedValues<ConnectFour.ServerGameState>(
                     await RedisClient.hgetall(room_id),
                 );
 
-            let updateGameState: boolean = true;
+            if (user_id !== gameState.active_player) {
+                return;
+            }
 
-            if (gameState.player1.user_id === user_id) {
+            if (gameState.winner_id) {
+                return;
+            }
+
+            if (user_id === gameState.player1.user_id) {
                 if (gameState.player1.currentMove === null) {
                     gameState.player1.currentMove = move;
                 } else {
                     return;
                 }
-            } else if (gameState.player2.user_id === user_id) {
+            } else if (user_id === gameState.player2.user_id) {
                 if (gameState.player2.currentMove === null) {
                     gameState.player2.currentMove = move;
                 } else {
@@ -163,77 +166,70 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                 );
             }
 
-            if (
-                gameState.player1.currentScore < RockPaperScissors.winScore &&
-                gameState.player2.currentScore < RockPaperScissors.winScore &&
-                gameState.player1.currentMove &&
-                gameState.player2.currentMove
-            ) {
+            const activePlayer =
+                user_id === gameState.player1.user_id &&
+                gameState.player1.currentMove
+                    ? gameState.player1
+                    : gameState.player2.user_id === user_id &&
+                        gameState.player2.currentMove
+                      ? gameState.player2
+                      : null;
+
+            if (!activePlayer?.currentMove) {
+                throw Error(`no active player for player ${user_id}`);
+            }
+
+            for (let row = ConnectFour.rowCount - 1; row >= 0; row--) {
                 if (
-                    gameState.player1.currentMove ===
-                    gameState.player2.currentMove
+                    gameState.board[row][activePlayer.currentMove.column] ===
+                    null
                 ) {
-                    gameState.winner_id = null;
-                } else if (
-                    (gameState.player1.currentMove === "rock" &&
-                        gameState.player2.currentMove === "scissors") ||
-                    (gameState.player1.currentMove === "paper" &&
-                        gameState.player2.currentMove === "rock") ||
-                    (gameState.player1.currentMove === "scissors" &&
-                        gameState.player2.currentMove === "paper")
-                ) {
-                    gameState.winner_id = gameState.player1.user_id;
-                    gameState.player1.currentScore =
-                        gameState.player1.currentScore + 1;
-                } else {
-                    gameState.winner_id = gameState.player2.user_id;
-                    gameState.player2.currentScore =
-                        gameState.player2.currentScore + 1;
+                    gameState.board[row][activePlayer.currentMove.column] =
+                        activePlayer.user_id;
+                    break;
                 }
+            }
 
-                if (
-                    gameState.player1.currentScore <
-                        RockPaperScissors.winScore &&
-                    gameState.player2.currentScore < RockPaperScissors.winScore
-                ) {
-                    const roundEndEvent: RockPaperScissors.RoundEndEvent = {
-                        type: "round-end",
-                        payload: gameState,
-                    };
-                    io.to(room_id).emit(
-                        roundEndEvent.type,
-                        roundEndEvent.payload,
-                    );
-                } else {
-                    await setWinnerToGame(room_id, gameState.winner_id);
+            const win = checkWinner(gameState.board, user_id);
 
-                    await RedisClient.del(room_id);
-
-                    const gameEndEvent: RockPaperScissors.GameEndEvent = {
-                        type: "game-end",
-                        payload:
-                            gameState as RockPaperScissors.GameEndEvent["payload"],
-                    };
-                    io.to(room_id).emit(
-                        gameEndEvent.type,
-                        gameEndEvent.payload,
-                    );
-                    updateGameState = false;
-                }
+            if (!win) {
+                const moveEndEvent: ConnectFour.MoveEndEvent = {
+                    type: "move-end",
+                    payload: gameState,
+                };
+                io.to(room_id).emit(moveEndEvent.type, moveEndEvent.payload);
 
                 gameState.player1.currentMove = null;
                 gameState.player2.currentMove = null;
-                gameState.winner_id = null;
-                gameState.round = gameState.round + 1;
-            }
 
-            if (updateGameState) {
+                const tie = checkTie(gameState.board);
+
+                if (tie) {
+                    gameState.board = ConnectFour.emptyBoard;
+                    const tieEvent: ConnectFour.TieEvent = {
+                        type: "tie",
+                        payload: gameState,
+                    };
+                    io.to(room_id).emit(tieEvent.type, tieEvent.payload);
+                }
+
                 await RedisClient.hset(
                     room_id,
-                    stringifyObjectValues<RockPaperScissors.ServerGameState>(
+                    stringifyObjectValues<ConnectFour.ServerGameState>(
                         gameState,
                     ),
                 );
+            } else {
+                gameState.winner_id = activePlayer.user_id;
+                await setWinnerToGame(room_id, gameState.winner_id);
+
+                await RedisClient.del(room_id);
+
+                const gameEndEvent: ConnectFour.GameEndEvent = {
+                    type: "game-end",
+                    payload: gameState as ConnectFour.GameEndEvent["payload"],
+                };
+                io.to(room_id).emit(gameEndEvent.type, gameEndEvent.payload);
             }
         },
     );

@@ -1,4 +1,4 @@
-import { ConnectFour } from "../microservices/connect-four/connect-four";
+import { ConnectFourRoutes } from "../microservices/connect-four/connect-four.routes";
 import { RockPaperScissorsRoutes } from "../microservices/rock-paper-scissors/rock-paper-scissors.routes";
 import { GAME_NAMESPACES } from "common";
 import { Server } from "node:http";
@@ -10,7 +10,7 @@ export class WSService {
         [namespace in GAME_NAMESPACES]: (socket: Socket, io: Namespace) => void;
     } = {
         [GAME_NAMESPACES.ROCK_PAPER_SCISSORS]: RockPaperScissorsRoutes,
-        [GAME_NAMESPACES.CONNECT_FOUR]: ConnectFour,
+        [GAME_NAMESPACES.CONNECT_FOUR]: ConnectFourRoutes,
     };
 
     public static async init(server: Server) {

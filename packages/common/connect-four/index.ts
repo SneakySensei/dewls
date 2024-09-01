@@ -1,7 +1,12 @@
 export const slug = "connect-four";
 export const gameId = "94c14ce2-2110-4787-ab82-ec2945567f42";
+export const rowCount = 6;
+export const columnCount = 7;
+export const winCount = 4;
 
-export type Move = { column: number };
+export type Move = {
+  column: number;
+};
 
 export type JoinEvent = {
   type: "join";
@@ -75,67 +80,40 @@ export type ServerGameState = {
   active_player: string;
   player1: PlayerServerState;
   player2: PlayerServerState;
-  board: [
-    [
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-    ],
-    [
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-    ],
-    [
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-    ],
-    [
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-    ],
-    [
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-    ],
-    [
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-      BoardCellState,
-    ],
-  ];
+  board: Board;
 };
 
-type BoardCellState = string | null;
+export type BoardCellState = string | null;
+
+export type BoardRow = [
+  BoardCellState,
+  BoardCellState,
+  BoardCellState,
+  BoardCellState,
+  BoardCellState,
+  BoardCellState,
+  BoardCellState,
+];
+
+export type Board = [
+  BoardRow,
+  BoardRow,
+  BoardRow,
+  BoardRow,
+  BoardRow,
+  BoardRow,
+];
 
 export type PlayerServerState = {
   currentMove: Move | null;
   user_id: string;
 };
+
+export const emptyBoard: Board = [
+  [null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null],
+  [null, null, null, null, null, null, null],
+];
