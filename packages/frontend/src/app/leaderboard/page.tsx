@@ -30,19 +30,5 @@ export default async function LeaderboardPage() {
 
   const seasons = seasonsResponse.success ? seasonsResponse.data : [];
 
-  return (
-    <Leaderboard
-      leaderboard={leaderboard}
-      seasons={[
-        ...seasons,
-        ...seasons,
-        ...seasons,
-        ...seasons,
-        ...seasons,
-        ...seasons,
-        ...seasons,
-        ...seasons,
-      ]}
-    />
-  );
+  return <Leaderboard leaderboard={leaderboard} seasons={seasons} />;
 }

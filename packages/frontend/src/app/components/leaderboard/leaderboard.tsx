@@ -2,10 +2,11 @@
 
 import { MappedLeaderboard, MappedSeason } from "@/utils/types";
 import LeaderboardTable from "./LeaderboardTable";
-import Image from "next/image";
 import Dropdown from "../shared/dropdown";
 import { useState } from "react";
 import ChevronDown from "@/shared/icons/Chevron-Down";
+import coinsLottie from "../../../../public/leaderboard-coins.json";
+import Lottie from "react-lottie";
 
 export const Leaderboard: React.FC<{
   seasons: MappedSeason[];
@@ -17,27 +18,13 @@ export const Leaderboard: React.FC<{
   );
   const liveSeason = seasons[0];
 
-  const columns = [
-    { header: "#", key: "rank" },
-    { header: "User", key: "user" },
-    { header: "Won", key: "games_won" },
-    { header: "Lost", key: "games_lost" },
-    { header: "Score", key: "total_score" },
-  ];
-
-  const options = [
-    { value: "option1", label: "Option 1" },
-    { value: "option2", label: "Option 2" },
-    { value: "option3", label: "Option 3" },
-  ];
-
   return (
-    <main className="text-neutral-100 flex flex-col gap-y-6">
+    <main className="text-neutral-100 gap-y-6">
       <h1 className="text-heading-1 font-bold text-center tracking-widest font-display">
         Leaderboard
       </h1>
 
-      <div className="px-6">
+      <div className="px-4">
         <Dropdown
           open={dropdownOpen}
           setOpen={setDropdownOpen}
@@ -105,25 +92,31 @@ export const Leaderboard: React.FC<{
         </Dropdown>
       </div>
 
-      <div className="h-48 w-full flex flex-col items-center justify-center gap-y-4 bg-reward-pool-banner">
-        <Image
-          src="/leaderboard-coin.svg"
-          alt="Leaderboard Coins"
-          width={116}
-          height={96}
-        />
-        <div className="flex flex-col items-center gap-y-2">
-          <p className="text-heading-1 text-neutral-100 font-semibold">
-            $34,000
-          </p>
-          <p className="text-body-3 text-neutral-200 font-normal">
-            Amount Collected
-          </p>
+      <div className="justify-center m-4 bg-reward-pool-banner">
+        <div className="border border-purple-800 rounded-xl p-4">
+          <figure className="w-40 mx-auto">
+            <Lottie
+              options={{
+                loop: true,
+                autoplay: true,
+                animationData: coinsLottie,
+              }}
+            />
+          </figure>
+
+          <div className="gap-y-2 text-center">
+            <p className="text-heading-1 text-neutral-100 font-semibold">
+              ${selectedSeason.reward_pool_usd.toLocaleString()}
+            </p>
+
+            <p className="text-body-3 text-neutral-200 font-normal mt-2">
+              Amount Pooled
+            </p>
+          </div>
         </div>
       </div>
-      <div>
-        <LeaderboardTable columns={columns} data={[]} />
-      </div>
+
+      <LeaderboardTable data={leaderboard} />
     </main>
   );
 };
