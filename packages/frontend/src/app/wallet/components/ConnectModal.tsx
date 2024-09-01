@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { API_BASE_URL } from "@/utils/constants/api.constant";
 import { getWalletAddress } from "@/utils/functions/ethers";
+import { UserInfo } from "@web3auth/base";
+import { MappedUser, ResponseWithData } from "@/utils/types";
 
 export const ConnectModal: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
@@ -30,7 +32,9 @@ export const ConnectModal: React.FC = () => {
     setUser(null);
   };
 
-  const handleUserAuth = async (user: any) => {
+  const handleUserAuth = async (
+    user: Partial<UserInfo> & { wallet_address: string }
+  ) => {
     try {
       const res = await fetch(`${API_BASE_URL}/users/auth`, {
         method: "POST",
@@ -46,8 +50,11 @@ export const ConnectModal: React.FC = () => {
         cache: "no-cache",
       });
 
-      const data = await res.json();
-      return data;
+      const userResponse = (await res.json()) as ResponseWithData<{
+        user: MappedUser;
+        token: string;
+      }>;
+      if (userResponse.success) return userResponse.data;
     } catch (error) {
       console.error(error);
     }
@@ -56,26 +63,21 @@ export const ConnectModal: React.FC = () => {
   const handleWeb3Auth = async () => {
     try {
       if (web3auth.connected && web3auth.provider) {
-        const promises = await Promise.all([
+        const [userInfo, walletAddress] = await Promise.all([
           web3auth.getUserInfo(),
           getWalletAddress(web3auth.provider),
         ]);
 
         const authResponse = await handleUserAuth({
-          ...promises[0],
-          wallet_address: promises[1],
+          ...userInfo,
+          wallet_address: walletAddress,
         });
 
+        if (!authResponse) return;
+
         setLoggedIn(true);
-        localStorage.setItem("token", authResponse.data.token);
-        setUser({
-          email_id: promises[0].email!,
-          name: promises[0].name ? promises[0].name : promises[1],
-          profile_photo: promises[0].profileImage
-            ? promises[0].profileImage
-            : "",
-          wallet_address: promises[1],
-        });
+        localStorage.setItem("token", authResponse.token);
+        setUser({ data: authResponse.user, token: authResponse.token });
       }
     } catch (error) {
       console.error(error);
