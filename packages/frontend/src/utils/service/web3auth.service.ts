@@ -4,7 +4,7 @@ import { WEB3AUTH_NETWORK } from "@web3auth/base";
 import { Web3Auth } from "@web3auth/modal";
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
-  config: { chainConfig: CHAIN_CONFIG[296] },
+  config: { chainConfig: CHAIN_CONFIG[31] },
 });
 
 const web3auth = new Web3Auth({
