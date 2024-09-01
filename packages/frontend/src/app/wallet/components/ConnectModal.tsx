@@ -12,7 +12,6 @@ export const ConnectModal: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const {
     provider,
-    user,
     setProvider: setProviderContext,
     setUser,
   } = useWeb3AuthContext();
@@ -97,8 +96,6 @@ export const ConnectModal: React.FC = () => {
     };
     init();
   }, []);
-
-  console.log(user, localStorage.getItem("token"));
 
   return (
     <div>

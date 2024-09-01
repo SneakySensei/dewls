@@ -7,9 +7,9 @@ import { getSocketManager } from "@/utils/websockets";
 import { Socket } from "socket.io-client";
 import EnemyScreen from "./EnemyScreen";
 import PlayerScreen from "./PlayerScreen";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 
 type Props = {
-  user_id: string;
   tier: TIERS_IDS;
 };
 
@@ -50,7 +50,11 @@ export type GameState =
       winner_id: string;
     };
 
-export default function Game({ tier, user_id: player_user_id }: Props) {
+export default function Game({ tier }: Props) {
+  const { user } = useWeb3AuthContext();
+
+  const player_user_id = user!.data.user_id;
+
   const reducer = (
     gameState: GameState,
     action: RockPaperScissors.SERVER_EVENTS | { type: "next-round" }
