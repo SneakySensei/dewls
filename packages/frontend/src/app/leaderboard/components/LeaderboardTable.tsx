@@ -19,24 +19,31 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
   data,
 }) => {
   return (
-    <table className="w-full bg-neutral-700 rounded-lg">
-      <thead>
-        <tr className="text-neutral-300 font-normal text-body-2">
-          {columns.map((column) => (
-            <th key={column.key}>{column.header}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row, index) => (
-          <tr key={index}>
-            {columns.map((column) => (
-              <td key={column.key}>{row[column.key]}</td>
-            ))}
-          </tr>
+    <div className="w-full bg-neutral-700 rounded-lg grid grid-cols-12">
+      <div className="col-span-12 grid grid-cols-12 text-neutral-300 font-normal text-body-2">
+        {columns.map((column, index) => (
+          <div
+            key={column.key}
+            className={`${index === 1 ? "col-span-4" : index === 0 ? "col-span-1" : `col-span-2`} p-2 text-left px-6`}
+          >
+            {column.header}
+          </div>
         ))}
-      </tbody>
-    </table>
+      </div>
+
+      {data.map((row, rowIndex) => (
+        <div key={rowIndex} className="col-span-12 grid grid-cols-12">
+          {columns.map((column, index) => (
+            <div
+              key={column.key}
+              className={`${index === 1 ? "col-span-4" : index === 0 ? "col-span-1" : `col-span-2`} p-2 text-left px-6`}
+            >
+              {row[column.key]}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 };
 
