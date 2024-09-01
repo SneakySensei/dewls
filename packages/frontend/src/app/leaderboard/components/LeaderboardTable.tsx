@@ -32,11 +32,14 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
       </div>
 
       {data.map((row, rowIndex) => (
-        <div key={rowIndex} className="col-span-12 grid grid-cols-12">
+        <div
+          key={rowIndex}
+          className="col-span-12 grid grid-cols-12 border rounded-lg mx-4 py-4"
+        >
           {columns.map((column, index) => (
             <div
               key={column.key}
-              className={`${index === 1 ? "col-span-4" : index === 0 ? "col-span-1" : `col-span-2`} p-2 text-left px-6`}
+              className={`${index === 1 ? "col-span-4" : index === 0 ? "col-span-1" : `col-span-2`} p-2 text-left`}
             >
               {row[column.key]}
             </div>
