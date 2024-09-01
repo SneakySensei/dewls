@@ -8,9 +8,9 @@ import { Socket } from "socket.io-client";
 import { getWalletClient } from "@/utils/functions/ethers";
 import SignClient from "@/utils/service/sign-protocol.service";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
-import RockImage from "../assets/rock.png";
-import PaperImage from "../assets/paper.png";
-import ScissorsImage from "../assets/scissors.png";
+import RockImage from "@/assets/rock.png";
+import PaperImage from "@/assets/paper.png";
+import ScissorsImage from "@/assets/scissors.png";
 import Image from "next/image";
 import clsx from "clsx";
 import { AnimatePresence } from "framer-motion";
@@ -59,7 +59,6 @@ export type GameState =
     };
 
 export default function Game({ tier, user_id: player_user_id }: Props) {
-  const { provider } = useWeb3AuthContext();
   const reducer = (
     gameState: GameState,
     action: RockPaperScissors.SERVER_EVENTS | { type: "next-round" }
@@ -173,7 +172,7 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
     player: { currentMove: "rock", currentScore: 0, user_id: player_user_id },
   });
 
-  const socket = useRef<Socket>(
+  const socketRef = useRef<Socket>(
     getSocketManager().socket(`/${RockPaperScissors.slug}`, {
       auth: {
         // token,
@@ -182,33 +181,33 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
   );
 
   useEffect(() => {
-    socket.current.on("connect_error", (err) => {
+    socketRef.current.on("connect_error", (err) => {
       console.log(err.message); // prints the message associated with the error
     });
 
-    socket.current.on("error", (err) => {
+    socketRef.current.on("error", (err) => {
       console.error(err); // prints the message associated with the error
     });
 
-    socket.current.onAny((event, ...args) => {
+    socketRef.current.onAny((event, ...args) => {
       console.log("rx event", event, args);
     });
-    socket.current.onAnyOutgoing((event, ...args) => {
+    socketRef.current.onAnyOutgoing((event, ...args) => {
       console.log("tx event", event, args);
     });
-    socket.current.on(
+    socketRef.current.on(
       "player-joined" satisfies RockPaperScissors.PlayerJoinedEvent["type"],
       (payload: RockPaperScissors.PlayerJoinedEvent["payload"]) => {
         dispatch({ type: "player-joined", payload });
       }
     );
-    socket.current.on(
+    socketRef.current.on(
       "game-start" satisfies RockPaperScissors.GameStartEvent["type"],
       (payload: RockPaperScissors.GameStartEvent["payload"]) => {
         dispatch({ type: "game-start", payload });
       }
     );
-    socket.current.on(
+    socketRef.current.on(
       "round-end" satisfies RockPaperScissors.RoundEndEvent["type"],
       (payload: RockPaperScissors.RoundEndEvent["payload"]) => {
         dispatch({ type: "round-end", payload });
@@ -217,14 +216,14 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
         }, 5000);
       }
     );
-    socket.current.on(
+    socketRef.current.on(
       "game-end" satisfies RockPaperScissors.GameEndEvent["type"],
       (payload: RockPaperScissors.GameEndEvent["payload"]) => {
         dispatch({ type: "game-end", payload });
       }
     );
 
-    socket.current.emit(
+    socketRef.current.emit(
       "join" satisfies RockPaperScissors.JoinEvent["type"],
       {
         season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
@@ -235,135 +234,18 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
     );
 
     return () => {
-      socket.current.disconnect();
+      socketRef.current.disconnect();
     };
   }, []);
 
-  const player = gameState.player;
-  const enemy = gameState.state === "initial" ? undefined : gameState.enemy;
-
-  const handleMove = (move: RockPaperScissors.Move) => {
-    if (gameState.state !== "ongoingRound") return;
-    const moveEvent: RockPaperScissors.MoveEvent = {
-      type: "move",
-      payload: {
-        room_id: gameState.room_id,
-        user_id: gameState.player.user_id,
-        move,
-      },
-    };
-    socket.current.emit(moveEvent.type, moveEvent.payload);
-  };
-
-  const handleAttest = async () => {
-    if (gameState.state !== "gameEnd") return;
-
-    const walletClient = await getWalletClient(provider!);
-    const signClient = new SignClient(walletClient);
-    const attestation = await signClient.attest({
-      game_id: RockPaperScissors.gameId,
-      season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
-      user_id: player_user_id,
-      tier_id: tier,
-      winner_id: player_user_id,
-    });
-    console.log(attestation);
-  };
-
   return (
     <main className="relative h-full flex flex-col bg-neutral-100">
-      <section className="flex-1 grid place-items-center relative z-0 min-h-0 bg-[radial-gradient(circle_at_center_bottom,_#f87171_0%,_#d71e1e_100%)]">
-        <span className="absolute -z-10 bg-polkadots inset-0 bg-fixed" />
-        {enemy && (
-          <>
-            <div className="absolute top-0 left-0 w-full h-auto">
-              <h1>Player 2</h1>
-              <pre>{JSON.stringify(gameState, null, 2)}</pre>
-            </div>
-
-            <MoveImage move={enemy.currentMove} isEnemy />
-          </>
-        )}
-
-        {!enemy && (
-          <motion.h2
-            animate={{
-              opacity: [0, 1, 0],
-              transition: {
-                type: "tween",
-                repeat: Infinity,
-                duration: 1.5,
-                ease: "linear",
-              },
-            }}
-            className="text-display-1 z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          >
-            Waiting for <br />
-            opponent...
-          </motion.h2>
-        )}
-      </section>
-      <section className="flex-1 relative grid place-items-center z-0 min-h-0 bg-[radial-gradient(circle_at_center_top,_#60a5fa_0%,_#1d4ed8_100%)]">
-        <span className="absolute -z-10 bg-polkadots inset-0 bg-fixed" />
-        {player && (
-          <>
-            <div className="absolute bottom-0 left-0 w-full h-auto">
-              <h1>Player 1</h1>
-              <pre>{JSON.stringify(player, null, 2)}</pre>
-            </div>
-            <MoveImage move={player.currentMove} />
-
-            {/* CONTROLS */}
-            <AnimatePresence>
-              {gameState.state === "ongoingRound" && (
-                <motion.section
-                  initial="hidden"
-                  animate="show"
-                  exit="hidden"
-                  transition={{ staggerChildren: 0.1 }}
-                  className="p-2 space-y-3 absolute w-auto overflow-x-hidden right-0 top-1/2 -translate-y-1/2"
-                >
-                  {(
-                    [
-                      "rock",
-                      "paper",
-                      "scissors",
-                    ] satisfies RockPaperScissors.Move[]
-                  ).map((action) => (
-                    <motion.button
-                      variants={{
-                        hidden: { x: "100%", opacity: 0 },
-                        show: { x: 0, opacity: 1 },
-                      }}
-                      key={action}
-                      className="block bg-black/50 border rounded-full size-14 p-2"
-                      onClick={() => handleMove(action)}
-                    >
-                      <Image alt={action} src={MOVE_IMAGE_MAP[action]} />
-                    </motion.button>
-                  ))}
-                </motion.section>
-              )}
-            </AnimatePresence>
-          </>
-        )}
-        {!player && (
-          <motion.h2
-            animate={{
-              opacity: [0, 1, 0],
-              transition: {
-                type: "tween",
-                repeat: Infinity,
-                duration: 1.5,
-                ease: "linear",
-              },
-            }}
-            className="text-display-1 z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          >
-            Joining game...
-          </motion.h2>
-        )}
-      </section>
+      <EnemyScreen gameState={gameState} />
+      <PlayerScreen
+        gameState={gameState}
+        socket={socketRef.current}
+        tier={tier}
+      />
 
       {/* Middle text banner */}
       <section className="absolute top-1/2 p-1 text-center left-0 w-full -translate-y-1/2 bg-neutral-500">
@@ -387,11 +269,6 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
           </h2>
         )}
       </section>
-
-      {gameState.state === "gameEnd" &&
-        player?.user_id === gameState.winner_id && (
-          <button onClick={handleAttest}>Attest</button>
-        )}
     </main>
   );
 }
@@ -400,10 +277,18 @@ type MoveProps = {
   deciding?: boolean;
   move: RockPaperScissors.Move;
   isEnemy?: boolean;
+  state: "win" | "lose" | "idle";
 };
-function MoveImage({ move, isEnemy }: MoveProps) {
+function MoveImage({ move, isEnemy, state, deciding }: MoveProps) {
   return (
-    <div className="animate-shake">
+    <div
+      className={clsx(
+        "transition-all",
+        deciding && "animate-shake",
+        isEnemy ? "origin-top" : "origin-bottom",
+        state === "lose" && "grayscale"
+      )}
+    >
       <Image
         src={MOVE_IMAGE_MAP[move]}
         alt={move}
@@ -418,3 +303,170 @@ const MOVE_IMAGE_MAP = {
   paper: PaperImage,
   scissors: ScissorsImage,
 };
+
+type EnemyScreenProps = {
+  gameState: GameState;
+};
+
+function EnemyScreen({ gameState }: EnemyScreenProps) {
+  const enemy = gameState.state === "initial" ? undefined : gameState.enemy;
+
+  const moveState =
+    (gameState.state === "roundEnd" || gameState.state === "gameEnd") &&
+    gameState.winner_id
+      ? gameState.winner_id === gameState.player.user_id
+        ? "lose"
+        : "win"
+      : "idle";
+
+  return (
+    <section className="flex-1 grid place-items-center relative z-0 min-h-0 bg-[radial-gradient(circle_at_center_bottom,_#f87171_0%,_#d71e1e_100%)]">
+      <span className="absolute -z-10 bg-polkadots inset-0 bg-fixed" />
+      {enemy && (
+        <>
+          <div className="absolute top-0 left-0 w-full h-auto">
+            <h1>Player 2</h1>
+            <pre>{JSON.stringify(gameState, null, 2)}</pre>
+          </div>
+
+          <MoveImage move={enemy.currentMove} isEnemy state={moveState} />
+        </>
+      )}
+
+      {!enemy && (
+        <motion.h2
+          animate={{
+            opacity: [0, 1, 0],
+            transition: {
+              type: "tween",
+              repeat: Infinity,
+              duration: 1.5,
+              ease: "linear",
+            },
+          }}
+          className="text-display-1 z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
+          Waiting for <br />
+          opponent...
+        </motion.h2>
+      )}
+    </section>
+  );
+}
+
+type PlayerScreenProps = EnemyScreenProps & {
+  socket: Socket;
+  tier: TIERS_IDS;
+};
+
+function PlayerScreen({ gameState, socket, tier }: PlayerScreenProps) {
+  const { provider } = useWeb3AuthContext();
+
+  const handleMove = (move: RockPaperScissors.Move) => {
+    if (gameState.state !== "ongoingRound") return;
+    const moveEvent: RockPaperScissors.MoveEvent = {
+      type: "move",
+      payload: {
+        room_id: gameState.room_id,
+        user_id: gameState.player.user_id,
+        move,
+      },
+    };
+    socket.emit(moveEvent.type, moveEvent.payload);
+  };
+
+  const handleAttest = async () => {
+    if (gameState.state !== "gameEnd") return;
+
+    const walletClient = await getWalletClient(provider!);
+    const signClient = new SignClient(walletClient);
+
+    const attestation = await signClient.attest({
+      game_id: RockPaperScissors.gameId,
+      season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
+      user_id: gameState.player.user_id,
+      tier_id: tier,
+      winner_id: gameState.player.user_id,
+    });
+    console.log(attestation);
+  };
+
+  const player = gameState.player;
+
+  const moveState =
+    (gameState.state === "roundEnd" || gameState.state === "gameEnd") &&
+    gameState.winner_id
+      ? gameState.winner_id === gameState.player.user_id
+        ? "win"
+        : "lose"
+      : "idle";
+
+  return (
+    <section className="flex-1 relative grid place-items-center z-0 min-h-0 bg-[radial-gradient(circle_at_center_top,_#60a5fa_0%,_#1d4ed8_100%)]">
+      <span className="absolute -z-10 bg-polkadots inset-0 bg-fixed" />
+      {player && (
+        <>
+          <div className="absolute bottom-0 left-0 w-full h-auto">
+            <h1>Player 1</h1>
+            <pre>{JSON.stringify(player, null, 2)}</pre>
+          </div>
+          <MoveImage move={player.currentMove} state={moveState} />
+
+          {/* CONTROLS */}
+          <AnimatePresence>
+            {gameState.state === "ongoingRound" && (
+              <motion.section
+                initial="hidden"
+                animate="show"
+                exit="hidden"
+                transition={{ staggerChildren: 0.1 }}
+                className="p-2 space-y-3 absolute w-auto overflow-x-hidden right-0 top-1/2 -translate-y-1/2"
+              >
+                {(
+                  [
+                    "rock",
+                    "paper",
+                    "scissors",
+                  ] satisfies RockPaperScissors.Move[]
+                ).map((action) => (
+                  <motion.button
+                    variants={{
+                      hidden: { x: "100%", opacity: 0 },
+                      show: { x: 0, opacity: 1 },
+                    }}
+                    key={action}
+                    className="block bg-black/50 border border-neutral-400 shadow-md rounded-full size-14 p-2"
+                    onClick={() => handleMove(action)}
+                  >
+                    <Image alt={action} src={MOVE_IMAGE_MAP[action]} />
+                  </motion.button>
+                ))}
+              </motion.section>
+            )}
+          </AnimatePresence>
+        </>
+      )}
+      {!player && (
+        <motion.h2
+          animate={{
+            opacity: [0, 1, 0],
+            transition: {
+              type: "tween",
+              repeat: Infinity,
+              duration: 1.5,
+              ease: "linear",
+            },
+          }}
+          className="text-display-1 z-10 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
+          Joining game...
+        </motion.h2>
+      )}
+
+      {gameState.state === "gameEnd" &&
+        player?.user_id === gameState.winner_id && (
+          <button onClick={handleAttest}>Attest</button>
+        )}
+    </section>
+  );
+}
