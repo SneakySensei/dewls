@@ -101,12 +101,15 @@ const LeaderboardTable: React.FC<{
                     />
                   )}
 
-                  <div>
-                    <p className={`${you ? "text-brand-400" : ""} font-medium`}>
+                  <div className="text-ellipsis truncate w-full">
+                    <p
+                      className={`${you ? "text-brand-400" : ""} font-medium text-ellipsis w-full truncate`}
+                    >
                       {name}
                     </p>
+
                     <p className="text-body-3 text-neutral-300">
-                      {truncate(wallet_address)}
+                      {truncate(wallet_address).toUpperCase()}
                     </p>
                   </div>
                 </div>
