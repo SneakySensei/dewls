@@ -113,6 +113,9 @@ importers:
       '@web3auth/modal':
         specifier: ^8.12.7
         version: 8.12.7(@babel/runtime@7.25.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@web3auth/modal-react-hooks':
+        specifier: ^8.13.0
+        version: 8.13.0(@babel/runtime@7.25.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@web3auth/wallet-services-plugin':
         specifier: ^8.12.5
         version: 8.12.5(@babel/runtime@7.25.6)(@web3auth/openlogin-adapter@8.12.4(@babel/runtime@7.25.6))
@@ -1341,6 +1344,13 @@ packages:
     engines: {node: '>=18.x', npm: '>=9.x'}
     peerDependencies:
       '@babel/runtime': 7.x
+
+  '@web3auth/modal-react-hooks@8.13.0':
+    resolution: {integrity: sha512-SZ3QGoZ+qcLFSUnr9uhRKIU8CyTPWunnJryXOauuAwFNfhDdhsDBWLARqoel96GChdkkp3rOgTFOk6X0xmIgYA==}
+    engines: {node: '>=18.x', npm: '>=9.x'}
+    peerDependencies:
+      '@babel/runtime': ^7.x
+      react: ^18.x
 
   '@web3auth/modal@8.12.7':
     resolution: {integrity: sha512-/gtKVCicMU42OSy0Jle4qC8KLmCdXZR+Q2Gd98aRdAtXqZ+PLRyTwCZiba+aKavk5bqj0nItuHA0ugFK8oBa5A==}
@@ -6174,6 +6184,21 @@ snapshots:
     transitivePeerDependencies:
       - '@sentry/types'
       - bufferutil
+      - supports-color
+      - utf-8-validate
+
+  '@web3auth/modal-react-hooks@8.13.0(@babel/runtime@7.25.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      '@babel/runtime': 7.25.6
+      '@web3auth/base': 8.12.4(@babel/runtime@7.25.6)
+      '@web3auth/modal': 8.12.7(@babel/runtime@7.25.6)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+    transitivePeerDependencies:
+      - '@sentry/types'
+      - '@web3auth/wallet-connect-v2-adapter'
+      - bufferutil
+      - react-dom
+      - react-native
       - supports-color
       - utf-8-validate
 
