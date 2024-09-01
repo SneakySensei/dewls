@@ -1,6 +1,6 @@
 "use client";
 
-import { web3auth } from "@/utils/store/web3auth.store";
+import { web3auth } from "@/utils/service/web3auth.service";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";

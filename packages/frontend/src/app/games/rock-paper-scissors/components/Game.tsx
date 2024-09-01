@@ -4,7 +4,7 @@ import { RockPaperScissors, TIERS_IDS } from "common";
 import { getSocketManager } from "@/utils/websockets";
 import { Socket } from "socket.io-client";
 import { getWalletClient } from "@/utils/functions/ethers";
-import SignClient from "@/utils/store/sign-protocol.store";
+import SignClient from "@/utils/service/sign-protocol.service";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 
 type Props = {

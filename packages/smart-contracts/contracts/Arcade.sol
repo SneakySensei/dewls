@@ -14,21 +14,23 @@ interface IERC20 {
     ) external returns (bool);
 
     function balanceOf(address account) external view returns (uint256);
+
+    function approve(address spender, uint256 value) external returns (bool);
 }
 
 contract Arcade {
     address public owner;
-    uint256 public rewardPool;
-    uint256 private ownerPool;
+    uint256 public rewardPool = 0;
+    uint256 public ownerPool = 0;
     mapping(address => uint256) public userBalances;
-    mapping(uint256 => Game) public games;
-    uint256 public gameCounter;
+    mapping(string => Game) public games;
     IERC20 public token;
     uint256 public rewardPoolPercentage = 20;
     uint256 public ownerPercentage = 20;
     uint256 public winPercentage = 60;
 
     struct Game {
+        string gameId;
         address player1;
         address player2;
         uint256 betAmount;
@@ -40,20 +42,22 @@ contract Arcade {
     }
 
     event GameCreated(
-        uint256 indexed gameId,
+        string indexed gameId,
         address indexed player1,
         address indexed player2,
         uint256 betAmount
     );
     event BetPlaced(
-        uint256 indexed gameId,
+        string indexed gameId,
         address indexed player,
         uint256 amount
     );
     event GameEnded(
-        uint256 indexed gameId,
+        string indexed gameId,
         address indexed winner,
-        uint256 reward
+        uint256 reward,
+        uint256 betAmount,
+        uint256 winPercentage
     );
     event OwnerWithdraw(address indexed owner, uint256 amount);
     event RewardWithdrawn(address indexed user, uint256 amount);
@@ -68,8 +72,12 @@ contract Arcade {
         _;
     }
 
-    modifier gameExists(uint256 _gameId) {
-        require(_gameId < gameCounter, "Game does not exist");
+    modifier gameExists(string calldata _gameId) {
+        require(
+            keccak256(abi.encodePacked(games[_gameId].gameId)) ==
+                keccak256(abi.encodePacked(_gameId)),
+            "Game doesn't exist"
+        );
         _;
     }
 
@@ -79,16 +87,18 @@ contract Arcade {
     }
 
     function createGame(
+        string calldata _gameId,
         address _player1,
         address _player2,
         uint256 _betAmount,
         bool _isBettingActive
-    ) external onlyOwner returns (uint256) {
+    ) external onlyOwner returns (string calldata) {
         if (_isBettingActive) {
             require(_betAmount > 0, "Bet amount must be greater than 0");
         }
 
-        games[gameCounter] = Game({
+        games[_gameId] = Game({
+            gameId: _gameId,
             player1: _player1,
             player2: _player2,
             betAmount: _isBettingActive ? _betAmount : 0,
@@ -99,12 +109,12 @@ contract Arcade {
             isGameOver: false
         });
 
-        emit GameCreated(gameCounter, _player1, _player2, _betAmount);
-        return gameCounter++;
+        emit GameCreated(_gameId, _player1, _player2, _betAmount);
+        return _gameId;
     }
 
     function placeBet(
-        uint256 _gameId,
+        string calldata _gameId,
         uint256 _amount
     ) external gameExists(_gameId) {
         Game storage game = games[_gameId];
@@ -131,7 +141,7 @@ contract Arcade {
     }
 
     function endGame(
-        uint256 _gameId,
+        string calldata _gameId,
         address _winner,
         address _loser
     ) external onlyOwner gameExists(_gameId) {
@@ -150,14 +160,21 @@ contract Arcade {
         game.winner = _winner;
         game.isGameOver = true;
 
-        userBalances[_winner] += game.betAmount * (winPercentage / 100);
-        rewardPool += game.betAmount * (rewardPoolPercentage / 100);
-        ownerPool += game.betAmount * (ownerPercentage / 100);
+        userBalances[_winner] = (userBalances[_winner] +
+            (game.betAmount * winPercentage) /
+            100);
+        userBalances[_loser] = (userBalances[_loser] - game.betAmount);
+        rewardPool = (rewardPool +
+            (game.betAmount * rewardPoolPercentage) /
+            100);
+        ownerPool = (ownerPool + (game.betAmount * ownerPercentage) / 100);
 
         emit GameEnded(
             _gameId,
             _winner,
-            game.betAmount * (winPercentage / 100)
+            (game.betAmount * winPercentage) / 100,
+            game.betAmount,
+            winPercentage
         );
     }
 
@@ -166,18 +183,13 @@ contract Arcade {
         uint256 _amount
     ) external onlyOwner {
         uint256 balance = userBalances[_userAddress];
-        require(balance > _amount, "No rewards to withdraw");
+        require(balance < _amount, "No rewards to withdraw");
 
         userBalances[_userAddress] -= _amount;
-        token.transfer(_userAddress, _amount);
+        token.approve(address(this), _amount);
+        token.transferFrom(address(this), _userAddress, _amount);
 
         emit RewardWithdrawn(_userAddress, _amount);
-    }
-
-    function getGameDetails(
-        uint256 _gameId
-    ) external view gameExists(_gameId) returns (Game memory) {
-        return games[_gameId];
     }
 
     function withdrawOwnerPool() external onlyOwner {
@@ -185,7 +197,8 @@ contract Arcade {
 
         uint256 amountToWithdraw = ownerPool;
         ownerPool = 0;
-        token.transfer(owner, amountToWithdraw);
+        token.approve(address(this), amountToWithdraw);
+        token.transferFrom(address(this), owner, amountToWithdraw);
 
         emit OwnerWithdraw(owner, amountToWithdraw);
     }

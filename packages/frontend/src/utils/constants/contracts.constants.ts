@@ -525,12 +525,12 @@ export const ARCADE_ABI = [
 
 export const ARCADE_CONTRACT_ADDRESS: { [chainId: number]: string } = {
   296: "0xfcd63e6f3116809F54D8242d75Dfb80cB9a87916", // Hedera
-  31: "0x0e76A3D0B12385a030525b4252A775b4437fFaa7", // Rootstock
-  2810: "0xfcd63e6f3116809F54D8242d75Dfb80cB9a87916", // Morph L2
+  31: "0xeFF531D43600a925C0d282f755bA0D39aA82eF14", // Rootstock
+  2810: "0x24C6434B4779Cecd89075A936d11fd6Aec055166", // Morph L2
 };
 
 export const TOKEN_CONTRACT_ADDRESS: { [chainId: number]: string } = {
   296: "0x0e76A3D0B12385a030525b4252A775b4437fFaa7", // Hedera
-  31: "0xfcd63e6f3116809F54D8242d75Dfb80cB9a87916", // Rootstock
+  31: "0x24C6434B4779Cecd89075A936d11fd6Aec055166", // Rootstock
   2810: "0x9E12AD42c4E4d2acFBADE01a96446e48e6764B98", // Morph L2
 };

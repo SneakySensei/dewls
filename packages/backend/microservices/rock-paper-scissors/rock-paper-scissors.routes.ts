@@ -108,6 +108,8 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
             if (player1 && player2) {
                 console.info(logId, `starting game ${roomId}`);
 
+                // Contract call to create game
+
                 const gameStartEvent: RockPaperScissors.GameStartEvent = {
                     type: "game-start",
                     payload: {
