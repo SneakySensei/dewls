@@ -174,10 +174,22 @@ export default function Game({ tier, user_id: player_user_id }: Props) {
   });
 
   const socket = useRef<Socket>(
-    getSocketManager().socket(`/${RockPaperScissors.slug}`)
+    getSocketManager().socket(`/${RockPaperScissors.slug}`, {
+      auth: {
+        // token,
+      },
+    })
   );
 
   useEffect(() => {
+    socket.current.on("connect_error", (err) => {
+      console.log(err.message); // prints the message associated with the error
+    });
+
+    socket.current.on("error", (err) => {
+      console.error(err); // prints the message associated with the error
+    });
+
     socket.current.onAny((event, ...args) => {
       console.log("rx event", event, args);
     });

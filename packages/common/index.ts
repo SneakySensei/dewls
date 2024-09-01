@@ -1,5 +1,5 @@
-import * as RockPaperScissors from "./rock-paper-scissors";
 import * as ConnectFour from "./connect-four";
+import * as RockPaperScissors from "./rock-paper-scissors";
 
 export enum GAME_NAMESPACES {
   ROCK_PAPER_SCISSORS = RockPaperScissors.slug,
@@ -13,4 +13,9 @@ export enum TIERS_IDS {
   FREE = "8abf627a-bd65-4c50-9e16-52554e4064f9",
 }
 
-export { RockPaperScissors, ConnectFour };
+export type ErrorEvent = {
+  type: "error";
+  payload: object;
+};
+
+export { ConnectFour, RockPaperScissors };
