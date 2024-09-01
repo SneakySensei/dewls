@@ -122,7 +122,21 @@ export type Database = {
             foreignKeyName: "played_games_player_1_id_fkey"
             columns: ["player_1_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "played_games_player_1_id_fkey"
+            columns: ["player_1_id"]
+            isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "played_games_player_2_id_fkey"
+            columns: ["player_2_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
             referencedColumns: ["user_id"]
           },
           {
@@ -138,6 +152,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "seasons"
             referencedColumns: ["season_id"]
+          },
+          {
+            foreignKeyName: "played_games_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "played_games_winner_id_fkey"
@@ -201,24 +222,32 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leaderboard: {
+        Row: {
+          created_at: string | null
+          email_id: string | null
+          games_played: number | null
+          games_won: number | null
+          name: string | null
+          profile_photo: string | null
+          season_id: string | null
+          total_points: number | null
+          user_id: string | null
+          wallet_address: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "played_games_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["season_id"]
+          },
+        ]
+      }
     }
     Functions: {
-      get_leaderboard: {
-        Args: {
-          season_id_param: string
-        }
-        Returns: {
-          user_id: string
-          created_at: string
-          email_id: string
-          name: string
-          profile_photo: string
-          wallet_address: string
-          games_played: number
-          games_won: number
-        }[]
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
