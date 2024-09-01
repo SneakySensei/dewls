@@ -1,5 +1,6 @@
 import { gameTiersRouter } from "./microservices/game-tiers/game-tiers.routes";
 import { gamesRouter } from "./microservices/games/games.routes";
+import { seasonsRouter } from "./microservices/seasons/seasons.routes";
 import { usersRouter } from "./microservices/users/users.routes";
 import { RedisService, SupabaseService, WSService } from "./services";
 import cors from "cors";
@@ -28,6 +29,7 @@ app.use("/api/v1", v1Router);
 v1Router.use("/game-tiers", gameTiersRouter);
 v1Router.use("/games", gamesRouter);
 v1Router.use("/users", usersRouter);
+v1Router.use("/seasons", seasonsRouter);
 
 app.use("*", (_req: Request, res: Response) => {
     res.status(404).json({

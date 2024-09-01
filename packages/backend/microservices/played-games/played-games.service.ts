@@ -36,6 +36,7 @@ export const addPlayer2ToGame = async (
         .from("played_games")
         .update({
             player_2_id,
+            is_active: true,
         })
         .eq("played_game_id", played_game_id)
         .select();
