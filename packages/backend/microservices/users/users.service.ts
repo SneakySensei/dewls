@@ -17,7 +17,7 @@ export const fetchUserDetails = async (email_id: MappedUser["email_id"]) => {
         .eq("email_id", email_id)
         .single();
 
-    if (error) {
+    if (error && error.code === "23505") {
         console.error(error);
         throw error;
     }
