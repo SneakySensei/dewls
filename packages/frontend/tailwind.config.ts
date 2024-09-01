@@ -68,6 +68,8 @@ const config: Config = {
         // "gradient-conic":background: radial-gradient(50% 64.29% at 50% 117.86%, #8B81F8 0%, rgba(63, 46, 129, 0) 100%);
 
         //   "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "reward-pool-banner": "url('/reward-pool-bg.svg')",
+        "leaderboard-coin": "url('/leaderboard-coin.svg')",
         "gradient-active-tab":
           "radial-gradient(50% 64.29% at 50% 117.86%, rgba(139, 129, 248, 0.75) 0%, rgba(63, 46, 129, 0) 75%)",
         polkadots: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3Ccircle cx='13' cy='13' r='1.5'/%3E%3C/g%3E%3C/svg%3E")`,
