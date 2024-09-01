@@ -100,10 +100,7 @@ export const ConnectModal: React.FC = () => {
     <div>
       <button onClick={login}>Connect</button>
       <button onClick={logout}>Logout</button>
-      <div>
-        {provider && <p>Provider: {provider?.chainId}</p>}
-        {loggedIn && <p>Logged In</p>}
-      </div>
+      <div>{loggedIn && <p>Logged In</p>}</div>
     </div>
   );
 };

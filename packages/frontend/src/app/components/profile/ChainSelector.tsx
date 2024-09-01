@@ -8,15 +8,11 @@ import ChevronDown from "@/shared/icons/Chevron-Down";
 import Image from "next/image";
 import { web3auth } from "@/utils/service/web3auth.service";
 
-export const ChainSelector = () => {
+export const ChainSelector: React.FC<{
+  selectedChain: CustomChainConfig;
+  setSelectedChain: (chain: CustomChainConfig) => void;
+}> = ({ selectedChain, setSelectedChain }) => {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-  const [selectedChain, setSelectedChain] = useState<CustomChainConfig>(
-    CHAINS.find(
-      (chain) =>
-        // @ts-ignore
-        chain.chainId === web3auth.walletAdapters.openlogin?.chainConfig.chainId
-    )!
-  );
 
   const handleChainChange = async (chain: CustomChainConfig) => {
     await web3auth.addChain(chain);
@@ -72,13 +68,13 @@ export const ChainSelector = () => {
         <div className="cursor-pointer border-neutral-400 border rounded-lg p-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Image
-              src={selectedChain.logo!}
-              alt={selectedChain.displayName!}
+              src={selectedChain?.logo!}
+              alt={selectedChain?.displayName!}
               width={28}
               height={28}
               className="rounded-full object-contain "
             />
-            {selectedChain.displayName}{" "}
+            {selectedChain?.displayName}{" "}
           </div>
 
           <div
