@@ -19,12 +19,10 @@ export const fetchCurrentSeason = async () => {
 export const fetchCurrentLeaderboard = async () => {
     const { season_id } = await fetchCurrentSeason();
 
-    const { data, error } = await SupabaseService.getSupabase().rpc(
-        "get_leaderboard",
-        {
-            season_id_param: season_id,
-        },
-    );
+    const { data, error } = await SupabaseService.getSupabase()
+        .from("leaderboard")
+        .select()
+        .eq("season_id", season_id);
 
     if (error) {
         console.error(error);
