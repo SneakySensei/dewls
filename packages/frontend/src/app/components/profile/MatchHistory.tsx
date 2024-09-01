@@ -1,19 +1,10 @@
 "use client";
 
-import { TOKEN_CONTRACT_ADDRESS } from "@/utils/constants/contracts.constants";
-import { getTokenBalance } from "@/utils/functions/ethers";
-import { web3auth } from "@/utils/service/web3auth.service";
-import { CustomChainConfig } from "@web3auth/base";
-import { useEffect, useState } from "react";
 import BattleIcon from "@/shared/icons/BattleIcon";
-import Image from "next/image";
-import { minifyAddress } from "@/utils/functions/minify-address";
+import { MatchPlayer } from "./MatchPlayer";
 
-export const MatchHistory: React.FC<{
-  selectedChain: CustomChainConfig;
-}> = ({ selectedChain }) => {
+export const MatchHistory: React.FC = () => {
   // const { user } = useWeb3AuthContext();
-  const [currentBalance, setCurrentBalance] = useState<string>("0");
   const user = {
     email_id: "karanpargal007@gmail.com",
     name: "Karan Pargal",
@@ -25,79 +16,53 @@ export const MatchHistory: React.FC<{
     score: 1000,
   };
 
-  const fetchBalance = async () => {
-    const balance = await getTokenBalance(
-      web3auth.provider!,
-      user.wallet_address,
-      TOKEN_CONTRACT_ADDRESS[Number(selectedChain.chainId)]
-    );
-    setCurrentBalance(balance);
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchBalance();
-    }
-  }, [selectedChain, user]);
-
   if (!user) {
     return <></>;
   }
 
   return (
-    <>
-      <h3 className="text-heading-3 text-neutral-300 px-4">Match History</h3>
-      <div className="flex flex-col justify-center items-center border border-neutral-400 mx-4 rounded-lg">
-        <p className="text-body-1 text-neutral-100 bg-neutral-600 px-4 py-2 w-full rounded-t-lg">
+    <div className="px-4">
+      <h3 className="text-heading-3 text-neutral-300 my-2">Match History</h3>
+
+      <div className="border border-neutral-400 rounded-lg w-full">
+        <p className="text-body-1 text-neutral-100 bg-neutral-600 font-medium px-4 py-2 w-full rounded-t-lg">
           Game Name
         </p>
-        <div className="flex justify-center items-center gap-x-6 pt-8 pb-2 border-b w-96 border-neutral-500">
-          <div className="flex flex-col items-center w-full gap-y-2">
-            <figure className="relative object-cover w-12 h-12">
-              <Image
-                alt=""
-                src={user.profile_photo}
-                fill
-                className="rounded-full"
-              />
-            </figure>
 
-            <div className="flex flex-col items-center">
-              <h3 className="text-body-1 text-brand-400">You</h3>
-              <p className="text-neutral-300 text-body-3">
-                {minifyAddress(user.wallet_address)}
-              </p>
-            </div>
-          </div>
+        <div className="flex justify-center items-center gap-x-6 max-w-80 pt-8 w-3/5 mx-auto">
+          <MatchPlayer
+            profile_photo={user.profile_photo}
+            won={false}
+            name="You"
+            wallet_address={user.wallet_address}
+          />
+
           <BattleIcon className="h-20 w-20" />
-          <div className="flex flex-col items-center w-full gap-y-2">
-            <figure className="relative object-cover w-12 h-12">
-              <Image
-                alt=""
-                src={user.profile_photo}
-                fill
-                className="rounded-full ring-semantic-launch ring-offset-6 ring-2"
-              />
-            </figure>
 
-            <div className="flex flex-col items-center">
-              <h3 className="text-body-1 text-neutral-100">You</h3>
-              <p className="text-neutral-300 text-body-3">
-                {minifyAddress(user.wallet_address)}
-              </p>
-            </div>
-          </div>
+          <MatchPlayer
+            profile_photo={user.profile_photo}
+            won={true}
+            name="Enemy"
+            wallet_address={user.wallet_address}
+          />
         </div>
-        <div className="flex items-center gap-x-2 justify-start w-96 mx-2 py-2">
-          <p className="text-body-3 text-status-danger border-r border-neutral-500 pr-2">
-            Loss
-          </p>
-          <p className="text-body-3 text-neutral-100 border-r border-neutral-500 pr-2">
-            <span className="text-neutral-300">Tier</span> Alpha
-          </p>
-          <p className="text-body-3 text-neutral-300">21 Aug 2024</p>
+
+        <div className="px-4 mt-4 text-body-3">
+          <div className="flex items-center gap-x-2 justify-start py-4 border-t border-neutral-500">
+            <p className="text-status-danger">Loss</p>
+
+            <span className="text-neutral-500">|</span>
+
+            <p className="text-neutral-100">
+              <span className="text-neutral-300">Tier</span> Alpha
+            </p>
+
+            <span className="text-neutral-500">|</span>
+
+            <p className="text-neutral-300">21 Aug 2024</p>
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

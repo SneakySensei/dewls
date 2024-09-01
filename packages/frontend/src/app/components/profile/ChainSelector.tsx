@@ -78,7 +78,7 @@ export const ChainSelector: React.FC<{
           </div>
 
           <div
-            className={`text-neutral-300 ${dropdownOpen ? "" : "rotate-180"} transition-all`}
+            className={`text-neutral-300 ${dropdownOpen ? "rotate-180" : ""} transition-all`}
           >
             <ChevronDown />
           </div>
