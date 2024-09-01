@@ -62,6 +62,9 @@ const config: Config = {
           warning: "#FDBE8A",
           success: "#B4EB6F",
         },
+        semantic: {
+          launch: "#E89D0F",
+        },
       },
       backgroundImage: {
         // "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

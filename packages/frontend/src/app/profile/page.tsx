@@ -5,6 +5,7 @@ import {
   ProfileHero,
   WalletDetails,
   ChainSelector,
+  MatchHistory,
 } from "../components/profile";
 import { CustomChainConfig } from "@web3auth/base";
 import { CHAINS } from "@/utils/constants/chain-config.constant";
@@ -20,13 +21,14 @@ const Profile: React.FC = () => {
   );
 
   return (
-    <main className="text-neutral-100 flex flex-col gap-y-4">
+    <main className="text-neutral-100 flex flex-col gap-y-4 pb-10">
       <ProfileHero />
       <WalletDetails selectedChain={selectedChain} />
       <ChainSelector
         selectedChain={selectedChain}
         setSelectedChain={setSelectedChain}
       />
+      <MatchHistory selectedChain={selectedChain} />
     </main>
   );
 };

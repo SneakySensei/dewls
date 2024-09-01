@@ -22,7 +22,7 @@ export const ChainSelector: React.FC<{
   };
 
   return (
-    <div className="px-6">
+    <div className="px-4">
       <Dropdown
         open={dropdownOpen}
         setOpen={setDropdownOpen}
