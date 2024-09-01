@@ -9,44 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      connected_wallets: {
-        Row: {
-          chain_id: number
-          connected_wallet_id: string
-          created_at: string
-          is_primary: boolean
-          nickname: string | null
-          user_id: string
-          wallet_address: string
-        }
-        Insert: {
-          chain_id: number
-          connected_wallet_id: string
-          created_at?: string
-          is_primary?: boolean
-          nickname?: string | null
-          user_id: string
-          wallet_address: string
-        }
-        Update: {
-          chain_id?: number
-          connected_wallet_id?: string
-          created_at?: string
-          is_primary?: boolean
-          nickname?: string | null
-          user_id?: string
-          wallet_address?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "connected_wallets_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
       game_tiers: {
         Row: {
           created_at: string
@@ -78,7 +40,9 @@ export type Database = {
           description: string
           game_id: string
           icon_image: string
+          max_occupancy: number
           name: string
+          slug: string
         }
         Insert: {
           cover_image: string
@@ -86,7 +50,9 @@ export type Database = {
           description: string
           game_id?: string
           icon_image: string
+          max_occupancy?: number
           name: string
+          slug: string
         }
         Update: {
           cover_image?: string
@@ -94,44 +60,46 @@ export type Database = {
           description?: string
           game_id?: string
           icon_image?: string
+          max_occupancy?: number
           name?: string
+          slug?: string
         }
         Relationships: []
       }
       played_games: {
         Row: {
-          chain_id: number
+          attestation_hash: string | null
           created_at: string
           game_id: string
           game_tier_id: string
           is_active: boolean
-          played_game_id: number
-          player_1_id: string
-          player_2_id: string
+          played_game_id: string
+          player_1_id: string | null
+          player_2_id: string | null
           season_id: string
           winner_id: string | null
         }
         Insert: {
-          chain_id: number
+          attestation_hash?: string | null
           created_at?: string
           game_id?: string
           game_tier_id?: string
           is_active?: boolean
-          played_game_id?: number
-          player_1_id?: string
-          player_2_id?: string
+          played_game_id?: string
+          player_1_id?: string | null
+          player_2_id?: string | null
           season_id: string
           winner_id?: string | null
         }
         Update: {
-          chain_id?: number
+          attestation_hash?: string | null
           created_at?: string
           game_id?: string
           game_tier_id?: string
           is_active?: boolean
-          played_game_id?: number
-          player_1_id?: string
-          player_2_id?: string
+          played_game_id?: string
+          player_1_id?: string | null
+          player_2_id?: string | null
           season_id?: string
           winner_id?: string | null
         }
@@ -211,6 +179,7 @@ export type Database = {
           name: string
           profile_photo: string
           user_id: string
+          wallet_address: string
         }
         Insert: {
           created_at?: string
@@ -218,6 +187,7 @@ export type Database = {
           name: string
           profile_photo: string
           user_id?: string
+          wallet_address: string
         }
         Update: {
           created_at?: string
@@ -225,6 +195,7 @@ export type Database = {
           name?: string
           profile_photo?: string
           user_id?: string
+          wallet_address?: string
         }
         Relationships: []
       }

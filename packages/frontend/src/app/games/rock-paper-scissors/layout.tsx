@@ -3,5 +3,5 @@ export default function Layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="h-full bg-neutral-100">{children}</div>;
+  return <div className="h-full">{children}</div>;
 }

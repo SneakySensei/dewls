@@ -15,15 +15,6 @@ export const ConnectModal: React.FC = () => {
     setProviderContext(web3authProvider);
     if (web3auth.connected) {
       setLoggedIn(true);
-      //   const signProtocolClient = new SignProtocolClient(SpMode.OnChain, {
-      //     chain: EvmChains.arbitrumSepolia,
-      //     walletClient: web3auth
-      //   });
-      //   const createSchemaRes = await signProtocolClient.createSchema({
-      //     name: "xxx",
-      //     data: [{ name: "name", type: "string" }],
-      //   });
-      //   console.log(createSchemaRes);
     }
   };
 

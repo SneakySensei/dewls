@@ -8,3 +8,13 @@ export type MappedPlayedGame =
   Database["public"]["Tables"]["played_games"]["Row"];
 export type MappedSeason = Database["public"]["Tables"]["seasons"]["Row"];
 export type MappedUser = Database["public"]["Tables"]["users"]["Row"];
+
+export type ResponseWithData<T> =
+  | {
+      success: true;
+      data: T;
+    }
+  | {
+      success: false;
+      data: unknown;
+    };

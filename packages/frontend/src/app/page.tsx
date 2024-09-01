@@ -1,17 +1,12 @@
-import Card from "./components/Card";
-import { ConnectModal } from "./wallet/components/ConnectModal";
+import { API_BASE_URL } from "@/utils/constants/api.constant";
+import { MappedGame, ResponseWithData } from "@/utils/types";
+import GameListing from "./components/GameListing";
 
-export default function GameListing() {
-  return (
-    <main className="text-neutral-100">
-      <section className="px-4">
-        <section className="space-y-3 py-4">
-          <ConnectModal />
-          <Card />
-          <Card />
-          <Card />
-        </section>
-      </section>
-    </main>
-  );
+export default async function GameListingPage() {
+  const res = await fetch(`${API_BASE_URL}/games`, { cache: "no-cache" });
+  const gamesResponse = (await res.json()) as ResponseWithData<MappedGame[]>;
+
+  const games = gamesResponse.success ? gamesResponse.data : [];
+
+  return <GameListing games={games} />;
 }

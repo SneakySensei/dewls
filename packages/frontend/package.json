@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "types:database": "npx supabase login --token $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_ACCESS_TOKEN)') && npx supabase gen types --lang=typescript --project-id $(node -e 'require(\"dotenv\").config(); console.log(process.env.SUPABASE_PROJECT_ID)') > src/utils/types/database.types.ts"
+    "types:database": "node ./scripts/generate-supabase-types.js"
   },
   "dependencies": {
     "@ethsign/sp-sdk": "^0.7.2",

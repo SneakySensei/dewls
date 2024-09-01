@@ -32,36 +32,37 @@ const config: Config = {
       "body-3": ["0.75rem", { lineHeight: "150%", fontWeight: 400 }],
       "body-4": ["0.688rem", { lineHeight: "150%", fontWeight: 400 }],
     },
-    colors: {
-      brand: {
-        100: "#E0E2FF",
-        200: "#C7C9FE",
-        300: "#ABABFC",
-        400: "#8B81F8",
-        500: "#7863F1",
-        600: "#6A46E5",
-        700: "#5C38CA",
-        800: "#4B30A3",
-        900: "#3F2E81",
-        950: "#261B4B",
-      },
-      neutral: {
-        100: "#FFFFFF",
-        200: "#8A8A98",
-        300: "#555563",
-        400: "#2D2D3A",
-        500: "#1F1F24",
-        600: "#17171B",
-        700: "#121215",
-        800: "#0E0E11",
-      },
-      status: {
-        danger: "#FE7C8C",
-        warning: "#FDBE8A",
-        success: "#B4EB6F",
-      },
-    },
+
     extend: {
+      colors: {
+        brand: {
+          100: "#E0E2FF",
+          200: "#C7C9FE",
+          300: "#ABABFC",
+          400: "#8B81F8",
+          500: "#7863F1",
+          600: "#6A46E5",
+          700: "#5C38CA",
+          800: "#4B30A3",
+          900: "#3F2E81",
+          950: "#261B4B",
+        },
+        neutral: {
+          100: "#FFFFFF",
+          200: "#8A8A98",
+          300: "#555563",
+          400: "#2D2D3A",
+          500: "#1F1F24",
+          600: "#17171B",
+          700: "#121215",
+          800: "#0E0E11",
+        },
+        status: {
+          danger: "#FE7C8C",
+          warning: "#FDBE8A",
+          success: "#B4EB6F",
+        },
+      },
       backgroundImage: {
         // "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         // "gradient-conic":background: radial-gradient(50% 64.29% at 50% 117.86%, #8B81F8 0%, rgba(63, 46, 129, 0) 100%);
@@ -69,6 +70,19 @@ const config: Config = {
         //   "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
         "gradient-active-tab":
           "radial-gradient(50% 64.29% at 50% 117.86%, rgba(139, 129, 248, 0.75) 0%, rgba(63, 46, 129, 0) 75%)",
+        polkadots: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3Ccircle cx='13' cy='13' r='1.5'/%3E%3C/g%3E%3C/svg%3E")`,
+      },
+      animation: {
+        shake: "shake 0.25s linear infinite",
+      },
+      keyframes: {
+        shake: {
+          "0%": { transform: "translate(0, 0) rotate(0deg)" },
+          "25%": { transform: "translate(5px, 5px) rotate(5deg)" },
+          "50%": { transform: "translate(0, 0) rotate(0eg)" },
+          "75%": { transform: "translate(-5px, 5px) rotate(-5deg)" },
+          "100%": { transform: "translate(0, 0) rotate(0deg)" },
+        },
       },
     },
   },
