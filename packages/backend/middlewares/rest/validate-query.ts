@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type Request, type Response, type NextFunction } from "express";
+import { type NextFunction, type Request, type Response } from "express";
 import { type ObjectSchema, type ValidationError } from "yup";
 
 type RequestLocations = "query" | "body" | "params" | "headers";
@@ -11,7 +11,7 @@ type RequestLocations = "query" | "body" | "params" | "headers";
  */
 export const validateQuery = (
     location: RequestLocations,
-    schema: ObjectSchema<any>
+    schema: ObjectSchema<any>,
 ) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         let _location;
@@ -38,7 +38,7 @@ export const validateQuery = (
                 message += `${e}. `;
             });
             res.status(400).json({
-                name: "Validation Error",
+                success: false,
                 message: message.trim(),
             });
         }

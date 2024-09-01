@@ -1,4 +1,4 @@
-import { validateQuery } from "../../middlewares";
+import { validateQuery } from "../../middlewares/rest";
 import { type MappedUser } from "../../utils/types/mappers.types";
 import { getUserParams, userAuthBody } from "./users.schema";
 import { createJWToken, createUser, fetchUserDetails } from "./users.service";
