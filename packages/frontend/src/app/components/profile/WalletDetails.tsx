@@ -4,7 +4,7 @@ import CopyIcon from "@/shared/icons/CopyIcon";
 import { TOKEN_CONTRACT_ADDRESS } from "@/utils/constants/contracts.constants";
 import { getTokenBalance } from "@/utils/functions/ethers";
 import { web3auth } from "@/utils/service/web3auth.service";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export const WalletDetails: React.FC = () => {
   // const { user } = useWeb3AuthContext();
@@ -24,22 +24,33 @@ export const WalletDetails: React.FC = () => {
     const balance = await getTokenBalance(
       web3auth.provider!,
       user.wallet_address,
-      TOKEN_CONTRACT_ADDRESS[Number(web3auth.coreOptions.chainConfig?.chainId!)]
+      TOKEN_CONTRACT_ADDRESS[
+        // @ts-ignore
+        Number(web3auth.walletAdapters.openlogin?.chainConfig.chainId)
+      ]
     );
     setCurrentBalance(balance);
   };
+
+  const chainId = useMemo(
+    () => {
+      // @ts-ignore
+      return web3auth.walletAdapters.openlogin?.chainConfig.chainId;
+    },
+    // @ts-ignore
+    [web3auth.walletAdapters.openlogin?.chainConfig.chainId]
+  );
 
   useEffect(() => {
     if (user) {
       fetchBalance();
     }
-  }, []);
+    // @ts-ignore
+  }, [web3auth.walletAdapters.openlogin?.chainConfig.chainId]);
 
   if (!user) {
     return <></>;
   }
-
-  console.log(currentBalance);
 
   return (
     <>
@@ -65,9 +76,7 @@ export const WalletDetails: React.FC = () => {
           </div>
           <div className="flex flex-col gap-2 text-right">
             <p className="flex-1 text-body-2 text-neutral-200">Chain ID</p>
-            <p className="flex-1 text-body-1 text-neutral-100">
-              {web3auth.coreOptions.chainConfig?.chainId}
-            </p>
+            <p className="flex-1 text-body-1 text-neutral-100">{chainId}</p>
           </div>
         </div>
       </div>

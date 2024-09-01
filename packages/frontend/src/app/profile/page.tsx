@@ -1,11 +1,15 @@
-import { ProfileHero } from "../components/profile";
-import { WalletDetails } from "../components/profile/WalletDetails";
+import {
+  ProfileHero,
+  WalletDetails,
+  ChainSelector,
+} from "../components/profile";
 
 const Profile: React.FC = () => {
   return (
     <main className="text-neutral-100 flex flex-col gap-y-4">
       <ProfileHero />
       <WalletDetails />
+      <ChainSelector />
     </main>
   );
 };
