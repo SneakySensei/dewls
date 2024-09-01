@@ -1,7 +1,7 @@
 "use client";
 
-import LeaderboardTable from "../components/LeaderboardTable";
-import SelectDropdown from "../components/SelectDropdown";
+import LeaderboardTable from "./components/LeaderboardTable";
+import SelectDropdown from "./components/SelectDropdown";
 import Image from "next/image";
 
 const options = [
