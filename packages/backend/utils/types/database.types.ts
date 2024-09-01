@@ -68,6 +68,7 @@ export type Database = {
       }
       played_games: {
         Row: {
+          attestation_hash: string | null
           created_at: string
           game_id: string
           game_tier_id: string
@@ -79,6 +80,7 @@ export type Database = {
           winner_id: string | null
         }
         Insert: {
+          attestation_hash?: string | null
           created_at?: string
           game_id?: string
           game_tier_id?: string
@@ -90,6 +92,7 @@ export type Database = {
           winner_id?: string | null
         }
         Update: {
+          attestation_hash?: string | null
           created_at?: string
           game_id?: string
           game_tier_id?: string
