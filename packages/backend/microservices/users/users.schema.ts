@@ -11,7 +11,7 @@ export const getUserParams = yup
     .noUnknown()
     .required();
 
-export const userSignupBody = yup
+export const userAuthBody = yup
     .object()
     .shape<PartialYupSchema<MappedUser>>({
         email_id: yup.string().trim().email().required(),
@@ -22,15 +22,6 @@ export const userSignupBody = yup
             .trim()
             .matches(/^0x[a-fA-F0-9]{40}$/, "invalid evm address")
             .required(),
-    })
-    .strict()
-    .noUnknown()
-    .required();
-
-export const userLoginBody = yup
-    .object()
-    .shape<PartialYupSchema<MappedUser>>({
-        user_id: yup.string().trim().required(),
     })
     .strict()
     .noUnknown()

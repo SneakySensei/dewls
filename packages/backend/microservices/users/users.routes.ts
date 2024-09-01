@@ -1,6 +1,6 @@
 import { validateQuery } from "../../middlewares";
 import { type MappedUser } from "../../utils/types/mappers.types";
-import { getUserParams, userSignupBody } from "./users.schema";
+import { getUserParams, userAuthBody } from "./users.schema";
 import { createJWToken, createUser, fetchUserDetails } from "./users.service";
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
@@ -24,7 +24,7 @@ const handleGetUser = async (
     }
 };
 
-const handlerUserSignup = async (
+const handlerUserAuth = async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -32,35 +32,20 @@ const handlerUserSignup = async (
     try {
         const { email_id, name, profile_photo, wallet_address } =
             req.body as MappedUser;
-        const data = await createUser({
-            email_id,
-            name,
-            profile_photo,
-            wallet_address,
-        });
-        return res.json({
-            success: true,
-            data: {
-                token: data,
-            },
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
-const handlerUserLogin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
-        const { user_id } = req.body as MappedUser;
-        const user = await fetchUserDetails(user_id);
+        let user = await fetchUserDetails(email_id);
+        if (!user) {
+            user = await createUser({
+                email_id,
+                name,
+                profile_photo,
+                wallet_address,
+            });
+        }
         const token = createJWToken(user);
         return res.json({
             success: true,
             data: {
+                user,
                 token,
             },
         });
@@ -69,16 +54,7 @@ const handlerUserLogin = async (
     }
 };
 
-usersRouter.post(
-    "/signup",
-    validateQuery("body", userSignupBody),
-    handlerUserSignup,
-);
-usersRouter.post(
-    "/login",
-    validateQuery("body", userSignupBody),
-    handlerUserLogin,
-);
+usersRouter.post("/auth", validateQuery("body", userAuthBody), handlerUserAuth);
 usersRouter.get(
     "/:user_id",
     validateQuery("params", getUserParams),

@@ -10,11 +10,11 @@ export const createJWToken = (user: MappedUser) => {
     return token;
 };
 
-export const fetchUserDetails = async (user_id: MappedUser["user_id"]) => {
+export const fetchUserDetails = async (email_id: MappedUser["email_id"]) => {
     const { data, error } = await SupabaseService.getSupabase()
         .from("users")
         .select()
-        .eq("user_id", user_id)
+        .eq("email_id", email_id)
         .single();
 
     if (error) {
