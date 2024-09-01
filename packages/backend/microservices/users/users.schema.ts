@@ -26,3 +26,12 @@ export const userSignupBody = yup
     .strict()
     .noUnknown()
     .required();
+
+export const userLoginBody = yup
+    .object()
+    .shape<PartialYupSchema<MappedUser>>({
+        user_id: yup.string().trim().required(),
+    })
+    .strict()
+    .noUnknown()
+    .required();

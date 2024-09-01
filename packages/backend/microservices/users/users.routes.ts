@@ -1,7 +1,7 @@
 import { validateQuery } from "../../middlewares";
 import { type MappedUser } from "../../utils/types/mappers.types";
 import { getUserParams, userSignupBody } from "./users.schema";
-import { authUser, fetchUserDetails } from "./users.service";
+import { createJWToken, createUser, fetchUserDetails } from "./users.service";
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 
@@ -24,7 +24,7 @@ const handleGetUser = async (
     }
 };
 
-const handlerUserAuth = async (
+const handlerUserSignup = async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -32,12 +32,32 @@ const handlerUserAuth = async (
     try {
         const { email_id, name, profile_photo, wallet_address } =
             req.body as MappedUser;
-        const token = await authUser({
+        const data = await createUser({
             email_id,
             name,
             profile_photo,
             wallet_address,
         });
+        return res.json({
+            success: true,
+            data: {
+                token: data,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const handlerUserLogin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { user_id } = req.body as MappedUser;
+        const user = await fetchUserDetails(user_id);
+        const token = createJWToken(user);
         return res.json({
             success: true,
             data: {
@@ -50,9 +70,14 @@ const handlerUserAuth = async (
 };
 
 usersRouter.post(
-    "/auth",
+    "/signup",
     validateQuery("body", userSignupBody),
-    handlerUserAuth,
+    handlerUserSignup,
+);
+usersRouter.post(
+    "/login",
+    validateQuery("body", userSignupBody),
+    handlerUserLogin,
 );
 usersRouter.get(
     "/:user_id",

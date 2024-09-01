@@ -25,12 +25,12 @@ export const fetchUserDetails = async (user_id: MappedUser["user_id"]) => {
     return data;
 };
 
-export const authUser = async ({
+export const createUser = async ({
     email_id,
     name,
     profile_photo,
     wallet_address,
-}: Omit<MappedUser, "created_at" | "user_id">): Promise<string> => {
+}: Omit<MappedUser, "created_at" | "user_id">) => {
     const { data, error } = await SupabaseService.getSupabase()
         .from("users")
         .insert({
@@ -46,7 +46,5 @@ export const authUser = async ({
         throw error;
     }
 
-    const token = createJWToken(data);
-
-    return token;
+    return data;
 };
