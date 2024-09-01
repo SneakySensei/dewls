@@ -2,13 +2,15 @@
 "use client";
 import { IProvider } from "@web3auth/base";
 import React, { createContext, ReactNode, useContext, useState } from "react";
-import { User } from "../types/shared.types";
+import { MappedUser } from "../types";
+
+export type AuthUser = { data: MappedUser; token: string };
 
 interface Web3AuthContextProps {
   provider: IProvider | null;
   setProvider: React.Dispatch<React.SetStateAction<IProvider | null>>;
-  user: User | null;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  user: AuthUser | null;
+  setUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
 }
 
 const Web3AuthContext = createContext({} as Web3AuthContextProps);
@@ -19,7 +21,7 @@ export const Web3AuthContextProvider = ({
   children: ReactNode;
 }) => {
   const [provider, setProvider] = useState<IProvider | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   return (
     <Web3AuthContext.Provider value={{ provider, setProvider, user, setUser }}>

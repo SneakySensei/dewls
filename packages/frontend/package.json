@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@ethsign/sp-sdk": "^0.7.2",
+    "@tsparticles/engine": "^3.5.0",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.5.0",
     "@web3auth/base": "^8.12.4",
     "@web3auth/ethereum-provider": "^8.12.4",
     "@web3auth/modal": "^8.12.7",
@@ -24,6 +27,7 @@
     "react": "^18",
     "react-dom": "^18",
     "socket.io-client": "^4.7.5",
+    "tailwind-merge": "^2.5.2",
     "viem": "^2.21.1"
   },
   "devDependencies": {

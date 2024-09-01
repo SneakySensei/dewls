@@ -1,15 +1,15 @@
 "use client";
 
 import { GamesIcon, TrophyIcon } from "@/shared/icons";
-import Image from "next/image";
 import Link from "next/link";
 import anonImage from "@/assets/anon.png";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 
 export default function Footer() {
-  const isAuthenticated = true;
+  const { user } = useWeb3AuthContext();
 
   const pathname = usePathname();
 
@@ -21,8 +21,10 @@ export default function Footer() {
 
   const profileImage = (
     <div className="size-7 overflow-hidden rounded-full">
-      <Image
-        src={anonImage}
+      <img
+        src={
+          user?.data.profile_photo ? user?.data.profile_photo : anonImage.src
+        }
         alt="Profile image"
         className="size-full [image-rendering:pixelated]"
       />
@@ -69,7 +71,7 @@ export default function Footer() {
         </AnimatePresence>
         <TrophyIcon className="size-7" />
       </Link>
-      {isAuthenticated ? (
+      {user ? (
         <Link href="/profile" className="px-6 grid place-items-center relative">
           <AnimatePresence>
             {isProfilePage && (
