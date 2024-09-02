@@ -129,6 +129,13 @@ export type Database = {
             foreignKeyName: "played_games_player_1_id_fkey"
             columns: ["player_1_id"]
             isOneToOne: false
+            referencedRelation: "player_game_history"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "played_games_player_1_id_fkey"
+            columns: ["player_1_id"]
+            isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["player_id"]
           },
@@ -137,6 +144,13 @@ export type Database = {
             columns: ["player_2_id"]
             isOneToOne: false
             referencedRelation: "leaderboard"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "played_games_player_2_id_fkey"
+            columns: ["player_2_id"]
+            isOneToOne: false
+            referencedRelation: "player_game_history"
             referencedColumns: ["player_id"]
           },
           {
@@ -158,6 +172,13 @@ export type Database = {
             columns: ["winner_id"]
             isOneToOne: false
             referencedRelation: "leaderboard"
+            referencedColumns: ["player_id"]
+          },
+          {
+            foreignKeyName: "played_games_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
+            referencedRelation: "player_game_history"
             referencedColumns: ["player_id"]
           },
           {
@@ -234,6 +255,7 @@ export type Database = {
           player_1: Json | null
           player_2: Json | null
           season_id: string | null
+          winner_id: string | null
         }
         Relationships: [
           {
@@ -280,6 +302,20 @@ export type Database = {
             referencedColumns: ["season_id"]
           },
         ]
+      }
+      player_game_history: {
+        Row: {
+          created_at: string | null
+          enemy_name: string | null
+          enemy_profile_photo: string | null
+          enemy_wallet_address: string | null
+          game_name: string | null
+          played_game_id: string | null
+          player_id: string | null
+          tier_name: string | null
+          winner_id: string | null
+        }
+        Relationships: []
       }
     }
     Functions: {
