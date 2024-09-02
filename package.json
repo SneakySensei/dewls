@@ -5,6 +5,7 @@
     "build:common": "cd packages/common && pnpm build",
     "build:backend": "pnpm build:common && cd packages/backend && pnpm build",
     "build:frontend": "pnpm build:common && cd packages/frontend && pnpm build",
-    "start:backend": "cd packages/backend && pnpm start"
+    "start:backend": "cd packages/backend && pnpm start",
+    "start:frontend": "cd packages/frontend && pnpm start"
   }
 }
