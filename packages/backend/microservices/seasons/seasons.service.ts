@@ -1,4 +1,5 @@
 import { SupabaseService } from "../../services";
+import { MappedSeason } from "../../utils/types/mappers.types";
 
 export const fetchAllSeasons = async () => {
     const { data, error } = await SupabaseService.getSupabase()
@@ -27,5 +28,5 @@ export const fetchCurrentSeason = async () => {
         throw error;
     }
 
-    return data;
+    return data as MappedSeason | null;
 };
