@@ -16,7 +16,7 @@ export class WSService {
     public static async init(server: Server) {
         this.ioConnection = new WSServer(server, {
             cors: {
-                origin: ["http://localhost:3000"],
+                origin: "*",
                 methods: ["GET", "POST"],
                 credentials: true,
             },
