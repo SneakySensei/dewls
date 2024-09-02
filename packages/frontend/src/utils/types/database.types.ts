@@ -266,6 +266,7 @@ export type Database = {
           name: string | null
           player_id: string | null
           profile_photo: string | null
+          rank: number | null
           season_id: string | null
           total_points: number | null
           wallet_address: string | null

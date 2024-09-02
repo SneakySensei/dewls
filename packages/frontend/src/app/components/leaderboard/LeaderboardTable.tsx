@@ -7,9 +7,14 @@ import Image from "next/image";
 import React from "react";
 
 const LeaderboardTable: React.FC<{
+  activeSeason: boolean;
   leaderboard: MappedLeaderboard[];
-}> = ({ leaderboard }) => {
+}> = ({ activeSeason, leaderboard: initialLeaderboard }) => {
   const { user } = useWeb3AuthContext();
+
+  const leaderboard = activeSeason
+    ? initialLeaderboard
+    : initialLeaderboard.slice(3);
 
   const headings = ["#", "User", "Won", "Played", "Score"];
 
@@ -37,6 +42,10 @@ const LeaderboardTable: React.FC<{
     "/rank-three-wreath.png",
   ];
 
+  const yourIndex = leaderboard.findIndex(
+    ({ player_id }) => user?.data.player_id === player_id
+  );
+
   return (
     <div className="w-full bg-neutral-700 rounded-lg text-left mb-4 pb-2">
       <div className="grid grid-cols-12 text-neutral-300 font-normal text-body-2 p-4 gap-2">
@@ -59,20 +68,18 @@ const LeaderboardTable: React.FC<{
           </p>
         ) : (
           leaderboard.map(
-            (
-              {
-                player_id,
-                profile_photo,
-                name,
-                wallet_address,
-                games_won,
-                games_played,
-                total_points,
-              },
-              i
-            ) => {
+            ({
+              player_id,
+              profile_photo,
+              name,
+              wallet_address,
+              games_won,
+              games_played,
+              total_points,
+              rank,
+            }) => {
               const you = user?.data.player_id === player_id;
-              const rank = i < 3;
+              const rankStyles = rank && rank <= 3 && activeSeason;
 
               return (
                 <div
@@ -82,25 +89,25 @@ const LeaderboardTable: React.FC<{
                       ? "text-brand-400 border-brand-400"
                       : "border-neutral-600"
                   } ${
-                    rank ? rankingClasses.wrapper[i] : ""
+                    rankStyles ? rankingClasses.wrapper[rank - 1] : ""
                   } grid grid-cols-12 gap-2 py-4 items-center text-center bg-neutral-600 mb-4 relative rounded-lg border`}
                 >
-                  {rank ? (
+                  {rankStyles ? (
                     <>
                       <div
-                        className={`${rankingClasses.indicator[i]} absolute h-3/4 w-0.5 rounded-full`}
+                        className={`${rankingClasses.indicator[rank - 1]} absolute h-3/4 w-0.5 rounded-full`}
                       />
 
                       <Image
                         alt=""
-                        src={rankingWreathImages[i]}
+                        src={rankingWreathImages[rank - 1]}
                         height={22}
                         width={24}
                         className="col-span-2 mx-auto"
                       />
                     </>
                   ) : (
-                    <p className="col-span-2">{i + 1}</p>
+                    <p className="col-span-2">{rank}</p>
                   )}
 
                   <div className="col-span-4 flex items-center text-left">
@@ -135,12 +142,10 @@ const LeaderboardTable: React.FC<{
                     {games_played?.toLocaleString()}
                   </p>
 
-                  <p
-                    className={`${
-                      rank ? rankingClasses.score[i] : ""
-                    } col-span-2 text-center text-white`}
-                  >
-                    <span className={`${rank ? rankingClasses.score[i] : ""}`}>
+                  <p className="col-span-2 text-center text-white">
+                    <span
+                      className={`${rankStyles ? rankingClasses.score[rank - 1] : ""}`}
+                    >
                       {total_points?.toLocaleString()}
                     </span>
                   </p>

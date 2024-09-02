@@ -12,6 +12,9 @@ import ChevronDown from "@/shared/icons/Chevron-Down";
 import coinsLottie from "../../../../public/leaderboard-coins.json";
 import Lottie from "react-lottie";
 import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
+import RankTwo from "./rank-two";
+import { truncate } from "@/utils/functions/truncate";
+import StarIcon from "@/shared/icons/StarIcon";
 
 export const Leaderboard: React.FC<{
   seasons: MappedSeason[];
@@ -48,7 +51,7 @@ export const Leaderboard: React.FC<{
     }
   };
 
-  const selectedSeasonEnded =
+  const selectedSeasonActive =
     selectedSeason.ended_on > new Date().toISOString();
 
   return (
@@ -103,7 +106,7 @@ export const Leaderboard: React.FC<{
             <div className="flex items-center gap-4">
               <span>{selectedSeason.name}</span>
 
-              {selectedSeasonEnded && (
+              {selectedSeasonActive && (
                 <span className="px-3 py-2 font-medium leading-none text-body-4 text-neutral-500 bg-status-success rounded-2xl">
                   LIVE
                 </span>
@@ -120,22 +123,49 @@ export const Leaderboard: React.FC<{
 
         <p
           className={`${
-            selectedSeasonEnded
+            selectedSeasonActive
               ? "bg-[linear-gradient(90deg,_rgba(18,18,21,0.2)_0%,_rgba(232,157,15,0.2)_30%,_rgba(232,157,15,0.2)_60%,_rgba(18,18,21,0.2)_100%)]"
               : "bg-[linear-gradient(90deg,_rgba(18,18,21,0.2)_0%,_#1F1F24_30%,_#1F1F24_60%,_rgba(18,18,21,0.2)_100%)] text-neutral-200"
-          } text-center py-2 mt-2`}
+          } text-center py-2 mt-2 mb-4`}
         >
           Season ends
         </p>
       </div>
 
-      <div className="justify-center m-4 bg-reward-pool-banner">
-        {!selectedSeasonEnded ? (
-          // TODO
-          "complicated ui - will pick later"
+      <div className="justify-center mx-4">
+        {!selectedSeasonActive ? (
+          <div className="grid grid-cols-3 h-80">
+            <div className="flex flex-col justify-end pb-6 text-center pt-16 bg-[linear-gradient(0deg,_rgba(204,204,204,0.2)_0%,_rgba(204,204,204,0)_56.58%)]">
+              <RankTwo
+                className="w-20 h-20 mx-auto"
+                profile_photo={leaderboard[1].profile_photo!}
+              />
+
+              <p className="w-full font-medium">{leaderboard[0].name}</p>
+
+              <p className="w-full text-body-4 text-neutral-200">
+                {truncate(leaderboard[1].wallet_address).toUpperCase()}
+              </p>
+
+              <div className="w-full text-body-3 text-neutral-200 flex items-center gap-1 justify-center">
+                <StarIcon />
+                {leaderboard[1].total_points?.toLocaleString()}
+              </div>
+
+              <p
+                className={`mt-4 text-heading-2 font-semibold bg-[linear-gradient(180deg,_#F1F8FF_0%,_#7C8186_100%)] text-transparent bg-clip-text`}
+              >
+                ${"TBC"}
+              </p>
+            </div>
+
+            <div>{leaderboard[1].name}</div>
+
+            <div>{leaderboard[2].name}</div>
+          </div>
         ) : (
-          <div className="border border-purple-800 rounded-xl p-4 bg-active-leaderboard bg-cover bg-center">
-            <figure className="w-40 mx-auto">
+          <div className="border mb-4 border-purple-800 rounded-xl h-72 w-full bg-active-leaderboard bg-cover bg-center overflow-hidden">
+            <figure className="h-48 scale-[2] mx-auto">
               <Lottie
                 options={{
                   loop: true,
@@ -145,7 +175,7 @@ export const Leaderboard: React.FC<{
               />
             </figure>
 
-            <div className="gap-y-2 text-center">
+            <div className="gap-y-2 text-center mt-6">
               <p className="text-heading-1 text-neutral-100 font-semibold">
                 ${selectedSeason.reward_pool_usd.toLocaleString()}
               </p>
@@ -163,7 +193,10 @@ export const Leaderboard: React.FC<{
           Curating the leaderboard...
         </p>
       ) : (
-        <LeaderboardTable leaderboard={leaderboard} />
+        <LeaderboardTable
+          activeSeason={selectedSeasonActive}
+          leaderboard={leaderboard}
+        />
       )}
     </main>
   );
