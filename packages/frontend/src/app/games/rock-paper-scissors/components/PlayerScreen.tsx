@@ -41,8 +41,7 @@ export default function PlayerScreen({
     const signClient = new SignClient(walletClient);
 
     const attestation = await signClient.attest({
-      game_id: RockPaperScissors.gameId,
-      season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
+      played_game_id: gameState.room_id,
       player_id: gameState.player.player_id,
       tier_id: tier,
     });

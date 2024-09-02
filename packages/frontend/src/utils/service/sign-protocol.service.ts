@@ -37,13 +37,11 @@ export default class SignClient {
   }
 
   async attest({
-    game_id,
+    played_game_id,
     player_id,
-    season_id,
     tier_id,
   }: {
-    game_id: string;
-    season_id: string;
+    played_game_id: string;
     player_id: string;
     tier_id: string;
   }): Promise<AttestationResult> {
@@ -51,12 +49,11 @@ export default class SignClient {
       const response = await this.signClient.createAttestation({
         schemaId: "0x92",
         data: {
-          game_id,
-          season_id,
+          played_game_id,
           player_id,
           tier_id,
         },
-        indexingValue: game_id,
+        indexingValue: played_game_id,
       });
 
       return response;
