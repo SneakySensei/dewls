@@ -43,7 +43,11 @@ export type PlayerJoinedEvent = {
 
 export type StakingEvent = {
   type: "staking";
-  payload: null;
+  payload: {
+    round: 0;
+    player1: PlayerServerState;
+    player2: PlayerServerState;
+  };
 };
 
 export type GameStartEvent = {

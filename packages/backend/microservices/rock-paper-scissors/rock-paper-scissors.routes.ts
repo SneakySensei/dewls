@@ -37,6 +37,7 @@ export const RockPaperScissorsRoutes = async (
                 tier_id,
                 player_id,
             }: RockPaperScissors.JoinEvent["payload"]) => {
+                console.log(1);
                 try {
                     const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
                     const logId: string = `[${season_id}][${game_id}][${tier_id}][${player_id}]`;
@@ -137,15 +138,19 @@ export const RockPaperScissorsRoutes = async (
                         playerJoinedEvent.payload,
                     );
 
-                    const { player1, player2, round } =
+                    const gameState =
                         parseStringifiedValues<RockPaperScissors.ServerGameState>(
                             await RedisClient.hgetall(room_id),
                         );
 
-                    if (player1 && player2) {
+                    if (gameState.player1 && gameState.player2) {
                         const stakingEvent: RockPaperScissors.StakingEvent = {
                             type: "staking",
-                            payload: null,
+                            payload: {
+                                player1: gameState.player1,
+                                player2: gameState.player2,
+                                round: gameState.round as 0,
+                            },
                         };
                         io.to(room_id).emit(
                             stakingEvent.type,
