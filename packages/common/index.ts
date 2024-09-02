@@ -1,6 +1,10 @@
 import * as ConnectFour from "./connect-four";
 import * as RockPaperScissors from "./rock-paper-scissors";
 
+export const rankOwnRewardPercentage = 50;
+export const rankTwoRewardPercentage = 35;
+export const rankThreeRewardPercentage = 15;
+
 export const GAME_NAMESPACES = {
   ROCK_PAPER_SCISSORS: RockPaperScissors.slug,
   CONNECT_FOUR: ConnectFour.slug,

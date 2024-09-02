@@ -12,9 +12,17 @@ import ChevronDown from "@/shared/icons/Chevron-Down";
 import coinsLottie from "../../../../public/leaderboard-coins.json";
 import Lottie from "react-lottie";
 import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
-import RankTwo from "./rank-two";
 import { truncate } from "@/utils/functions/truncate";
 import StarIcon from "@/shared/icons/StarIcon";
+import RankOne from "./rank-one";
+import RankTwo from "./rank-two";
+import RankThree from "./rank-three";
+import { calculatePercentage } from "@/utils/functions/calculate-percentage";
+import {
+  rankOwnRewardPercentage,
+  rankThreeRewardPercentage,
+  rankTwoRewardPercentage,
+} from "common";
 
 export const Leaderboard: React.FC<{
   seasons: MappedSeason[];
@@ -135,15 +143,17 @@ export const Leaderboard: React.FC<{
       <div className="justify-center mx-4">
         {!selectedSeasonActive ? (
           <div className="grid grid-cols-3 h-80">
-            <div className="flex flex-col justify-end pb-6 text-center pt-16 bg-[linear-gradient(0deg,_rgba(204,204,204,0.2)_0%,_rgba(204,204,204,0)_56.58%)]">
+            <div className="flex flex-col justify-end pb-6 text-center px-2 text-ellipsis truncate pt-16 bg-[linear-gradient(0deg,_rgba(204,204,204,0.2)_0%,_rgba(204,204,204,0)_56.58%)]">
               <RankTwo
-                className="w-20 h-20 mx-auto"
+                className="w-24 h-24 mx-auto"
                 profile_photo={leaderboard[1].profile_photo!}
               />
 
-              <p className="w-full font-medium">{leaderboard[0].name}</p>
+              <p className="text-body-1 w-full font-medium text-ellipsis truncate">
+                {leaderboard[1].name}
+              </p>
 
-              <p className="w-full text-body-4 text-neutral-200">
+              <p className="w-full text-body-3 text-neutral-200">
                 {truncate(leaderboard[1].wallet_address).toUpperCase()}
               </p>
 
@@ -155,13 +165,73 @@ export const Leaderboard: React.FC<{
               <p
                 className={`mt-4 text-heading-2 font-semibold bg-[linear-gradient(180deg,_#F1F8FF_0%,_#7C8186_100%)] text-transparent bg-clip-text`}
               >
-                ${"TBC"}
+                $
+                {calculatePercentage(
+                  selectedSeason.reward_pool_usd,
+                  rankTwoRewardPercentage
+                ).toLocaleString()}
               </p>
             </div>
 
-            <div>{leaderboard[1].name}</div>
+            <div className="flex flex-col justify-end pb-6 text-center px-2 text-ellipsis truncate pt-16 bg-[linear-gradient(0deg,_rgba(246,216,135,0.24)_0%,_rgba(246,216,135,0)_95.04%)]">
+              <RankOne
+                className="w-28 h-28 mx-auto"
+                profile_photo={leaderboard[0].profile_photo!}
+              />
 
-            <div>{leaderboard[2].name}</div>
+              <p className="text-body-1 w-full font-medium text-ellipsis truncate">
+                {leaderboard[0].name}
+              </p>
+
+              <p className="w-full text-body-3 text-neutral-200">
+                {truncate(leaderboard[0].wallet_address).toUpperCase()}
+              </p>
+
+              <div className="w-full text-body-3 text-neutral-200 flex items-center gap-1 justify-center">
+                <StarIcon />
+                {leaderboard[0].total_points?.toLocaleString()}
+              </div>
+
+              <p
+                className={`mt-12 text-heading-2 font-semibold bg-[linear-gradient(180deg,_#FCE19A_0%,_#BD9350_100%)] text-transparent bg-clip-text`}
+              >
+                $
+                {calculatePercentage(
+                  selectedSeason.reward_pool_usd,
+                  rankOwnRewardPercentage
+                ).toLocaleString()}
+              </p>
+            </div>
+
+            <div className="flex flex-col justify-end pb-6 text-center px-2 text-ellipsis truncate pt-16 bg-[linear-gradient(0deg,_rgba(211,160,133,0.2)_0%,_rgba(211,160,133,0)_71.8%)]">
+              <RankThree
+                className="w-24 h-24 mx-auto"
+                profile_photo={leaderboard[2].profile_photo!}
+              />
+
+              <p className="text-body-1 w-full font-medium text-ellipsis truncate">
+                {leaderboard[2].name}
+              </p>
+
+              <p className="w-full text-body-3 text-neutral-200">
+                {truncate(leaderboard[2].wallet_address).toUpperCase()}
+              </p>
+
+              <div className="w-full text-body-3 text-neutral-200 flex items-center gap-1 justify-center">
+                <StarIcon />
+                {leaderboard[2].total_points?.toLocaleString()}
+              </div>
+
+              <p
+                className={`mt-4 text-heading-2 font-semibold bg-[linear-gradient(180deg,_#FFDDC6_0%,_#9E7259_100%)] text-transparent bg-clip-text`}
+              >
+                $
+                {calculatePercentage(
+                  selectedSeason.reward_pool_usd,
+                  rankThreeRewardPercentage
+                ).toLocaleString()}
+              </p>
+            </div>
           </div>
         ) : (
           <div className="border mb-4 border-purple-800 rounded-xl h-72 w-full bg-active-leaderboard bg-cover bg-center overflow-hidden">

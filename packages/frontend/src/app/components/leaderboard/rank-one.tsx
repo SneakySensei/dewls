@@ -20,10 +20,10 @@ const RankOne = ({
       width={78}
       height={78}
       rx={39}
-      stroke="url(#a)"
+      stroke="url(#aone)"
       strokeWidth={2}
     />
-    <rect x={4.5} y={4} width={72} height={72} rx={36} fill="url(#b)" />
+    <rect x={4.5} y={4} width={72} height={72} rx={36} fill="url(#bone)" />
     <rect
       x={40.314}
       y={67}
@@ -31,7 +31,7 @@ const RankOne = ({
       height={16}
       rx={5}
       transform="rotate(45 40.314 67)"
-      fill="url(#c)"
+      fill="url(#cone)"
     />
     <path
       d="M41.505 75v8h-1.21v-6.79h-.048l-1.914 1.25v-1.155L40.33 75z"
@@ -39,7 +39,7 @@ const RankOne = ({
     />
     <defs>
       <linearGradient
-        id="a"
+        id="aone"
         x1={40.5}
         y1={0}
         x2={40.5}
@@ -50,7 +50,7 @@ const RankOne = ({
         <stop offset={1} stopColor="#BD9350" />
       </linearGradient>
       <linearGradient
-        id="c"
+        id="cone"
         x1={48.314}
         y1={67}
         x2={48.314}
@@ -61,14 +61,14 @@ const RankOne = ({
         <stop offset={1} stopColor="#BD9350" />
       </linearGradient>
       <pattern
-        id="b"
+        id="bone"
         patternContentUnits="objectBoundingBox"
         width={1}
         height={1}
       >
-        <use xlinkHref="#d" transform="scale(.01563)" />
+        <use xlinkHref="#done" transform="scale(.01563)" />
       </pattern>
-      <image id="d" width={64} height={64} href={profile_photo} />
+      <image id="done" width={64} height={64} href={profile_photo} />
     </defs>
   </svg>
 );
