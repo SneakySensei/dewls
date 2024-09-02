@@ -747,9 +747,9 @@ export const ERC_20_ABI = [
 ];
 
 export const ARCADE_CONTRACT_ADDRESS: { [chainId: number]: string } = {
-  296: "0xeff531D43600A925c0D282f755bA0d39AA82EF14", // Hedera
-  31: "0xeFF531D43600a925C0d282f755bA0D39aA82eF14", // Rootstock
-  2810: "0x24C6434B4779Cecd89075A936d11fd6Aec055166", // Morph L2
+  296: "0xdD049Fc4b926A7857c012354e578c6da1c5B8316", // Hedera
+  31: "0xdD049Fc4b926A7857c012354e578c6DA1C5B8316", // Rootstock
+  2810: "0xeff531D43600A925c0D282f755bA0d39AA82EF14", // Morph L2
 };
 
 export const TOKEN_CONTRACT_ADDRESS: { [chainId: number]: string } = {

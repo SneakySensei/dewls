@@ -61,6 +61,12 @@ contract Arcade {
     );
     event OwnerWithdraw(address indexed owner, uint256 amount);
     event RewardWithdrawn(address indexed user, uint256 amount);
+    event PrizeDistributed(
+        address indexed _1stPlaceAddress,
+        address indexed _2ndPlaceAddress,
+        address indexed _3rdPlaceAddress,
+        uint256 totalAmount
+    );
     event PercentagesUpdated(
         uint256 rewardPoolPercentage,
         uint256 ownerPercentage,
@@ -190,6 +196,42 @@ contract Arcade {
         token.transferFrom(address(this), _userAddress, _amount);
 
         emit RewardWithdrawn(_userAddress, _amount);
+    }
+
+    function withdrawRewardPool(
+        address _1stPlaceAddress,
+        address _2ndPlaceAddress,
+        address _3rdPlaceAddress,
+        uint256 _amount
+    ) external onlyOwner {
+        require(
+            rewardPool >= _amount,
+            "Reward Pool doesn't have sufficient funds"
+        );
+
+        token.approve(address(this), _amount);
+        token.transferFrom(
+            address(this),
+            _1stPlaceAddress,
+            ((rewardPool * 50) / 100)
+        );
+        token.transferFrom(
+            address(this),
+            _2ndPlaceAddress,
+            ((rewardPool * 35) / 100)
+        );
+        token.transferFrom(
+            address(this),
+            _3rdPlaceAddress,
+            ((rewardPool * 15) / 100)
+        );
+
+        emit PrizeDistributed(
+            _1stPlaceAddress,
+            _2ndPlaceAddress,
+            _3rdPlaceAddress,
+            _amount
+        );
     }
 
     function withdrawOwnerPool() external onlyOwner {
