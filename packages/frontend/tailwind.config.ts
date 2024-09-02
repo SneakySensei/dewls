@@ -71,7 +71,7 @@ const config: Config = {
         // "gradient-conic":background: radial-gradient(50% 64.29% at 50% 117.86%, #8B81F8 0%, rgba(63, 46, 129, 0) 100%);
 
         //   "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-        "reward-pool-banner": "url('/reward-pool-bg.svg')",
+        "active-leaderboard": "url(/active-leaderboard.svg)",
         "leaderboard-coin": "url('/leaderboard-coin.svg')",
         "gradient-active-tab":
           "radial-gradient(50% 64.29% at 50% 117.86%, rgba(139, 129, 248, 0.75) 0%, rgba(63, 46, 129, 0) 75%)",

@@ -48,6 +48,9 @@ export const Leaderboard: React.FC<{
     }
   };
 
+  const selectedSeasonEnded =
+    selectedSeason.ended_on > new Date().toISOString();
+
   return (
     <main className="text-neutral-100 gap-y-6">
       <h1 className="text-heading-1 font-bold text-center tracking-widest font-display">
@@ -100,7 +103,7 @@ export const Leaderboard: React.FC<{
             <div className="flex items-center gap-4">
               <span>{selectedSeason.name}</span>
 
-              {selectedSeason.ended_on > new Date().toISOString() && (
+              {selectedSeasonEnded && (
                 <span className="px-3 py-2 font-medium leading-none text-body-4 text-neutral-500 bg-status-success rounded-2xl">
                   LIVE
                 </span>
@@ -114,30 +117,45 @@ export const Leaderboard: React.FC<{
             </div>
           </div>
         </Dropdown>
+
+        <p
+          className={`${
+            selectedSeasonEnded
+              ? "bg-[linear-gradient(90deg,_rgba(18,18,21,0.2)_0%,_rgba(232,157,15,0.2)_30%,_rgba(232,157,15,0.2)_60%,_rgba(18,18,21,0.2)_100%)]"
+              : "bg-[linear-gradient(90deg,_rgba(18,18,21,0.2)_0%,_#1F1F24_30%,_#1F1F24_60%,_rgba(18,18,21,0.2)_100%)] text-neutral-200"
+          } text-center py-2 mt-2`}
+        >
+          Season ends
+        </p>
       </div>
 
       <div className="justify-center m-4 bg-reward-pool-banner">
-        <div className="border border-purple-800 rounded-xl p-4">
-          <figure className="w-40 mx-auto">
-            <Lottie
-              options={{
-                loop: true,
-                autoplay: true,
-                animationData: coinsLottie,
-              }}
-            />
-          </figure>
+        {!selectedSeasonEnded ? (
+          // TODO
+          "complicated ui - will pick later"
+        ) : (
+          <div className="border border-purple-800 rounded-xl p-4 bg-active-leaderboard bg-cover bg-center">
+            <figure className="w-40 mx-auto">
+              <Lottie
+                options={{
+                  loop: true,
+                  autoplay: true,
+                  animationData: coinsLottie,
+                }}
+              />
+            </figure>
 
-          <div className="gap-y-2 text-center">
-            <p className="text-heading-1 text-neutral-100 font-semibold">
-              ${selectedSeason.reward_pool_usd.toLocaleString()}
-            </p>
+            <div className="gap-y-2 text-center">
+              <p className="text-heading-1 text-neutral-100 font-semibold">
+                ${selectedSeason.reward_pool_usd.toLocaleString()}
+              </p>
 
-            <p className="text-body-3 text-neutral-200 font-normal mt-2">
-              Amount Pooled
-            </p>
+              <p className="text-body-3 text-neutral-200 font-normal mt-2">
+                Amount Pooled
+              </p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {loading ? (

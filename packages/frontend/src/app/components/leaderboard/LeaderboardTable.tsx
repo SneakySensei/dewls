@@ -11,19 +11,23 @@ const LeaderboardTable: React.FC<{
 }> = ({ leaderboard }) => {
   const { user } = useWeb3AuthContext();
 
-  const headings = ["#", "User", "Won", "Lost", "Score"];
+  const headings = ["#", "User", "Won", "Played", "Score"];
 
   const rankingClasses: {
     score: [string, string, string];
     indicator: [string, string, string];
-    wrapperBgImage: [string, string, string];
+    wrapper: [string, string, string];
   } = {
-    score: ["", "", ""],
+    score: [
+      "bg-[linear-gradient(180deg,_#FCE19A_0%,_#BD9350_100%)] text-transparent bg-clip-text",
+      "bg-[linear-gradient(180deg,_#F1F8FF_0%,_#7C8186_100%)] text-transparent bg-clip-text",
+      "bg-[linear-gradient(180deg,_#FFDDC6_0%,_#9E7259_100%)] text-transparent bg-clip-text",
+    ],
     indicator: ["bg-[#F6D887]", "bg-[#CCCCCC]", "bg-[#D3A085]"],
-    wrapperBgImage: [
-      "linear-gradient(90deg, rgba(246, 216, 135, 0.2) 0.5%, rgba(246, 216, 135, 0) 50%)",
-      "linear-gradient(90deg, rgba(204, 204, 204, 0.2) 0.5%, rgba(204, 204, 204, 0) 50%)",
-      "linear-gradient(90deg, rgba(211, 160, 133, 0.2) 0.5%, rgba(211, 160, 133, 0) 50%)",
+    wrapper: [
+      "bg-[linear-gradient(90deg,_rgba(246,216,135,0.2)_0.5%,_rgba(246,216,135,0)_50%)]",
+      "bg-[linear-gradient(90deg,_rgba(204,204,204,0.2)_0.5%,_rgba(204,204,204,0)_50%)]",
+      "bg-[linear-gradient(90deg,_rgba(211,160,133,0.2)_0.5%,_rgba(211,160,133,0)_50%)]",
     ],
   };
 
@@ -68,20 +72,20 @@ const LeaderboardTable: React.FC<{
               i
             ) => {
               const you = user?.data.player_id === player_id;
+              const rank = i < 3;
 
               return (
                 <div
                   key={player_id}
-                  className={`${i < 3 ? "rankingClasses[i]" : ""} ${
+                  className={`${
                     you
                       ? "text-brand-400 border-brand-400"
                       : "border-neutral-600"
+                  } ${
+                    rank ? rankingClasses.wrapper[i] : ""
                   } grid grid-cols-12 gap-2 py-4 items-center text-center bg-neutral-600 mb-4 relative rounded-lg border`}
-                  style={{
-                    backgroundImage: rankingClasses.wrapperBgImage[i],
-                  }}
                 >
-                  {i < 3 ? (
+                  {rank ? (
                     <>
                       <div
                         className={`${rankingClasses.indicator[i]} absolute h-3/4 w-0.5 rounded-full`}
@@ -124,19 +128,21 @@ const LeaderboardTable: React.FC<{
                   </div>
 
                   <p className="col-span-2 text-center text-neutral-200">
-                    {games_won}
+                    {games_won?.toLocaleString()}
                   </p>
 
                   <p className="col-span-2 text-center text-neutral-200">
-                    {games_played}
+                    {games_played?.toLocaleString()}
                   </p>
 
                   <p
                     className={`${
-                      i < 3 ? rankingClasses.score[i] : ""
+                      rank ? rankingClasses.score[i] : ""
                     } col-span-2 text-center text-white`}
                   >
-                    {total_points}
+                    <span className={`${rank ? rankingClasses.score[i] : ""}`}>
+                      {total_points?.toLocaleString()}
+                    </span>
                   </p>
                 </div>
               );
