@@ -1,6 +1,11 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "build:common": "cd packages/common && pnpm build",
+    "build:backend": "pnpm build:common && cd packages/backend && pnpm build",
+    "build:frontend": "pnpm build:common && cd packages/frontend && pnpm build"
+  },
   "dependencies": {},
   "devDependencies": {}
 }
