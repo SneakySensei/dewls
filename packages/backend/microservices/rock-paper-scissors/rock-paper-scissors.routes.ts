@@ -9,7 +9,10 @@ import {
     createGame,
     setWinnerToGame,
 } from "../played-games/played-games.service";
-import { fetchCurrentSeason } from "../seasons/seasons.service";
+import {
+    addMoneyToSeasonPool,
+    fetchCurrentSeason,
+} from "../seasons/seasons.service";
 import { RockPaperScissors } from "common";
 import { type Namespace, type Socket } from "socket.io";
 
@@ -38,10 +41,10 @@ export const RockPaperScissorsRoutes = async (
                     const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
                     const logId: string = `[${season_id}][${game_id}][${tier_id}][${player_id}]`;
 
-                    let roomId: string | null =
+                    let room_id: string | null =
                         (await RedisClient.lpop(roomKey)) || null;
 
-                    if (!roomId) {
+                    if (!room_id) {
                         console.info(
                             logId,
                             `no room found for room key ${roomKey}`,
@@ -54,16 +57,16 @@ export const RockPaperScissorsRoutes = async (
                             tier_id,
                         );
 
-                        roomId = played_game_id;
+                        room_id = played_game_id;
 
-                        await RedisClient.rpush(roomKey, roomId);
+                        await RedisClient.rpush(roomKey, room_id);
                         console.info(
                             logId,
-                            `pushed room id ${roomId} in room key ${roomKey}`,
+                            `pushed room id ${room_id} in room key ${roomKey}`,
                         );
 
                         await RedisClient.hset(
-                            roomId,
+                            room_id,
                             stringifyObjectValues<
                                 Omit<
                                     RockPaperScissors.ServerGameState,
@@ -76,13 +79,14 @@ export const RockPaperScissorsRoutes = async (
                                     player_id,
                                     currentMove: null,
                                     currentScore: 0,
+                                    staked: false,
                                 },
                             }),
                         );
 
                         console.info(
                             logId,
-                            `saved game state in hashmap ${roomId}`,
+                            `saved game state in hashmap ${room_id}`,
                         );
                     } else {
                         console.info(
@@ -92,10 +96,10 @@ export const RockPaperScissorsRoutes = async (
 
                         // TODO: fix self joining room
 
-                        await addPlayer2ToGame(roomId, player_id);
+                        await addPlayer2ToGame(room_id, player_id);
 
                         await RedisClient.hset(
-                            roomId,
+                            room_id,
                             stringifyObjectValues<
                                 Pick<
                                     RockPaperScissors.ServerGameState,
@@ -106,60 +110,89 @@ export const RockPaperScissorsRoutes = async (
                                     player_id,
                                     currentMove: null,
                                     currentScore: 0,
+                                    staked: false,
                                 },
                             }),
                         );
 
                         console.info(
                             logId,
-                            `updated game state in hashmap ${roomId}`,
+                            `updated game state in hashmap ${room_id}`,
                         );
                     }
 
-                    socket.join(roomId);
-                    console.info(logId, `user joined ${roomId}`);
+                    socket.join(room_id);
+                    console.info(logId, `user joined ${room_id}`);
 
                     const playerJoinedEvent: RockPaperScissors.PlayerJoinedEvent =
                         {
                             type: "player-joined",
                             payload: {
-                                room_id: roomId,
+                                room_id: room_id,
                                 player_id,
                             },
                         };
-                    io.to(roomId).emit(
+                    io.to(room_id).emit(
                         playerJoinedEvent.type,
                         playerJoinedEvent.payload,
                     );
 
                     const { player1, player2, round } =
                         parseStringifiedValues<RockPaperScissors.ServerGameState>(
-                            await RedisClient.hgetall(roomId),
+                            await RedisClient.hgetall(room_id),
                         );
 
                     if (player1 && player2) {
-                        console.info(logId, `starting game ${roomId}`);
+                        const stakingEvent: RockPaperScissors.StakingEvent = {
+                            type: "staking",
+                            payload: null,
+                        };
+                        io.to(room_id).emit(
+                            stakingEvent.type,
+                            stakingEvent.payload,
+                        );
+                    }
+                } catch (error) {
+                    WSError(socket, error);
+                }
+            },
+        );
 
-                        // TODO: Contract call to create game
+        socket.on(
+            "staked" satisfies RockPaperScissors.StakedEvent["type"],
+            async ({
+                room_id,
+                player_id,
+                tier_id,
+            }: RockPaperScissors.StakedEvent["payload"]) => {
+                try {
+                    const gameState =
+                        parseStringifiedValues<RockPaperScissors.ServerGameState>(
+                            await RedisClient.hgetall(room_id),
+                        );
+
+                    if (gameState.player1.player_id === player_id) {
+                        gameState.player1.staked = true;
+                    } else if (gameState.player2.player_id === player_id) {
+                        gameState.player2.staked = true;
+                    } else {
+                        throw Error(
+                            `Player ${player_id} does not exist in room ${room_id}`,
+                        );
+                    }
+
+                    if (gameState.player1.staked && gameState.player2.staked) {
+                        await addMoneyToSeasonPool(season_id, tier_id);
 
                         const gameStartEvent: RockPaperScissors.GameStartEvent =
                             {
                                 type: "game-start",
                                 payload: {
-                                    player1: {
-                                        currentMove: null,
-                                        currentScore: 0,
-                                        player_id: player1.player_id,
-                                    },
-                                    player2: {
-                                        currentMove: null,
-                                        currentScore: 0,
-                                        player_id: player2.player_id,
-                                    },
-                                    round: round as 0,
+                                    ...gameState,
+                                    round: gameState.round as 0,
                                 },
                             };
-                        io.to(roomId).emit(
+                        io.to(room_id).emit(
                             gameStartEvent.type,
                             gameStartEvent.payload,
                         );

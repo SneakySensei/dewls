@@ -17,9 +17,8 @@ export type StakedEvent = {
   type: "staked";
   payload: {
     player_id: string;
-    game_id: string;
+    room_id: string;
     tier_id: string;
-    transaction_hash: string;
   };
 };
 
@@ -32,7 +31,7 @@ export type MoveEvent = {
   };
 };
 
-export type CLIENT_EVENTS = JoinEvent | MoveEvent;
+export type CLIENT_EVENTS = JoinEvent | StakedEvent | MoveEvent;
 
 export type PlayerJoinedEvent = {
   type: "player-joined";
@@ -44,7 +43,7 @@ export type PlayerJoinedEvent = {
 
 export type StakingEvent = {
   type: "staking";
-  payload: {};
+  payload: null;
 };
 
 export type GameStartEvent = {
@@ -78,6 +77,7 @@ export type GameEndEvent = {
 
 export type SERVER_EVENTS =
   | PlayerJoinedEvent
+  | StakingEvent
   | GameStartEvent
   | RoundEndEvent
   | GameEndEvent;
