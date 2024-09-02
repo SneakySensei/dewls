@@ -246,41 +246,6 @@ export type Database = {
       }
     }
     Views: {
-      game_history: {
-        Row: {
-          created_at: string | null
-          game_id: string | null
-          game_tier_id: string | null
-          played_game_id: string | null
-          player_1: Json | null
-          player_2: Json | null
-          season_id: string | null
-          winner_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "played_games_game_id_fkey"
-            columns: ["game_id"]
-            isOneToOne: false
-            referencedRelation: "games"
-            referencedColumns: ["game_id"]
-          },
-          {
-            foreignKeyName: "played_games_game_tier_id_fkey"
-            columns: ["game_tier_id"]
-            isOneToOne: false
-            referencedRelation: "game_tiers"
-            referencedColumns: ["tier_id"]
-          },
-          {
-            foreignKeyName: "played_games_season_id_fkey"
-            columns: ["season_id"]
-            isOneToOne: false
-            referencedRelation: "seasons"
-            referencedColumns: ["season_id"]
-          },
-        ]
-      }
       leaderboard: {
         Row: {
           games_played: number | null
@@ -312,10 +277,19 @@ export type Database = {
           game_name: string | null
           played_game_id: string | null
           player_id: string | null
+          season_id: string | null
           tier_name: string | null
           winner_id: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "played_games_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["season_id"]
+          },
+        ]
       }
     }
     Functions: {
