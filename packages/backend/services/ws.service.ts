@@ -1,5 +1,6 @@
 import { ConnectFourRoutes } from "../microservices/connect-four/connect-four.routes";
 import { RockPaperScissorsRoutes } from "../microservices/rock-paper-scissors/rock-paper-scissors.routes";
+import { validateJwt } from "../middlewares/ws";
 import { GAME_NAMESPACES } from "common";
 import { Server } from "node:http";
 import { type Namespace, type Socket, Server as WSServer } from "socket.io";
@@ -7,7 +8,10 @@ import { type Namespace, type Socket, Server as WSServer } from "socket.io";
 export class WSService {
     private static ioConnection: WSServer;
     private static socketRoutes: {
-        [namespace in GAME_NAMESPACES]: (socket: Socket, io: Namespace) => void;
+        [namespace in (typeof GAME_NAMESPACES)[keyof typeof GAME_NAMESPACES]]: (
+            socket: Socket,
+            io: Namespace,
+        ) => void;
     } = {
         [GAME_NAMESPACES.ROCK_PAPER_SCISSORS]: RockPaperScissorsRoutes,
         [GAME_NAMESPACES.CONNECT_FOUR]: ConnectFourRoutes,
@@ -31,7 +35,7 @@ export class WSService {
             scopedIO.use((socket, next) => {
                 try {
                     const token = socket.handshake.auth.token;
-                    // validateJwt(token);
+                    validateJwt(token);
                     next();
                 } catch (error: Error | any) {
                     next(error);

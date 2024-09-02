@@ -1,10 +1,10 @@
 import * as ConnectFour from "./connect-four";
 import * as RockPaperScissors from "./rock-paper-scissors";
 
-export enum GAME_NAMESPACES {
-  ROCK_PAPER_SCISSORS = RockPaperScissors.slug,
-  CONNECT_FOUR = ConnectFour.slug,
-}
+export const GAME_NAMESPACES = {
+  ROCK_PAPER_SCISSORS: RockPaperScissors.slug,
+  CONNECT_FOUR: ConnectFour.slug,
+} as const;
 
 export enum TIERS_IDS {
   ALPHA = "5f534987-4ca5-4b27-8597-835fc9512f85",

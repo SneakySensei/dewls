@@ -54,6 +54,7 @@ export default function Game({ tier }: Props) {
   const { user } = useWeb3AuthContext();
 
   const player_user_id = user!.data.player_id;
+  const player_token = user!.token;
 
   const reducer = (
     gameState: GameState,
@@ -175,7 +176,7 @@ export default function Game({ tier }: Props) {
   const socketRef = useRef<Socket>(
     getSocketManager().socket(`/${RockPaperScissors.slug}`, {
       auth: {
-        // token,
+        token: player_token,
       },
     })
   );
