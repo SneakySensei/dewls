@@ -7,7 +7,6 @@ export type Move = "rock" | "paper" | "scissors";
 export type JoinEvent = {
   type: "join";
   payload: {
-    season_id: string;
     player_id: string;
     game_id: string;
     tier_id: string;

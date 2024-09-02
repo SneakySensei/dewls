@@ -226,7 +226,6 @@ export default function Game({ tier }: Props) {
     socketRef.current.emit(
       "join" satisfies RockPaperScissors.JoinEvent["type"],
       {
-        season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
         player_id: player_user_id,
         game_id: RockPaperScissors.gameId,
         tier_id: tier,
