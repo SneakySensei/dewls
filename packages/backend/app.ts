@@ -1,7 +1,9 @@
 import { gameTiersRouter } from "./microservices/game-tiers/game-tiers.routes";
 import { gamesRouter } from "./microservices/games/games.routes";
+import { leaderboardRouter } from "./microservices/leaderboard/leaderboard.routes";
+import { playedGamesRouter } from "./microservices/played-games/played-games.routes";
+import { playersRouter } from "./microservices/players/players.routes";
 import { seasonsRouter } from "./microservices/seasons/seasons.routes";
-import { usersRouter } from "./microservices/users/users.routes";
 import { RedisService, SupabaseService, WSService } from "./services";
 import cors from "cors";
 import "dotenv/config";
@@ -28,8 +30,10 @@ app.use("/api/v1", v1Router);
 
 v1Router.use("/game-tiers", gameTiersRouter);
 v1Router.use("/games", gamesRouter);
-v1Router.use("/users", usersRouter);
+v1Router.use("/players", playersRouter);
 v1Router.use("/seasons", seasonsRouter);
+v1Router.use("/played-games", playedGamesRouter);
+v1Router.use("/leaderboard", leaderboardRouter);
 
 app.use("*", (_req: Request, res: Response) => {
     res.status(404).json({

@@ -1,24 +1,20 @@
 "use client";
 
 import BattleIcon from "@/shared/icons/BattleIcon";
-import { MatchPlayer } from "./MatchPlayer";
+import { GamePlayer } from "./GamePlayer";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import { MappedPlayedGame } from "@/utils/types";
 
-export const MatchHistory: React.FC = () => {
-  // const { user } = useWeb3AuthContext();
-  const user = {
-    email_id: "karanpargal007@gmail.com",
-    name: "Karan Pargal",
-    profile_photo:
-      "https://lh3.googleusercontent.com/a/ACg8ocIJsSTDQXwXlpZTNdu0n6G-EySqxIwKJfUTewSoej7mbMF9ITIH=s96-c",
-    wallet_address: "0xC1931B33dCb6E64da65D2F3c73bcDc42d2f9Ce98",
-    won: 10,
-    played: 20,
-    score: 1000,
-  };
+export const GameHistory: React.FC<{ playedGame: MappedPlayedGame }> = async ({
+  playedGame,
+}) => {
+  const { user } = useWeb3AuthContext();
 
   if (!user) {
     return <></>;
   }
+
+  const won = playedGame.winner_id === user.data.player_id;
 
   return (
     <div className="px-4">
@@ -26,24 +22,24 @@ export const MatchHistory: React.FC = () => {
 
       <div className="border border-neutral-400 rounded-lg w-full">
         <p className="text-body-1 text-neutral-100 bg-neutral-600 font-medium px-4 py-2 w-full rounded-t-lg">
-          Game Name
+          {playedGame.game_id}
         </p>
 
         <div className="flex justify-center items-center gap-x-6 max-w-80 pt-8 w-3/5 mx-auto">
-          <MatchPlayer
-            profile_photo={user.profile_photo}
-            won={false}
+          <GamePlayer
+            profile_photo={user.data.profile_photo}
+            won={won}
             name="You"
-            wallet_address={user.wallet_address}
+            wallet_address={user.data.wallet_address}
           />
 
           <BattleIcon className="h-20 w-20" />
 
-          <MatchPlayer
-            profile_photo={user.profile_photo}
-            won={true}
+          <GamePlayer
+            profile_photo={user.data.profile_photo}
+            won={won}
             name="Enemy"
-            wallet_address={user.wallet_address}
+            wallet_address={user.data.wallet_address}
           />
         </div>
 

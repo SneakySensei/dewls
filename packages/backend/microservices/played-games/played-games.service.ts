@@ -1,5 +1,25 @@
 import { SupabaseService } from "../../services";
-import { MappedPlayedGame } from "../../utils/types/mappers.types";
+import {
+    MappedPlayedGame,
+    MappedPlayer,
+} from "../../utils/types/mappers.types";
+
+export const fetchAllUserGames = async (
+    player_id: MappedPlayer["player_id"],
+) => {
+    const { data, error } = await SupabaseService.getSupabase()
+        .from("played_games")
+        .select()
+        .or(`player_1_id.eq.${player_id},player_2_id.eq.${player_id}`)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error(error);
+        throw error;
+    }
+
+    return data;
+};
 
 export const createGame = async (
     player_1_id: MappedPlayedGame["player_1_id"],

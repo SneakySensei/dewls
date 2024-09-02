@@ -1,8 +1,4 @@
-import {
-    fetchAllSeasons,
-    fetchCurrentLeaderboard,
-    fetchCurrentSeason,
-} from "./seasons.service";
+import { fetchAllSeasons, fetchCurrentSeason } from "./seasons.service";
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 
@@ -40,22 +36,5 @@ const handleGetCurrentSeason = async (
     }
 };
 
-const handleGetCurrentLeaderboard = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
-        const data = await fetchCurrentLeaderboard();
-        return res.json({
-            success: true,
-            data,
-        });
-    } catch (error) {
-        next(error);
-    }
-};
-
 seasonsRouter.get("/", handleGetAllSeasons);
 seasonsRouter.get("/current", handleGetCurrentSeason);
-seasonsRouter.get("/current/leaderboard", handleGetCurrentLeaderboard);

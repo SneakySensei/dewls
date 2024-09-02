@@ -21,11 +21,11 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
             game_id,
             season_id,
             tier_id,
-            user_id,
+            player_id,
         }: RockPaperScissors.JoinEvent["payload"]) => {
             try {
                 const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
-                const logId: string = `[${season_id}][${game_id}][${tier_id}][${user_id}]`;
+                const logId: string = `[${season_id}][${game_id}][${tier_id}][${player_id}]`;
 
                 let roomId: string | null =
                     (await RedisClient.lpop(roomKey)) || null;
@@ -37,7 +37,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     );
 
                     const { played_game_id } = await createGame(
-                        user_id,
+                        player_id,
                         season_id,
                         game_id,
                         tier_id,
@@ -59,7 +59,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                             winner_id: null,
                             round: 0,
                             player1: {
-                                user_id,
+                                player_id,
                                 currentMove: null,
                                 currentScore: 0,
                             },
@@ -75,7 +75,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
                     // TODO: fix self joining room
 
-                    await addPlayer2ToGame(roomId, user_id);
+                    await addPlayer2ToGame(roomId, player_id);
 
                     await RedisClient.hset(
                         roomId,
@@ -83,7 +83,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                             Pick<RockPaperScissors.ServerGameState, "player2">
                         >({
                             player2: {
-                                user_id,
+                                player_id,
                                 currentMove: null,
                                 currentScore: 0,
                             },
@@ -103,7 +103,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     type: "player-joined",
                     payload: {
                         room_id: roomId,
-                        user_id,
+                        player_id,
                     },
                 };
                 io.to(roomId).emit(
@@ -127,12 +127,12 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                             player1: {
                                 currentMove: null,
                                 currentScore: 0,
-                                user_id: player1.user_id,
+                                player_id: player1.player_id,
                             },
                             player2: {
                                 currentMove: null,
                                 currentScore: 0,
-                                user_id: player2.user_id,
+                                player_id: player2.player_id,
                             },
                             round: round as 0,
                         },
@@ -153,7 +153,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
         async ({
             move,
             room_id,
-            user_id,
+            player_id,
         }: RockPaperScissors.MoveEvent["payload"]) => {
             try {
                 const gameState =
@@ -163,13 +163,13 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
 
                 let updateGameState: boolean = true;
 
-                if (gameState.player1.user_id === user_id) {
+                if (gameState.player1.player_id === player_id) {
                     if (gameState.player1.currentMove === null) {
                         gameState.player1.currentMove = move;
                     } else {
                         return;
                     }
-                } else if (gameState.player2.user_id === user_id) {
+                } else if (gameState.player2.player_id === player_id) {
                     if (gameState.player2.currentMove === null) {
                         gameState.player2.currentMove = move;
                     } else {
@@ -177,7 +177,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     }
                 } else {
                     throw Error(
-                        `Player ${user_id} does not exist in room ${room_id}`,
+                        `Player ${player_id} does not exist in room ${room_id}`,
                     );
                 }
 
@@ -202,11 +202,11 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                         (gameState.player1.currentMove === "scissors" &&
                             gameState.player2.currentMove === "paper")
                     ) {
-                        gameState.winner_id = gameState.player1.user_id;
+                        gameState.winner_id = gameState.player1.player_id;
                         gameState.player1.currentScore =
                             gameState.player1.currentScore + 1;
                     } else {
-                        gameState.winner_id = gameState.player2.user_id;
+                        gameState.winner_id = gameState.player2.player_id;
                         gameState.player2.currentScore =
                             gameState.player2.currentScore + 1;
                     }

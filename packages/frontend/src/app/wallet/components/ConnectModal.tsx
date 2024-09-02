@@ -6,7 +6,7 @@ import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { API_BASE_URL } from "@/utils/constants/api.constant";
 import { getWalletAddress } from "@/utils/functions/ethers";
 import { UserInfo } from "@web3auth/base";
-import { MappedUser, ResponseWithData } from "@/utils/types";
+import { MappedPlayer, ResponseWithData } from "@/utils/types";
 
 export const ConnectModal: React.FC = () => {
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
@@ -35,7 +35,7 @@ export const ConnectModal: React.FC = () => {
     user: Partial<UserInfo> & { wallet_address: string }
   ) => {
     try {
-      const res = await fetch(`${API_BASE_URL}/users/auth`, {
+      const res = await fetch(`${API_BASE_URL}/players/auth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +50,7 @@ export const ConnectModal: React.FC = () => {
       });
 
       const userResponse = (await res.json()) as ResponseWithData<{
-        user: MappedUser;
+        user: MappedPlayer;
         token: string;
       }>;
       if (userResponse.success) return userResponse.data;

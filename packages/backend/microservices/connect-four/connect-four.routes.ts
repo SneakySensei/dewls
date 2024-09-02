@@ -22,11 +22,11 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
             game_id,
             season_id,
             tier_id,
-            user_id,
+            player_id,
         }: ConnectFour.JoinEvent["payload"]) => {
             try {
                 const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
-                const logId: string = `[${season_id}][${game_id}][${tier_id}][${user_id}]`;
+                const logId: string = `[${season_id}][${game_id}][${tier_id}][${player_id}]`;
 
                 let roomId: string | null =
                     (await RedisClient.lpop(roomKey)) || null;
@@ -38,7 +38,7 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                     );
 
                     const { played_game_id } = await createGame(
-                        user_id,
+                        player_id,
                         season_id,
                         game_id,
                         tier_id,
@@ -58,9 +58,9 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                             Omit<ConnectFour.ServerGameState, "player2">
                         >({
                             winner_id: null,
-                            active_player: user_id,
+                            active_player: player_id,
                             player1: {
-                                user_id,
+                                player_id,
                                 currentMove: null,
                             },
                             board: ConnectFour.emptyBoard,
@@ -76,7 +76,7 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
 
                     // TODO: fix self joining room
 
-                    await addPlayer2ToGame(roomId, user_id);
+                    await addPlayer2ToGame(roomId, player_id);
 
                     await RedisClient.hset(
                         roomId,
@@ -84,7 +84,7 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                             Pick<ConnectFour.ServerGameState, "player2">
                         >({
                             player2: {
-                                user_id,
+                                player_id,
                                 currentMove: null,
                             },
                         }),
@@ -103,7 +103,7 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                     type: "player-joined",
                     payload: {
                         room_id: roomId,
-                        user_id,
+                        player_id,
                     },
                 };
                 io.to(roomId).emit(
@@ -124,11 +124,11 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                         payload: {
                             player1: {
                                 currentMove: null,
-                                user_id: player1.user_id,
+                                player_id: player1.player_id,
                             },
                             player2: {
                                 currentMove: null,
-                                user_id: player2.user_id,
+                                player_id: player2.player_id,
                             },
                             active_player,
                             board,
@@ -150,7 +150,7 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
         async ({
             move,
             room_id,
-            user_id,
+            player_id,
         }: ConnectFour.MoveEvent["payload"]) => {
             try {
                 const gameState =
@@ -158,7 +158,7 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                         await RedisClient.hgetall(room_id),
                     );
 
-                if (user_id !== gameState.active_player) {
+                if (player_id !== gameState.active_player) {
                     return;
                 }
 
@@ -166,13 +166,13 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                     return;
                 }
 
-                if (user_id === gameState.player1.user_id) {
+                if (player_id === gameState.player1.player_id) {
                     if (gameState.player1.currentMove === null) {
                         gameState.player1.currentMove = move;
                     } else {
                         return;
                     }
-                } else if (user_id === gameState.player2.user_id) {
+                } else if (player_id === gameState.player2.player_id) {
                     if (gameState.player2.currentMove === null) {
                         gameState.player2.currentMove = move;
                     } else {
@@ -180,21 +180,21 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                     }
                 } else {
                     throw Error(
-                        `Player ${user_id} does not exist in room ${room_id}`,
+                        `Player ${player_id} does not exist in room ${room_id}`,
                     );
                 }
 
                 const activePlayer =
-                    user_id === gameState.player1.user_id &&
+                    player_id === gameState.player1.player_id &&
                     gameState.player1.currentMove
                         ? gameState.player1
-                        : gameState.player2.user_id === user_id &&
+                        : gameState.player2.player_id === player_id &&
                             gameState.player2.currentMove
                           ? gameState.player2
                           : null;
 
                 if (!activePlayer?.currentMove) {
-                    throw Error(`no active player for player ${user_id}`);
+                    throw Error(`no active player for player ${player_id}`);
                 }
 
                 for (let row = ConnectFour.rowCount - 1; row >= 0; row--) {
@@ -204,12 +204,12 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                         ] === null
                     ) {
                         gameState.board[row][activePlayer.currentMove.column] =
-                            activePlayer.user_id;
+                            activePlayer.player_id;
                         break;
                     }
                 }
 
-                const win = checkWinner(gameState.board, user_id);
+                const win = checkWinner(gameState.board, player_id);
 
                 if (!win) {
                     const moveEndEvent: ConnectFour.MoveEndEvent = {
@@ -242,7 +242,7 @@ export const ConnectFourRoutes = (socket: Socket, io: Namespace) => {
                         ),
                     );
                 } else {
-                    gameState.winner_id = activePlayer.user_id;
+                    gameState.winner_id = activePlayer.player_id;
                     await setWinnerToGame(room_id, gameState.winner_id);
 
                     await RedisClient.del(room_id);

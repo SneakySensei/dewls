@@ -27,7 +27,7 @@ export default function PlayerScreen({
       type: "move",
       payload: {
         room_id: gameState.room_id,
-        user_id: gameState.player.user_id,
+        player_id: gameState.player.player_id,
         move,
       },
     };
@@ -43,9 +43,8 @@ export default function PlayerScreen({
     const attestation = await signClient.attest({
       game_id: RockPaperScissors.gameId,
       season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
-      user_id: gameState.player.user_id,
+      player_id: gameState.player.player_id,
       tier_id: tier,
-      winner_id: gameState.player.user_id,
     });
     console.log(attestation);
   };
@@ -55,7 +54,7 @@ export default function PlayerScreen({
   const moveState =
     (gameState.state === "roundEnd" || gameState.state === "gameEnd") &&
     gameState.winner_id
-      ? gameState.winner_id === gameState.player.user_id
+      ? gameState.winner_id === gameState.player.player_id
         ? "win"
         : "lose"
       : "idle";
@@ -123,7 +122,7 @@ export default function PlayerScreen({
       )}
 
       {gameState.state === "gameEnd" &&
-        player?.user_id === gameState.winner_id && (
+        player?.player_id === gameState.winner_id && (
           <button onClick={handleAttest}>Attest</button>
         )}
     </section>

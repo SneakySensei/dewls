@@ -23,9 +23,8 @@ export default class SignClient {
         data: [
           { name: "game_id", type: "string" },
           { name: "season_id", type: "string" },
-          { name: "user_id", type: "string" },
+          { name: "player_id", type: "string" },
           { name: "tier_id", type: "string" },
-          { name: "winner_id", type: "string" },
         ],
       });
 
@@ -37,24 +36,27 @@ export default class SignClient {
     }
   }
 
-  async attest(data: {
+  async attest({
+    game_id,
+    player_id,
+    season_id,
+    tier_id,
+  }: {
     game_id: string;
     season_id: string;
-    user_id: string;
+    player_id: string;
     tier_id: string;
-    winner_id: string;
   }): Promise<AttestationResult> {
     try {
       const response = await this.signClient.createAttestation({
         schemaId: "0x92",
         data: {
-          game_id: data.game_id,
-          season_id: data.season_id,
-          user_id: data.user_id,
-          tier_id: data.tier_id,
-          winner_id: data.winner_id,
+          game_id,
+          season_id,
+          player_id,
+          tier_id,
         },
-        indexingValue: data.game_id,
+        indexingValue: game_id,
       });
 
       return response;

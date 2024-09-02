@@ -49,7 +49,9 @@ export const WalletDetails: React.FC<{
           Connected Wallet
         </p>
         <div className="flex items-center gap-x-2 py-4 my-2 px-8 border-b border-neutral-500">
-          <p className="text-body-2 text-neutral-200">{user.wallet_address}</p>
+          <p className="text-body-2 text-neutral-200">
+            {user.wallet_address.toUpperCase()}
+          </p>
           <CopyIcon
             className="cursor-pointer"
             onClick={() => {

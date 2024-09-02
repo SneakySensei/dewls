@@ -4,13 +4,12 @@
     "description": "",
     "main": "app.ts",
     "scripts": {
-        "dev": "pnpm run types && tsc-watch --onSuccess \"pnpm start\"",
+        "dev": "pnpm run types:database && tsc-watch --onSuccess \"pnpm start\"",
         "build": "([ ! -d dist ] || rm -r dist) && tsc",
         "lint": "eslint .",
         "pretty": "prettier . --write",
         "start": "node ./dist/app.js",
-        "types:database": "node ./scripts/generate-supabase-types.js",
-        "types": "pnpm run types:database"
+        "types:database": "node ./scripts/generate-supabase-types.js"
     },
     "engines": {
         "node": "^20.9.0"

@@ -1,11 +1,11 @@
 import { validateQuery } from "../../middlewares/rest";
-import { type MappedUser } from "../../utils/types/mappers.types";
-import { getUserParams, userAuthBody } from "./users.schema";
-import { createJWToken, createUser, fetchUserDetails } from "./users.service";
+import { type MappedPlayer } from "../../utils/types/mappers.types";
+import { getUserParams, userAuthBody } from "./players.schema";
+import { createJWToken, createUser, fetchUserDetails } from "./players.service";
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 
-export const usersRouter = Router();
+export const playersRouter = Router();
 
 const handleGetUser = async (
     req: Request,
@@ -13,8 +13,8 @@ const handleGetUser = async (
     next: NextFunction,
 ) => {
     try {
-        const { user_id } = req.params as MappedUser;
-        const data = await fetchUserDetails(user_id);
+        const { player_id } = req.params as MappedPlayer;
+        const data = await fetchUserDetails(player_id);
         return res.json({
             success: true,
             data,
@@ -31,7 +31,7 @@ const handlerUserAuth = async (
 ) => {
     try {
         const { email_id, name, profile_photo, wallet_address } =
-            req.body as MappedUser;
+            req.body as MappedPlayer;
         let user = await fetchUserDetails(email_id);
         if (!user) {
             user = await createUser({
@@ -54,9 +54,13 @@ const handlerUserAuth = async (
     }
 };
 
-usersRouter.post("/auth", validateQuery("body", userAuthBody), handlerUserAuth);
-usersRouter.get(
-    "/:user_id",
+playersRouter.post(
+    "/auth",
+    validateQuery("body", userAuthBody),
+    handlerUserAuth,
+);
+playersRouter.get(
+    "/:player_id",
     validateQuery("params", getUserParams),
     handleGetUser,
 );

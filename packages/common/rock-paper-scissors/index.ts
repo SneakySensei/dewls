@@ -8,7 +8,7 @@ export type JoinEvent = {
   type: "join";
   payload: {
     season_id: string;
-    user_id: string;
+    player_id: string;
     game_id: string;
     tier_id: string;
   };
@@ -17,7 +17,7 @@ export type JoinEvent = {
 export type MoveEvent = {
   type: "move";
   payload: {
-    user_id: string;
+    player_id: string;
     room_id: string;
     move: Move;
   };
@@ -28,7 +28,7 @@ export type CLIENT_EVENTS = JoinEvent | MoveEvent;
 export type PlayerJoinedEvent = {
   type: "player-joined";
   payload: {
-    user_id: string;
+    player_id: string;
     room_id: string;
   };
 };
@@ -78,5 +78,5 @@ export type ServerGameState = {
 export type PlayerServerState = {
   currentMove: Move | null;
   currentScore: number;
-  user_id: string;
+  player_id: string;
 };

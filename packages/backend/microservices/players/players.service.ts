@@ -1,8 +1,8 @@
 import { SupabaseService } from "../../services";
-import { type MappedUser } from "../../utils/types/mappers.types";
+import { type MappedPlayer } from "../../utils/types/mappers.types";
 import { sign } from "jsonwebtoken";
 
-export const createJWToken = (user: MappedUser) => {
+export const createJWToken = (user: MappedPlayer) => {
     const token = sign(user, process.env.JWT_SECRET_KEY!, {
         issuer: "dewl$",
         expiresIn: "24h",
@@ -10,9 +10,9 @@ export const createJWToken = (user: MappedUser) => {
     return token;
 };
 
-export const fetchUserDetails = async (email_id: MappedUser["email_id"]) => {
+export const fetchUserDetails = async (email_id: MappedPlayer["email_id"]) => {
     const { data, error } = await SupabaseService.getSupabase()
-        .from("users")
+        .from("players")
         .select()
         .eq("email_id", email_id)
         .single();
@@ -30,9 +30,9 @@ export const createUser = async ({
     name,
     profile_photo,
     wallet_address,
-}: Omit<MappedUser, "created_at" | "user_id">) => {
+}: Omit<MappedPlayer, "created_at" | "player_id">) => {
     const { data, error } = await SupabaseService.getSupabase()
-        .from("users")
+        .from("players")
         .insert({
             email_id,
             name,

@@ -2,7 +2,7 @@ import Crown from "@/shared/icons/Crown";
 import { truncate } from "@/utils/functions/truncate";
 import Image from "next/image";
 
-export const MatchPlayer: React.FC<{
+export const GamePlayer: React.FC<{
   profile_photo: string;
   won: boolean;
   name: string;

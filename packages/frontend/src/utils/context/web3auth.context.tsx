@@ -2,9 +2,9 @@
 "use client";
 import { IProvider } from "@web3auth/base";
 import React, { createContext, ReactNode, useContext, useState } from "react";
-import { MappedUser } from "../types";
+import { MappedPlayer } from "../types";
 
-export type AuthUser = { data: MappedUser; token: string };
+export type AuthUser = { data: MappedPlayer; token: string };
 
 interface Web3AuthContextProps {
   provider: IProvider | null;

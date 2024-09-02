@@ -1,6 +1,6 @@
 type Props = {
-  user_id: string;
+  player_id: string;
 };
-export default function PlayerThumb({ user_id }: Props) {
-  return <article>{user_id}</article>;
+export default function PlayerThumb({ player_id }: Props) {
+  return <article>{player_id}</article>;
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { truncate } from "@/utils/functions/truncate";
 import { MappedLeaderboard } from "@/utils/types";
@@ -5,8 +7,8 @@ import Image from "next/image";
 import React from "react";
 
 const LeaderboardTable: React.FC<{
-  data: MappedLeaderboard[];
-}> = ({ data }) => {
+  leaderboard: MappedLeaderboard[];
+}> = ({ leaderboard }) => {
   const { user } = useWeb3AuthContext();
 
   const headings = ["#", "User", "Won", "Lost", "Score"];
@@ -47,91 +49,99 @@ const LeaderboardTable: React.FC<{
       </div>
 
       <div className="px-4">
-        {data.map(
-          (
-            {
-              user_id,
-              profile_photo,
-              name,
-              wallet_address,
-              games_won,
-              games_played,
-              total_points,
-            },
-            i
-          ) => {
-            const you = user?.data.user_id === user_id;
+        {!leaderboard.length ? (
+          <p className="text-center py-2 text-body-3 text-neutral-200 bg-neutral-600 rounded-lg mb-2">
+            The first game of this season awaits!
+          </p>
+        ) : (
+          leaderboard.map(
+            (
+              {
+                player_id,
+                profile_photo,
+                name,
+                wallet_address,
+                games_won,
+                games_played,
+                total_points,
+              },
+              i
+            ) => {
+              const you = user?.data.player_id === player_id;
 
-            return (
-              <div
-                key={user_id}
-                className={`${i < 3 ? "rankingClasses[i]" : ""} ${
-                  you ? "text-brand-400 border-brand-400" : "border-neutral-600"
-                } grid grid-cols-12 gap-2 py-4 items-center text-center bg-neutral-600 mb-4 relative rounded-lg border`}
-                style={{
-                  backgroundImage: rankingClasses.wrapperBgImage[i],
-                }}
-              >
-                {i < 3 ? (
-                  <>
-                    <div
-                      className={`${rankingClasses.indicator[i]} absolute h-3/4 w-0.5 rounded-full`}
-                    />
+              return (
+                <div
+                  key={player_id}
+                  className={`${i < 3 ? "rankingClasses[i]" : ""} ${
+                    you
+                      ? "text-brand-400 border-brand-400"
+                      : "border-neutral-600"
+                  } grid grid-cols-12 gap-2 py-4 items-center text-center bg-neutral-600 mb-4 relative rounded-lg border`}
+                  style={{
+                    backgroundImage: rankingClasses.wrapperBgImage[i],
+                  }}
+                >
+                  {i < 3 ? (
+                    <>
+                      <div
+                        className={`${rankingClasses.indicator[i]} absolute h-3/4 w-0.5 rounded-full`}
+                      />
 
-                    <Image
-                      alt=""
-                      src={rankingWreathImages[i]}
-                      height={22}
-                      width={24}
-                      className="col-span-2 mx-auto"
-                    />
-                  </>
-                ) : (
-                  <p className="col-span-2">{i + 1}</p>
-                )}
-
-                <div className="col-span-4 flex items-center text-left">
-                  {profile_photo && (
-                    <Image
-                      alt=""
-                      src={profile_photo}
-                      height={36}
-                      width={36}
-                      className="rounded-full mr-4"
-                    />
+                      <Image
+                        alt=""
+                        src={rankingWreathImages[i]}
+                        height={22}
+                        width={24}
+                        className="col-span-2 mx-auto"
+                      />
+                    </>
+                  ) : (
+                    <p className="col-span-2">{i + 1}</p>
                   )}
 
-                  <div className="text-ellipsis truncate w-full">
-                    <p
-                      className={`${you ? "text-brand-400" : ""} font-medium text-ellipsis w-full truncate`}
-                    >
-                      {name}
-                    </p>
+                  <div className="col-span-4 flex items-center text-left">
+                    {profile_photo && (
+                      <Image
+                        alt=""
+                        src={profile_photo}
+                        height={36}
+                        width={36}
+                        className="rounded-full mr-4"
+                      />
+                    )}
 
-                    <p className="text-body-3 text-neutral-300">
-                      {truncate(wallet_address).toUpperCase()}
-                    </p>
+                    <div className="text-ellipsis truncate w-full">
+                      <p
+                        className={`${you ? "text-brand-400" : ""} font-medium text-ellipsis w-full truncate`}
+                      >
+                        {name}
+                      </p>
+
+                      <p className="text-body-3 text-neutral-300">
+                        {truncate(wallet_address).toUpperCase()}
+                      </p>
+                    </div>
                   </div>
+
+                  <p className="col-span-2 text-center text-neutral-200">
+                    {games_won}
+                  </p>
+
+                  <p className="col-span-2 text-center text-neutral-200">
+                    {games_played}
+                  </p>
+
+                  <p
+                    className={`${
+                      i < 3 ? rankingClasses.score[i] : ""
+                    } col-span-2 text-center text-white`}
+                  >
+                    {total_points}
+                  </p>
                 </div>
-
-                <p className="col-span-2 text-center text-neutral-200">
-                  {games_won}
-                </p>
-
-                <p className="col-span-2 text-center text-neutral-200">
-                  {games_played}
-                </p>
-
-                <p
-                  className={`${
-                    i < 3 ? rankingClasses.score[i] : ""
-                  } col-span-2 text-center text-white`}
-                >
-                  {total_points}
-                </p>
-              </div>
-            );
-          }
+              );
+            }
+          )
         )}
       </div>
     </div>

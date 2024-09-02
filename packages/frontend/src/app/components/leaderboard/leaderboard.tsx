@@ -1,22 +1,52 @@
 "use client";
 
-import { MappedLeaderboard, MappedSeason } from "@/utils/types";
+import {
+  MappedLeaderboard,
+  MappedSeason,
+  ResponseWithData,
+} from "@/utils/types";
 import LeaderboardTable from "./LeaderboardTable";
 import Dropdown from "../shared/dropdown";
 import { useState } from "react";
 import ChevronDown from "@/shared/icons/Chevron-Down";
 import coinsLottie from "../../../../public/leaderboard-coins.json";
 import Lottie from "react-lottie";
+import { API_BASE_URL } from "@/utils/constants/api.constant";
 
 export const Leaderboard: React.FC<{
   seasons: MappedSeason[];
   leaderboard: MappedLeaderboard[];
-}> = ({ leaderboard, seasons }) => {
+}> = ({ leaderboard: initialLeaderboard, seasons }) => {
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
   const [selectedSeason, setSelectedSeason] = useState<MappedSeason>(
     seasons[0]
   );
-  const liveSeason = seasons[0];
+  const [loading, setLoading] = useState<boolean>(false);
+  const [leaderboard, setLeaderboard] =
+    useState<MappedLeaderboard[]>(initialLeaderboard);
+
+  const updateLeaderboardHandler = async (season_id: string) => {
+    try {
+      setLoading(true);
+
+      const leaderboardRes = await fetch(
+        `${API_BASE_URL}/leaderboard/${season_id}`,
+        {
+          cache: "no-cache",
+        }
+      );
+      const leaderboardResponse =
+        (await leaderboardRes.json()) as ResponseWithData<MappedLeaderboard[]>;
+
+      if (leaderboardResponse.success) {
+        setLeaderboard(leaderboardResponse.data);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="text-neutral-100 gap-y-6">
@@ -35,48 +65,42 @@ export const Leaderboard: React.FC<{
               key="seasons-dropdown"
               className="bg-neutral-600 mt-2 rounded-lg px-4 max-h-96 overflow-auto"
             >
-              {seasons.map((season, i) => {
-                const isActive: boolean =
-                  liveSeason.season_id === season.season_id;
-                return (
-                  <div
-                    key={season.season_id}
-                    className={`${
-                      isActive ? "bg-neutral-500" : ""
-                    } rounded-lg py-3 px-4 my-4 flex items-center justify-between w-full text-neutral-300 hover:text-neutral-100 transition-all cursor-pointer`}
-                    onClick={() => {
-                      setSelectedSeason(season);
-                      setDropdownOpen(false);
-                    }}
-                  >
-                    <p className="font-medium text-body-1">
-                      Season {seasons.length - i}
-                    </p>
+              {seasons.map((season, i) => (
+                <div
+                  key={season.season_id}
+                  className={`${
+                    selectedSeason.season_id === season.season_id
+                      ? "bg-neutral-500"
+                      : ""
+                  } rounded-lg py-3 px-4 my-4 flex items-center justify-between w-full text-neutral-300 hover:text-neutral-100 transition-all cursor-pointer`}
+                  onClick={() => {
+                    setSelectedSeason(season);
+                    setDropdownOpen(false);
+                    updateLeaderboardHandler(season.season_id);
+                  }}
+                >
+                  <p className="font-medium text-body-1">{season.name}</p>
 
-                    {isActive ? (
-                      <span className="px-3 py-2 font-medium leading-none text-body-4 text-neutral-500 bg-status-success rounded-2xl">
-                        LIVE
-                      </span>
-                    ) : (
-                      <p className="text-body-4">
-                        Ended on {new Date(season.ended_on).getDate()}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
+                  {season.ended_on > new Date().toISOString() ? (
+                    <span className="px-3 py-2 font-medium leading-none text-body-4 text-neutral-500 bg-status-success rounded-2xl">
+                      LIVE
+                    </span>
+                  ) : (
+                    <p className="text-body-4">
+                      Ended on {new Date(season.ended_on).getDate()}
+                    </p>
+                  )}
+                </div>
+              ))}
             </div>,
           ]}
           dropdownClassname="w-full"
         >
           <div className="cursor-pointer border-neutral-400 border rounded-lg p-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
-              Season{" "}
-              {seasons.length -
-                seasons.findIndex(
-                  ({ season_id }) => selectedSeason.season_id === season_id
-                )}
-              {liveSeason.season_id === selectedSeason.season_id && (
+              <span>{selectedSeason.name}</span>
+
+              {selectedSeason.ended_on > new Date().toISOString() && (
                 <span className="px-3 py-2 font-medium leading-none text-body-4 text-neutral-500 bg-status-success rounded-2xl">
                   LIVE
                 </span>
@@ -116,7 +140,13 @@ export const Leaderboard: React.FC<{
         </div>
       </div>
 
-      <LeaderboardTable data={leaderboard} />
+      {loading ? (
+        <p className="text-center py-2 text-body-3 text-neutral-200 bg-neutral-600 rounded-lg mb-2">
+          Curating the leaderboard...
+        </p>
+      ) : (
+        <LeaderboardTable leaderboard={leaderboard} />
+      )}
     </main>
   );
 };

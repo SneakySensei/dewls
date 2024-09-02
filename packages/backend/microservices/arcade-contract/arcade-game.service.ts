@@ -4,7 +4,10 @@ import {
     ARCADE_CONTRACT_ADDRESS,
 } from "../../utils/constants/contracts.constants";
 import { NETWORK_RPC_URL } from "../../utils/constants/network-config.constants";
-import { MappedPlayedGame, MappedUser } from "../../utils/types/mappers.types";
+import {
+    MappedPlayedGame,
+    MappedPlayer,
+} from "../../utils/types/mappers.types";
 import { Contract, ethers } from "ethers";
 
 export class ArcadeService {
@@ -22,8 +25,8 @@ export class ArcadeService {
 
     public static async createGame(
         game_id: MappedPlayedGame["game_id"],
-        player_1_address: MappedUser["wallet_address"],
-        player_2_address: MappedUser["wallet_address"],
+        player_1_address: MappedPlayer["wallet_address"],
+        player_2_address: MappedPlayer["wallet_address"],
         game_tier_id: MappedPlayedGame["game_tier_id"],
         is_betting_active: boolean,
     ) {
@@ -58,8 +61,8 @@ export class ArcadeService {
 
     public static async endGame(
         game_id: MappedPlayedGame["game_id"],
-        winner: MappedUser["wallet_address"],
-        loser: MappedUser["wallet_address"],
+        winner: MappedPlayer["wallet_address"],
+        loser: MappedPlayer["wallet_address"],
     ) {
         try {
             const tx = await this.arcade_contract.endGame(
@@ -78,7 +81,7 @@ export class ArcadeService {
     }
 
     public static async withdrawUserReward(
-        user_address: MappedUser["wallet_address"],
+        user_address: MappedPlayer["wallet_address"],
         amount: number,
     ) {
         try {

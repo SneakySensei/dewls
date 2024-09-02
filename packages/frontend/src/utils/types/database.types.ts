@@ -123,28 +123,28 @@ export type Database = {
             columns: ["player_1_id"]
             isOneToOne: false
             referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "played_games_player_1_id_fkey"
             columns: ["player_1_id"]
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["user_id"]
+            referencedRelation: "players"
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "played_games_player_2_id_fkey"
             columns: ["player_2_id"]
             isOneToOne: false
             referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "played_games_player_2_id_fkey"
             columns: ["player_2_id"]
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["user_id"]
+            referencedRelation: "players"
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "played_games_season_id_fkey"
@@ -158,21 +158,49 @@ export type Database = {
             columns: ["winner_id"]
             isOneToOne: false
             referencedRelation: "leaderboard"
-            referencedColumns: ["user_id"]
+            referencedColumns: ["player_id"]
           },
           {
             foreignKeyName: "played_games_winner_id_fkey"
             columns: ["winner_id"]
             isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["user_id"]
+            referencedRelation: "players"
+            referencedColumns: ["player_id"]
           },
         ]
+      }
+      players: {
+        Row: {
+          created_at: string
+          email_id: string
+          name: string
+          player_id: string
+          profile_photo: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          email_id: string
+          name: string
+          player_id?: string
+          profile_photo: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          email_id?: string
+          name?: string
+          player_id?: string
+          profile_photo?: string
+          wallet_address?: string
+        }
+        Relationships: []
       }
       seasons: {
         Row: {
           created_at: string
           ended_on: string
+          name: string
           reward_pool_usd: number
           season_id: string
           started_on: string
@@ -180,6 +208,7 @@ export type Database = {
         Insert: {
           created_at?: string
           ended_on: string
+          name?: string
           reward_pool_usd?: number
           season_id?: string
           started_on: string
@@ -187,52 +216,58 @@ export type Database = {
         Update: {
           created_at?: string
           ended_on?: string
+          name?: string
           reward_pool_usd?: number
           season_id?: string
           started_on?: string
         }
         Relationships: []
       }
-      users: {
-        Row: {
-          created_at: string
-          email_id: string
-          name: string
-          profile_photo: string
-          user_id: string
-          wallet_address: string
-        }
-        Insert: {
-          created_at?: string
-          email_id: string
-          name: string
-          profile_photo: string
-          user_id?: string
-          wallet_address: string
-        }
-        Update: {
-          created_at?: string
-          email_id?: string
-          name?: string
-          profile_photo?: string
-          user_id?: string
-          wallet_address?: string
-        }
-        Relationships: []
-      }
     }
     Views: {
-      leaderboard: {
+      game_history: {
         Row: {
           created_at: string | null
-          email_id: string | null
+          game_id: string | null
+          game_tier_id: string | null
+          played_game_id: string | null
+          player_1: Json | null
+          player_2: Json | null
+          season_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "played_games_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["game_id"]
+          },
+          {
+            foreignKeyName: "played_games_game_tier_id_fkey"
+            columns: ["game_tier_id"]
+            isOneToOne: false
+            referencedRelation: "game_tiers"
+            referencedColumns: ["tier_id"]
+          },
+          {
+            foreignKeyName: "played_games_season_id_fkey"
+            columns: ["season_id"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["season_id"]
+          },
+        ]
+      }
+      leaderboard: {
+        Row: {
           games_played: number | null
           games_won: number | null
           name: string | null
+          player_id: string | null
           profile_photo: string | null
           season_id: string | null
           total_points: number | null
-          user_id: string | null
           wallet_address: string | null
         }
         Relationships: [

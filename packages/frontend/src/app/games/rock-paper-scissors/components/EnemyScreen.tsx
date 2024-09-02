@@ -12,7 +12,7 @@ export default function EnemyScreen({ gameState }: EnemyScreenProps) {
   const moveState =
     (gameState.state === "roundEnd" || gameState.state === "gameEnd") &&
     gameState.winner_id
-      ? gameState.winner_id === gameState.player.user_id
+      ? gameState.winner_id === gameState.player.player_id
         ? "lose"
         : "win"
       : "idle";

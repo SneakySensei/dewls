@@ -16,7 +16,7 @@ type Props = {
 type PlayerState = {
   currentMove: RockPaperScissors.Move;
   currentScore: number;
-  user_id: string;
+  player_id: string;
 };
 export type GameState =
   | { state: "initial"; player: PlayerState }
@@ -53,7 +53,7 @@ export type GameState =
 export default function Game({ tier }: Props) {
   const { user } = useWeb3AuthContext();
 
-  const player_user_id = user!.data.user_id;
+  const player_user_id = user!.data.player_id;
 
   const reducer = (
     gameState: GameState,
@@ -61,12 +61,16 @@ export default function Game({ tier }: Props) {
   ): GameState => {
     switch (action.type) {
       case "player-joined": {
-        const { room_id, user_id } = action.payload;
-        if (user_id === player_user_id) {
+        const { room_id, player_id } = action.payload;
+        if (player_id === player_user_id) {
           return {
             ...gameState,
             state: "waiting",
-            player: { currentMove: "rock", currentScore: 0, user_id },
+            player: {
+              currentMove: "rock",
+              currentScore: 0,
+              player_id,
+            },
             room_id,
           };
         }
@@ -74,15 +78,15 @@ export default function Game({ tier }: Props) {
           ...gameState,
           state: "waiting",
           room_id,
-          enemy: { currentMove: "rock", currentScore: 0, user_id },
+          enemy: { currentMove: "rock", currentScore: 0, player_id: player_id },
         };
       }
 
       // ? Possible the game start fires before player joined event
       case "game-start": {
         const { round, player1, player2 } = action.payload;
-        const player = player1.user_id === player_user_id ? player1 : player2;
-        const enemy = player1.user_id !== player_user_id ? player1 : player2;
+        const player = player1.player_id === player_user_id ? player1 : player2;
+        const enemy = player1.player_id !== player_user_id ? player1 : player2;
 
         if (gameState.state === "waiting") {
           return {
@@ -92,12 +96,12 @@ export default function Game({ tier }: Props) {
             player: {
               currentMove: "rock",
               currentScore: player.currentScore,
-              user_id: player.user_id,
+              player_id: player.player_id,
             },
             enemy: {
               currentMove: "rock",
               currentScore: enemy.currentScore,
-              user_id: enemy.user_id,
+              player_id: enemy.player_id,
             },
           };
         }
@@ -106,8 +110,8 @@ export default function Game({ tier }: Props) {
       case "round-end": {
         const { round, player1, player2, winner_id } = action.payload;
 
-        const player = player1.user_id === player_user_id ? player1 : player2;
-        const enemy = player1.user_id !== player_user_id ? player1 : player2;
+        const player = player1.player_id === player_user_id ? player1 : player2;
+        const enemy = player1.player_id !== player_user_id ? player1 : player2;
 
         if (
           gameState.state === "ongoingRound" &&
@@ -141,8 +145,8 @@ export default function Game({ tier }: Props) {
       case "game-end": {
         const { player1, player2, round, winner_id } = action.payload;
 
-        const player = player1.user_id === player_user_id ? player1 : player2;
-        const enemy = player1.user_id !== player_user_id ? player1 : player2;
+        const player = player1.player_id === player_user_id ? player1 : player2;
+        const enemy = player1.player_id !== player_user_id ? player1 : player2;
         if (
           gameState.state === "ongoingRound" &&
           player.currentMove &&
@@ -165,7 +169,7 @@ export default function Game({ tier }: Props) {
   };
   const [gameState, dispatch] = useReducer(reducer, {
     state: "initial",
-    player: { currentMove: "rock", currentScore: 0, user_id: player_user_id },
+    player: { currentMove: "rock", currentScore: 0, player_id: player_user_id },
   });
 
   const socketRef = useRef<Socket>(
@@ -223,7 +227,7 @@ export default function Game({ tier }: Props) {
       "join" satisfies RockPaperScissors.JoinEvent["type"],
       {
         season_id: "6dd7cc5f-45ab-42d8-84f9-9bc0a5ff2121",
-        user_id: player_user_id,
+        player_id: player_user_id,
         game_id: RockPaperScissors.gameId,
         tier_id: tier,
       } satisfies RockPaperScissors.JoinEvent["payload"]
@@ -251,7 +255,7 @@ export default function Game({ tier }: Props) {
         {gameState.state === "roundEnd" && (
           <h2 className="text-display-2">
             {gameState.winner_id
-              ? gameState.winner_id === gameState.player.user_id
+              ? gameState.winner_id === gameState.player.player_id
                 ? "You win the round!"
                 : "Enemy wins the round!"
               : "Draw!"}
@@ -259,7 +263,7 @@ export default function Game({ tier }: Props) {
         )}
         {gameState.state === "gameEnd" && (
           <h2 className="text-display-2">
-            {gameState.winner_id === gameState.player.user_id
+            {gameState.winner_id === gameState.player.player_id
               ? "You win!"
               : "Enemy wins!"}
           </h2>

@@ -1,11 +1,11 @@
-import { type MappedUser } from "../../utils/types/mappers.types";
+import { type MappedPlayer } from "../../utils/types/mappers.types";
 import { type PartialYupSchema } from "../../utils/types/shared.types";
 import * as yup from "yup";
 
 export const getUserParams = yup
     .object()
-    .shape<PartialYupSchema<MappedUser>>({
-        user_id: yup.string().trim().required(),
+    .shape<PartialYupSchema<MappedPlayer>>({
+        player_id: yup.string().trim().required(),
     })
     .strict()
     .noUnknown()
@@ -13,7 +13,7 @@ export const getUserParams = yup
 
 export const userAuthBody = yup
     .object()
-    .shape<PartialYupSchema<MappedUser>>({
+    .shape<PartialYupSchema<MappedPlayer>>({
         email_id: yup.string().trim().email().required(),
         profile_photo: yup.string().trim().url().required(),
         name: yup.string().trim().required(),
