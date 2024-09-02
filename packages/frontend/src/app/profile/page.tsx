@@ -12,7 +12,7 @@ import { CHAINS } from "@/utils/constants/chain-config.constant";
 import { web3auth } from "@/utils/service/web3auth.service";
 import { MappedPlayedGame, ResponseWithData } from "@/utils/types";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
-import { API_BASE_URL } from "@/utils/constants/api.constant";
+import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 
 const Profile: React.FC = () => {
   const { user } = useWeb3AuthContext();
@@ -37,7 +37,7 @@ const Profile: React.FC = () => {
         setLoading(true);
 
         const gamesRes = await fetch(
-          `${API_BASE_URL}/played-games/${user.data.player_id}`,
+          `${API_REST_BASE_URL}/played-games/${user.data.player_id}`,
           {
             cache: "no-cache",
           }

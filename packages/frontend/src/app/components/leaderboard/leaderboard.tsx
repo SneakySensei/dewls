@@ -11,7 +11,7 @@ import { useState } from "react";
 import ChevronDown from "@/shared/icons/Chevron-Down";
 import coinsLottie from "../../../../public/leaderboard-coins.json";
 import Lottie from "react-lottie";
-import { API_BASE_URL } from "@/utils/constants/api.constant";
+import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 
 export const Leaderboard: React.FC<{
   seasons: MappedSeason[];
@@ -30,7 +30,7 @@ export const Leaderboard: React.FC<{
       setLoading(true);
 
       const leaderboardRes = await fetch(
-        `${API_BASE_URL}/leaderboard/${season_id}`,
+        `${API_REST_BASE_URL}/leaderboard/${season_id}`,
         {
           cache: "no-cache",
         }

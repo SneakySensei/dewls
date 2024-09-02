@@ -1,4 +1,5 @@
 import { Manager } from "socket.io-client";
+import { API_BASE_URL } from "./constants/api.constant";
 
 export const getSocketManager = () =>
-  new Manager("localhost:8000", { withCredentials: true });
+  new Manager(API_BASE_URL, { withCredentials: true });
