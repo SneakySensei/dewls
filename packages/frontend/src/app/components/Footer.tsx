@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import Image from "next/image";
 
 export default function Footer() {
   const { user } = useWeb3AuthContext();
@@ -20,15 +21,16 @@ export default function Footer() {
   if (!(isGamesListingPage || isLeaderboardPage || isProfilePage)) return <></>;
 
   const profileImage = (
-    <div className="size-7 overflow-hidden rounded-full">
-      <img
+    <figure className="relative size-7 overflow-hidden rounded-full">
+      <Image
         src={
           user?.data.profile_photo ? user?.data.profile_photo : anonImage.src
         }
+        fill
         alt="Profile image"
         className="size-full [image-rendering:pixelated]"
       />
-    </div>
+    </figure>
   );
 
   return (

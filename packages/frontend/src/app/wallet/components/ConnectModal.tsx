@@ -74,7 +74,6 @@ export const ConnectModal: React.FC = () => {
 
         if (!authResponse) return;
         setLoggedIn(true);
-        localStorage.setItem("token", authResponse.token);
         setUser({ data: authResponse.user, token: authResponse.token });
       }
     } catch (error) {

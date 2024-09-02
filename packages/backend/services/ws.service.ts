@@ -20,7 +20,10 @@ export class WSService {
     public static async init(server: Server) {
         this.ioConnection = new WSServer(server, {
             cors: {
-                origin: "*",
+                origin: [
+                    "http://localhost:3000",
+                    "https://dewls-frontend.vercel.app",
+                ],
                 methods: ["GET", "POST"],
                 credentials: true,
             },
