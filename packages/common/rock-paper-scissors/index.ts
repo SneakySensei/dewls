@@ -13,6 +13,16 @@ export type JoinEvent = {
   };
 };
 
+export type StakedEvent = {
+  type: "staked";
+  payload: {
+    player_id: string;
+    game_id: string;
+    tier_id: string;
+    transaction_hash: string;
+  };
+};
+
 export type MoveEvent = {
   type: "move";
   payload: {
@@ -30,6 +40,11 @@ export type PlayerJoinedEvent = {
     player_id: string;
     room_id: string;
   };
+};
+
+export type StakingEvent = {
+  type: "staking";
+  payload: {};
 };
 
 export type GameStartEvent = {
@@ -78,4 +93,5 @@ export type PlayerServerState = {
   currentMove: Move | null;
   currentScore: number;
   player_id: string;
+  staked: boolean;
 };
