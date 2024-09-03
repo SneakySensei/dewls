@@ -1,4 +1,4 @@
-import { RedisService } from "../../services";
+import { EthersService, RedisService } from "../../services";
 import {
     parseStringifiedValues,
     stringifyObjectValues,
@@ -7,6 +7,7 @@ import {
 import {
     addPlayer2ToGame,
     createGame,
+    fetchPlayersDetailsForPlayedGame,
     setWinnerToGame,
 } from "../played-games/played-games.service";
 import {
@@ -35,11 +36,11 @@ export const RockPaperScissorsRoutes = async (
             async ({
                 game_id,
                 tier_id,
+                chain_id,
                 player_id,
             }: RockPaperScissors.JoinEvent["payload"]) => {
-                console.log(1);
                 try {
-                    const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
+                    const roomKey: string = `${season_id}::${game_id}::${tier_id}::${chain_id}`;
                     const logId: string = `[${season_id}][${game_id}][${tier_id}][${player_id}]`;
 
                     let room_id: string | null =
@@ -144,6 +145,18 @@ export const RockPaperScissorsRoutes = async (
                         );
 
                     if (gameState.player1 && gameState.player2) {
+                        const { player_1, player_2 } =
+                            await fetchPlayersDetailsForPlayedGame(room_id);
+
+                        await EthersService.createContractGame(
+                            room_id,
+                            player_1.wallet_address,
+                            player_2.wallet_address,
+                            tier_id,
+                            true,
+                            chain_id,
+                        );
+
                         const stakingEvent: RockPaperScissors.StakingEvent = {
                             type: "staking",
                             payload: {
@@ -214,6 +227,7 @@ export const RockPaperScissorsRoutes = async (
                 move,
                 room_id,
                 player_id,
+                chain_id,
             }: RockPaperScissors.MoveEvent["payload"]) => {
                 try {
                     const gameState =
@@ -287,6 +301,20 @@ export const RockPaperScissorsRoutes = async (
                                 roundEndEvent.payload,
                             );
                         } else {
+                            const { player_1, player_2 } =
+                                await fetchPlayersDetailsForPlayedGame(room_id);
+
+                            await EthersService.endGame(
+                                room_id,
+                                gameState.winner_id === player_1.player_id
+                                    ? player_1.wallet_address
+                                    : player_2.wallet_address,
+                                gameState.winner_id === player_1.player_id
+                                    ? player_2.wallet_address
+                                    : player_1.wallet_address,
+                                chain_id,
+                            );
+
                             await setWinnerToGame(room_id, gameState.winner_id);
 
                             await RedisClient.del(room_id);

@@ -1,4 +1,5 @@
 import * as ConnectFour from "./connect-four";
+import * as Contracts from "./contracts";
 import * as RockPaperScissors from "./rock-paper-scissors";
 
 export const rankOwnRewardPercentage = 50;
@@ -22,4 +23,4 @@ export type ErrorEvent = {
   payload: object;
 };
 
-export { ConnectFour, RockPaperScissors };
+export { ConnectFour, Contracts, RockPaperScissors };

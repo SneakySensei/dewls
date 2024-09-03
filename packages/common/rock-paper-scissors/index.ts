@@ -10,6 +10,7 @@ export type JoinEvent = {
     player_id: string;
     game_id: string;
     tier_id: string;
+    chain_id: number;
   };
 };
 
@@ -28,6 +29,7 @@ export type MoveEvent = {
     player_id: string;
     room_id: string;
     move: Move;
+    chain_id: number;
   };
 };
 

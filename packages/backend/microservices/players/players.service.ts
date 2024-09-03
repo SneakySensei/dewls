@@ -10,7 +10,9 @@ export const createJWToken = (user: MappedPlayer) => {
     return token;
 };
 
-export const fetchUserDetails = async (email_id: MappedPlayer["email_id"]) => {
+export const fetchPlayerDetailsFromEmailId = async (
+    email_id: MappedPlayer["email_id"],
+) => {
     const { data, error } = await SupabaseService.getSupabase()
         .from("players")
         .select()
@@ -18,6 +20,23 @@ export const fetchUserDetails = async (email_id: MappedPlayer["email_id"]) => {
         .single();
 
     if (error && error.code === "23505") {
+        console.error(error);
+        throw error;
+    }
+
+    return data;
+};
+
+export const fetchPlayerDetailsFromUserId = async (
+    player_id: MappedPlayer["player_id"],
+) => {
+    const { data, error } = await SupabaseService.getSupabase()
+        .from("players")
+        .select()
+        .eq("player_id", player_id)
+        .single();
+
+    if (error) {
         console.error(error);
         throw error;
     }

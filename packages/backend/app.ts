@@ -5,7 +5,12 @@ import { playedGamesRouter } from "./microservices/played-games/played-games.rou
 import { playerGameHistoryRouter } from "./microservices/player-game-history/player-game-history.routes";
 import { playersRouter } from "./microservices/players/players.routes";
 import { seasonsRouter } from "./microservices/seasons/seasons.routes";
-import { RedisService, SupabaseService, WSService } from "./services";
+import {
+    EthersService,
+    RedisService,
+    SupabaseService,
+    WSService,
+} from "./services";
 import cors from "cors";
 import "dotenv/config";
 import type { Express, NextFunction, Request, Response } from "express";
@@ -69,6 +74,7 @@ app.use(
             SupabaseService.init(),
             RedisService.init(),
             WSService.init(server),
+            EthersService.init(),
         ]);
         const env: string = process.env.NODE_ENV || "development";
         if (env !== "test") {

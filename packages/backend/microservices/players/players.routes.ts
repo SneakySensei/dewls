@@ -1,7 +1,11 @@
 import { validateQuery } from "../../middlewares/rest";
 import { type MappedPlayer } from "../../utils/types/mappers.types";
 import { getUserParams, userAuthBody } from "./players.schema";
-import { createJWToken, createUser, fetchUserDetails } from "./players.service";
+import {
+    createJWToken,
+    createUser,
+    fetchPlayerDetailsFromEmailId,
+} from "./players.service";
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 
@@ -14,7 +18,7 @@ const handleGetUser = async (
 ) => {
     try {
         const { player_id } = req.params as MappedPlayer;
-        const data = await fetchUserDetails(player_id);
+        const data = await fetchPlayerDetailsFromEmailId(player_id);
         return res.json({
             success: true,
             data,
@@ -32,7 +36,7 @@ const handlerUserAuth = async (
     try {
         const { email_id, name, profile_photo, wallet_address } =
             req.body as MappedPlayer;
-        let user = await fetchUserDetails(email_id);
+        let user = await fetchPlayerDetailsFromEmailId(email_id);
         if (!user) {
             user = await createUser({
                 email_id,
