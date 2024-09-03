@@ -2,20 +2,44 @@
 
 import ChevronDown from "@/shared/icons/Chevron-Down";
 import Dropdown from "./dropdown";
-import { MappedSeason } from "@/utils/types";
-import { useState } from "react";
+import { MappedSeason, ResponseWithData } from "@/utils/types";
+import { useEffect, useState } from "react";
+import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 
-const SeasonDropdown: React.FC<{
-  seasons: MappedSeason[];
-  selectedSeason: MappedSeason;
-  setSelectedSeason: React.Dispatch<
-    React.SetStateAction<MappedSeason | undefined>
-  >;
-  selectedSeasonEnded: boolean;
-}> = ({ seasons, selectedSeason, setSelectedSeason, selectedSeasonEnded }) => {
+const SeasonsDropdown: React.FC<{
+  selectedSeason: MappedSeason | null;
+  setSelectedSeason: React.Dispatch<React.SetStateAction<MappedSeason | null>>;
+}> = ({ selectedSeason, setSelectedSeason }) => {
+  const [seasons, setSeasons] = useState<MappedSeason[] | null>(null);
+
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
-  return (
+  useEffect(() => {
+    (async () => {
+      try {
+        if (!seasons) {
+          const seasonsRes = await fetch(`${API_REST_BASE_URL}/seasons`, {
+            cache: "no-cache",
+          });
+          const seasonsResponse = (await seasonsRes.json()) as ResponseWithData<
+            MappedSeason[]
+          >;
+          if (seasonsResponse.success) {
+            setSeasons(seasonsResponse.data);
+            setSelectedSeason(seasonsResponse.data[0]);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, []);
+
+  return !seasons || !selectedSeason ? (
+    <p className="text-center py-2 text-body-3 text-neutral-200 bg-neutral-600 rounded-lg mb-2">
+      Curating the seasons...
+    </p>
+  ) : (
     <Dropdown
       open={dropdownOpen}
       setOpen={setDropdownOpen}
@@ -60,7 +84,7 @@ const SeasonDropdown: React.FC<{
         <div className="flex items-center gap-4">
           <span>{selectedSeason.name}</span>
 
-          {selectedSeasonEnded && (
+          {selectedSeason.ended_on > new Date().toISOString() && (
             <span className="px-3 py-2 font-medium leading-none text-body-4 text-neutral-500 bg-status-success rounded-2xl">
               LIVE
             </span>
@@ -77,4 +101,4 @@ const SeasonDropdown: React.FC<{
   );
 };
 
-export default SeasonDropdown;
+export default SeasonsDropdown;

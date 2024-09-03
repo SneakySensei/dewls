@@ -5,6 +5,7 @@ import clsx from "clsx";
 import Footer from "./components/Footer";
 import { Web3AuthContextProvider } from "@/utils/context/web3auth.context";
 import Header from "./components/Header";
+import { SelectedChainContextProvider } from "@/utils/context/selected-chain.context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -37,9 +38,11 @@ export default function RootLayout({
         )}
       >
         <Web3AuthContextProvider>
-          <Header />
-          <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
-          <Footer />
+          <SelectedChainContextProvider>
+            <Header />
+            <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
+            <Footer />
+          </SelectedChainContextProvider>
         </Web3AuthContextProvider>
       </body>
     </html>

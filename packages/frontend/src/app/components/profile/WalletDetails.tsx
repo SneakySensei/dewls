@@ -1,43 +1,38 @@
 "use client";
 
 import CopyIcon from "@/shared/icons/CopyIcon";
-import { TOKEN_CONTRACT_ADDRESS } from "@/utils/constants/contracts.constants";
 import { getTokenBalance } from "@/utils/functions/ethers";
 import { web3auth } from "@/utils/service/web3auth.service";
 import { CustomChainConfig } from "@web3auth/base";
 import { useEffect, useState } from "react";
 import { ChainSelector } from "./ChainSelector";
+import { Contracts } from "common";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 
 export const WalletDetails: React.FC<{
   selectedChain: CustomChainConfig;
   setSelectedChain: (chain: CustomChainConfig) => void;
 }> = ({ selectedChain, setSelectedChain }) => {
-  // const { user } = useWeb3AuthContext();
+  const { user } = useWeb3AuthContext();
   const [currentBalance, setCurrentBalance] = useState<string>("0");
-  const user = {
-    email_id: "karanpargal007@gmail.com",
-    name: "Karan Pargal",
-    profile_photo:
-      "https://lh3.googleusercontent.com/a/ACg8ocIJsSTDQXwXlpZTNdu0n6G-EySqxIwKJfUTewSoej7mbMF9ITIH=s96-c",
-    wallet_address: "0xC1931B33dCb6E64da65D2F3c73bcDc42d2f9Ce98",
-    won: 10,
-    played: 20,
-    score: 1000,
-  };
-
-  const fetchBalance = async () => {
-    const balance = await getTokenBalance(
-      web3auth.provider!,
-      user.wallet_address,
-      TOKEN_CONTRACT_ADDRESS[Number(selectedChain.chainId)]
-    );
-    setCurrentBalance(balance);
-  };
 
   useEffect(() => {
-    if (user) {
-      fetchBalance();
-    }
+    (async () => {
+      try {
+        if (!user) {
+          return;
+        }
+
+        const balance = await getTokenBalance(
+          web3auth.provider!,
+          user.data.wallet_address,
+          Contracts.TOKEN_CONTRACT_ADDRESS[Number(selectedChain.chainId)]
+        );
+        setCurrentBalance(balance);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
   }, [selectedChain, user]);
 
   if (!user) {
@@ -59,12 +54,12 @@ export const WalletDetails: React.FC<{
         </p>
         <div className="flex items-center gap-x-2 py-4 my-2 px-8 border-b border-neutral-500">
           <p className="text-body-2 text-neutral-200">
-            {user.wallet_address.toUpperCase()}
+            {user.data.wallet_address.toUpperCase()}
           </p>
           <CopyIcon
             className="cursor-pointer"
             onClick={() => {
-              navigator.clipboard.writeText(user.wallet_address);
+              navigator.clipboard.writeText(user.data.wallet_address);
             }}
           />
         </div>

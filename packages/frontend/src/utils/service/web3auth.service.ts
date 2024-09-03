@@ -1,10 +1,10 @@
-import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
-import { CHAIN_CONFIG } from "../constants/chain-config.constant";
 import { WEB3AUTH_NETWORK } from "@web3auth/base";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import { Web3Auth } from "@web3auth/modal";
+import { Contracts } from "common";
 
 const privateKeyProvider = new EthereumPrivateKeyProvider({
-  config: { chainConfig: CHAIN_CONFIG[31] },
+  config: { chainConfig: Contracts.CHAIN_CONFIG[31] },
 });
 
 const web3auth = new Web3Auth({

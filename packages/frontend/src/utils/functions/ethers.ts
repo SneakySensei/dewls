@@ -1,8 +1,8 @@
 import { IProvider } from "@web3auth/base";
+import { Contracts } from "common";
 import { ethers } from "ethers";
 import { createWalletClient, custom, WalletClient } from "viem";
 import { sepolia } from "viem/chains";
-import { ERC_20_ABI } from "../constants/contracts.constants";
 
 export const getWalletClient = async (
   provider: IProvider
@@ -33,7 +33,7 @@ export const getTokenBalance = async (
   const walletClient = new ethers.BrowserProvider(provider);
   const contract = new ethers.Contract(
     tokenAddress,
-    ERC_20_ABI,
+    Contracts.ERC_20_ABI,
     walletClient.provider
   );
   const balance = await contract.balanceOf(walletAddress);

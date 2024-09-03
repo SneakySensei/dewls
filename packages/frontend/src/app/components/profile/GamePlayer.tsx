@@ -7,7 +7,8 @@ export const GamePlayer: React.FC<{
   won: boolean;
   name: string;
   wallet_address: string;
-}> = ({ profile_photo, won, name, wallet_address }) => {
+  you: boolean;
+}> = ({ profile_photo, won, name, wallet_address, you }) => {
   return (
     <div className="flex flex-col items-center w-full gap-2 relative">
       {won && (
@@ -32,7 +33,7 @@ export const GamePlayer: React.FC<{
 
       <div className="text-center">
         <h3
-          className={`${won ? "text-brand-400" : ""} text-body-1 font-medium`}
+          className={`${you ? "text-brand-400" : ""} text-body-1 font-medium`}
         >
           {name}
         </h3>

@@ -1,21 +1,16 @@
-import ethers from "ethers";
-import { Eip1193Provider } from "ethers";
-import { Contract } from "ethers";
-import {
-  ARCADE_ABI,
-  ARCADE_CONTRACT_ADDRESS,
-} from "../constants/contracts.constants";
+import { Contracts } from "common";
+import ethers, { Contract, Eip1193Provider } from "ethers";
 
 export class ArcadeService {
-  public static arcade_contract: Contract;
-  public static provider: ethers.BrowserProvider;
+  private static provider: ethers.BrowserProvider;
+  private static arcade_contract: Contract;
 
   public static async init(provider: Eip1193Provider) {
     this.provider = new ethers.BrowserProvider(provider);
     const chain_id = await provider.request({ method: "eth_chainId" });
     this.arcade_contract = new ethers.Contract(
-      ARCADE_CONTRACT_ADDRESS[chain_id],
-      ARCADE_ABI,
+      Contracts.ARCADE_CONTRACT_ADDRESS[chain_id],
+      Contracts.ARCADE_ABI,
       this.provider
     );
   }

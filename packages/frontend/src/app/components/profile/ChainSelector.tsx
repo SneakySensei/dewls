@@ -1,12 +1,12 @@
 "use client";
 
-import { CHAINS } from "@/utils/constants/chain-config.constant";
 import Dropdown from "../shared/dropdown";
 import { useState } from "react";
 import { CustomChainConfig } from "@web3auth/base";
 import ChevronDown from "@/shared/icons/Chevron-Down";
 import Image from "next/image";
 import { web3auth } from "@/utils/service/web3auth.service";
+import { Contracts } from "common";
 
 export const ChainSelector: React.FC<{
   selectedChain: CustomChainConfig;
@@ -33,7 +33,7 @@ export const ChainSelector: React.FC<{
             key="chains-dropdown"
             className="bg-neutral-600 mt-2 rounded-lg px-4 max-h-96 overflow-auto"
           >
-            {CHAINS.map((chain, i) => {
+            {Contracts.CHAINS.map((chain, i) => {
               const isSelectedChain: boolean =
                 // @ts-ignore
                 web3auth.walletAdapters.openlogin?.chainConfig.chainId ===

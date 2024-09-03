@@ -9,6 +9,7 @@ import EnemyScreen from "./EnemyScreen";
 import PlayerScreen from "./PlayerScreen";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import dynamic from "next/dynamic";
+import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 
 type Props = {
   tier: TIERS_IDS;
@@ -55,6 +56,7 @@ export default dynamic(
   () =>
     Promise.resolve(function Game({ tier }: Props) {
       const { user } = useWeb3AuthContext();
+      const { selectedChain } = useSelectedChainContext();
 
       const player_user_id = user!.data.player_id;
       const player_token = user!.token;
@@ -248,6 +250,7 @@ export default dynamic(
             player_id: player_user_id,
             game_id: RockPaperScissors.gameId,
             tier_id: tier,
+            chain_id: parseInt(selectedChain.chainId, 16),
           } satisfies RockPaperScissors.JoinEvent["payload"]
         );
 

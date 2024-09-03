@@ -10,9 +10,15 @@ export const fetchPlayerHistoryForSeason = async (
     season_id: MappedPlayerGameHistory["season_id"],
 ): Promise<{
     player_game_history: MappedPlayerGameHistory[];
-    rank: MappedLeaderboard["rank"];
+    season_statistics: {
+        games_played: MappedLeaderboard["games_played"];
+        games_won: MappedLeaderboard["games_won"];
+        rank: MappedLeaderboard["rank"];
+        total_points: MappedLeaderboard["total_points"];
+    };
 }> => {
-    const { rank } = await fetchPlayerInSeasonLeaderboard(player_id, season_id);
+    const { games_played, games_won, rank, total_points } =
+        await fetchPlayerInSeasonLeaderboard(player_id, season_id);
     const { data: historyData, error: historyError } =
         await SupabaseService.getSupabase()
             .from("player_game_history")
@@ -27,6 +33,11 @@ export const fetchPlayerHistoryForSeason = async (
 
     return {
         player_game_history: historyData,
-        rank,
+        season_statistics: {
+            rank,
+            games_played,
+            games_won,
+            total_points,
+        },
     };
 };
