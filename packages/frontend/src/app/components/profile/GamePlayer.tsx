@@ -3,7 +3,7 @@ import { truncate } from "@/utils/functions/truncate";
 import Image from "next/image";
 
 export const GamePlayer: React.FC<{
-  profile_photo: string;
+  profile_photo: string | null;
   won: boolean;
   name: string;
   wallet_address: string;
@@ -22,13 +22,15 @@ export const GamePlayer: React.FC<{
           won ? "border-semantic-launch" : "border-transparent"
         } border rounded-full`}
       >
-        <Image
-          alt=""
-          src={profile_photo}
-          height={80}
-          width={80}
-          className="rounded-full border-8 p-2 bg-neutral-500 border-neutral-500"
-        />
+        {profile_photo && (
+          <Image
+            alt=""
+            src={profile_photo}
+            height={80}
+            width={80}
+            className="rounded-full border-8 p-2 bg-neutral-500 border-neutral-500"
+          />
+        )}
       </figure>
 
       <div className="text-center">

@@ -7,6 +7,7 @@ import { Socket } from "socket.io-client";
 import { GameState } from "./Game";
 import Image from "next/image";
 import MoveImage, { MOVE_IMAGE_MAP } from "./MoveImage";
+import PlayerGameView from "@/shared/PlayerGameView";
 
 type PlayerScreenProps = {
   gameState: GameState;
@@ -69,38 +70,41 @@ export default function PlayerScreen({
           </div>
           <MoveImage move={player.currentMove} state={moveState} />
 
-          {/* CONTROLS */}
-          <AnimatePresence>
-            {gameState.state === "ongoingRound" && (
-              <motion.section
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-                transition={{ staggerChildren: 0.1 }}
-                className="p-2 space-y-3 absolute w-auto overflow-x-hidden right-0 top-1/2 -translate-y-1/2"
-              >
-                {(
-                  [
-                    "rock",
-                    "paper",
-                    "scissors",
-                  ] satisfies RockPaperScissors.Move[]
-                ).map((action) => (
-                  <motion.button
-                    variants={{
-                      hidden: { x: "100%", opacity: 0 },
-                      show: { x: 0, opacity: 1 },
-                    }}
-                    key={action}
-                    className="block bg-black/50 border border-neutral-400 shadow-md rounded-full size-14 p-2"
-                    onClick={() => handleMove(action)}
-                  >
-                    <Image alt={action} src={MOVE_IMAGE_MAP[action]} />
-                  </motion.button>
-                ))}
-              </motion.section>
-            )}
-          </AnimatePresence>
+          <section className="p-2 bottom-0 absolute right-0">
+            {/* CONTROLS */}
+            <AnimatePresence>
+              {gameState.state === "ongoingRound" && (
+                <motion.section
+                  initial="hidden"
+                  animate="show"
+                  exit="hidden"
+                  transition={{ staggerChildren: 0.1 }}
+                  className="space-y-3 w-auto overflow-x-hidden"
+                >
+                  {(
+                    [
+                      "rock",
+                      "paper",
+                      "scissors",
+                    ] satisfies RockPaperScissors.Move[]
+                  ).map((action) => (
+                    <motion.button
+                      variants={{
+                        hidden: { x: "100%", opacity: 0 },
+                        show: { x: 0, opacity: 1 },
+                      }}
+                      key={action}
+                      className="block bg-black/50 border border-neutral-400 shadow-md rounded-full size-14 p-2"
+                      onClick={() => handleMove(action)}
+                    >
+                      <Image alt={action} src={MOVE_IMAGE_MAP[action]} />
+                    </motion.button>
+                  ))}
+                </motion.section>
+              )}
+            </AnimatePresence>
+            <PlayerGameView user_id={player.player_id} timerSeconds={10} />
+          </section>
         </>
       )}
       {!player && (

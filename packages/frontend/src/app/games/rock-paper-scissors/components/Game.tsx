@@ -10,6 +10,7 @@ import PlayerScreen from "./PlayerScreen";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import dynamic from "next/dynamic";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
+import Dialog from "@/shared/Dialog";
 
 type Props = {
   tier: TIERS_IDS;
@@ -27,6 +28,13 @@ export type GameState =
       room_id: string;
       player?: PlayerState;
       enemy?: PlayerState;
+    }
+  | {
+      state: "staking";
+      room_id: string;
+      round: number;
+      player: PlayerState;
+      enemy: PlayerState;
     }
   | {
       state: "ongoingRound";
@@ -91,6 +99,33 @@ export default dynamic(
               },
             };
           }
+          case "staking": {
+            const { round, player1, player2 } = action.payload;
+            const player =
+              player1.player_id === player_user_id ? player1 : player2;
+            const enemy =
+              player1.player_id !== player_user_id ? player1 : player2;
+
+            if (gameState.state === "waiting") {
+              return {
+                ...gameState,
+                state: "staking",
+                round,
+                player: {
+                  currentMove: "rock",
+                  currentScore: player.currentScore,
+                  player_id: player.player_id,
+                },
+                enemy: {
+                  currentMove: "rock",
+                  currentScore: enemy.currentScore,
+                  player_id: enemy.player_id,
+                },
+              };
+            }
+
+            break;
+          }
 
           // ? Possible the game start fires before player joined event
           case "game-start": {
@@ -100,7 +135,7 @@ export default dynamic(
             const enemy =
               player1.player_id !== player_user_id ? player1 : player2;
 
-            if (gameState.state === "waiting") {
+            if (gameState.state === "staking") {
               return {
                 ...gameState,
                 state: "ongoingRound",
@@ -243,6 +278,7 @@ export default dynamic(
             dispatch({ type: "game-end", payload });
           }
         );
+        console.log("selectedChain", selectedChain);
 
         socket.emit(
           "join" satisfies RockPaperScissors.JoinEvent["type"],
@@ -290,6 +326,21 @@ export default dynamic(
               </h2>
             )}
           </section>
+
+          {/* Staking logic */}
+          <Dialog>
+            <Dialog.DialogContent>
+              <Dialog.DialogHeader>
+                <Dialog.DialogTitle>
+                  Are you absolutely sure?
+                </Dialog.DialogTitle>
+                <Dialog.DialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  your account and remove your data from our servers.
+                </Dialog.DialogDescription>
+              </Dialog.DialogHeader>
+            </Dialog.DialogContent>
+          </Dialog>
         </main>
       );
     }),

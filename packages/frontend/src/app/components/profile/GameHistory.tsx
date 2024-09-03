@@ -34,7 +34,7 @@ export const GameHistory: React.FC<{
 
         <GamePlayer
           you={false}
-          profile_photo={playedGame.enemy_profile_photo!}
+          profile_photo={playedGame.enemy_profile_photo}
           won={!won}
           name={playedGame.enemy_name!}
           wallet_address={playedGame.enemy_wallet_address!}

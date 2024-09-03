@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ethsign/sp-sdk": "^0.7.2",
+    "@radix-ui/react-dialog": "^1.1.1",
     "@tsparticles/engine": "^3.5.0",
     "@tsparticles/react": "^3.0.0",
     "@tsparticles/slim": "^3.5.0",

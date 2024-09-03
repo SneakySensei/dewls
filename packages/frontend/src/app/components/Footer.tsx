@@ -28,7 +28,10 @@ export default function Footer() {
         }
         fill
         alt="Profile image"
-        className="size-full [image-rendering:pixelated]"
+        className={clsx(
+          "size-full",
+          !user?.data.profile_photo && "[image-rendering:pixelated]"
+        )}
       />
     </figure>
   );

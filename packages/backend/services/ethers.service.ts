@@ -34,7 +34,7 @@ export class EthersService {
             const contract = new ethers.Contract(
                 Contracts.ARCADE_CONTRACT_ADDRESS[chainIdNum],
                 Contracts.ARCADE_ABI,
-                wallet.provider,
+                wallet,
             );
 
             this.config[chainIdNum] = {
