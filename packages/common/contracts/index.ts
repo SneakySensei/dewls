@@ -17,9 +17,9 @@ export const ARCADE_ABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "string",
         name: "gameId",
-        type: "uint256",
+        type: "string",
       },
       {
         indexed: true,
@@ -42,9 +42,9 @@ export const ARCADE_ABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "string",
         name: "gameId",
-        type: "uint256",
+        type: "string",
       },
       {
         indexed: true,
@@ -73,9 +73,9 @@ export const ARCADE_ABI = [
     inputs: [
       {
         indexed: true,
-        internalType: "uint256",
+        internalType: "string",
         name: "gameId",
-        type: "uint256",
+        type: "string",
       },
       {
         indexed: true,
@@ -87,6 +87,18 @@ export const ARCADE_ABI = [
         indexed: false,
         internalType: "uint256",
         name: "reward",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "betAmount",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "winPercentage",
         type: "uint256",
       },
     ],
@@ -143,6 +155,37 @@ export const ARCADE_ABI = [
       {
         indexed: true,
         internalType: "address",
+        name: "_1stPlaceAddress",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "_2ndPlaceAddress",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "_3rdPlaceAddress",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "totalAmount",
+        type: "uint256",
+      },
+    ],
+    name: "PrizeDistributed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "user",
         type: "address",
       },
@@ -158,6 +201,11 @@ export const ARCADE_ABI = [
   },
   {
     inputs: [
+      {
+        internalType: "string",
+        name: "_gameId",
+        type: "string",
+      },
       {
         internalType: "address",
         name: "_player1",
@@ -182,9 +230,9 @@ export const ARCADE_ABI = [
     name: "createGame",
     outputs: [
       {
-        internalType: "uint256",
+        internalType: "string",
         name: "",
-        type: "uint256",
+        type: "string",
       },
     ],
     stateMutability: "nonpayable",
@@ -193,9 +241,9 @@ export const ARCADE_ABI = [
   {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "string",
         name: "_gameId",
-        type: "uint256",
+        type: "string",
       },
       {
         internalType: "address",
@@ -214,28 +262,20 @@ export const ARCADE_ABI = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "gameCounter",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
-        internalType: "uint256",
+        internalType: "string",
         name: "",
-        type: "uint256",
+        type: "string",
       },
     ],
     name: "games",
     outputs: [
+      {
+        internalType: "string",
+        name: "gameId",
+        type: "string",
+      },
       {
         internalType: "address",
         name: "player1",
@@ -275,67 +315,6 @@ export const ARCADE_ABI = [
         internalType: "bool",
         name: "isGameOver",
         type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_gameId",
-        type: "uint256",
-      },
-    ],
-    name: "getGameDetails",
-    outputs: [
-      {
-        components: [
-          {
-            internalType: "address",
-            name: "player1",
-            type: "address",
-          },
-          {
-            internalType: "address",
-            name: "player2",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "betAmount",
-            type: "uint256",
-          },
-          {
-            internalType: "bool",
-            name: "isBettingActive",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "player1Deposit",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "player2Deposit",
-            type: "bool",
-          },
-          {
-            internalType: "address",
-            name: "winner",
-            type: "address",
-          },
-          {
-            internalType: "bool",
-            name: "isGameOver",
-            type: "bool",
-          },
-        ],
-        internalType: "struct Arcade.Game",
-        name: "",
-        type: "tuple",
       },
     ],
     stateMutability: "view",
@@ -387,11 +366,24 @@ export const ARCADE_ABI = [
     type: "function",
   },
   {
-    inputs: [
+    inputs: [],
+    name: "ownerPool",
+    outputs: [
       {
         internalType: "uint256",
-        name: "_gameId",
+        name: "",
         type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "_gameId",
+        type: "string",
       },
       {
         internalType: "uint256",
@@ -519,6 +511,34 @@ export const ARCADE_ABI = [
       },
     ],
     name: "withdrawReward",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_1stPlaceAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_2ndPlaceAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_3rdPlaceAddress",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "_amount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawRewardPool",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -761,9 +781,9 @@ export const TOKEN_CONTRACT_ADDRESS: { [chainId: number]: string } = {
 };
 
 export const NETWORK_RPC_URL: { [chainId: number]: string } = {
-  296: "0x0e76A3D0B12385a030525b4252A775b4437fFaa7", // * Hedera
-  31: "0x24C6434B4779Cecd89075A936d11fd6Aec055166", // * Rootstock
-  2810: "0x9E12AD42c4E4d2acFBADE01a96446e48e6764B98", // * Morph L2
+  296: "https://testnet.hashio.io/api", // * Hedera
+  31: "https://public-node.testnet.rsk.co", // * Rootstock
+  2810: "https://rpc-quicknode-holesky.morphl2.io", // * Morph L2
 };
 
 export const CHAIN_CONFIG: { [key: number]: CustomChainConfig } = {
