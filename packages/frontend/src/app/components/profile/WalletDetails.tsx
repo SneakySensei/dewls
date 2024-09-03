@@ -6,10 +6,12 @@ import { getTokenBalance } from "@/utils/functions/ethers";
 import { web3auth } from "@/utils/service/web3auth.service";
 import { CustomChainConfig } from "@web3auth/base";
 import { useEffect, useState } from "react";
+import { ChainSelector } from "./ChainSelector";
 
 export const WalletDetails: React.FC<{
   selectedChain: CustomChainConfig;
-}> = ({ selectedChain }) => {
+  setSelectedChain: (chain: CustomChainConfig) => void;
+}> = ({ selectedChain, setSelectedChain }) => {
   // const { user } = useWeb3AuthContext();
   const [currentBalance, setCurrentBalance] = useState<string>("0");
   const user = {
@@ -44,6 +46,13 @@ export const WalletDetails: React.FC<{
 
   return (
     <>
+      <h3 className="text-heading-3 text-neutral-300 my-2 mx-4">
+        Wallet Details
+      </h3>
+      <ChainSelector
+        selectedChain={selectedChain}
+        setSelectedChain={setSelectedChain}
+      />
       <div className="flex flex-col justify-center items-center border border-neutral-400 mx-4 rounded-lg">
         <p className="text-body-1 text-neutral-100 bg-neutral-600 px-4 py-2 w-full rounded-t-lg">
           Connected Wallet

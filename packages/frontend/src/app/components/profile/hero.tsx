@@ -31,31 +31,6 @@ export const ProfileHero: React.FC = () => {
           <p className="text-neutral-300 text-body-3">{user.data.email_id}</p>
         </div>
       </div>
-
-      <div className="flex justify-center items-center border border-neutral-400 p-4 mx-4 rounded-lg">
-        {[
-          {
-            heading: "Won",
-            value: "user.data.won",
-          },
-          {
-            heading: "Played",
-            value: "user.data.played",
-          },
-          {
-            heading: "Score",
-            value: "user.data.score",
-          },
-        ].map(({ heading, value }) => (
-          <div
-            key={heading}
-            className="flex-1 flex-col gap-y-1 text-center border-r last:border-r-0"
-          >
-            <p className="text-neutral-300 text-body-3">{heading}</p>
-            <p className="text-neutral-100 text-body-1">{value}</p>
-          </div>
-        ))}
-      </div>
     </>
   );
 };
