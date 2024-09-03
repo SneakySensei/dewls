@@ -5,6 +5,7 @@ import {
     createJWToken,
     createUser,
     fetchPlayerDetailsFromEmailId,
+    fetchPlayerDetailsFromUserId,
 } from "./players.service";
 import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
@@ -18,7 +19,7 @@ const handleGetUser = async (
 ) => {
     try {
         const { player_id } = req.params as MappedPlayer;
-        const data = await fetchPlayerDetailsFromEmailId(player_id);
+        const data = await fetchPlayerDetailsFromUserId(player_id);
         return res.json({
             success: true,
             data,
