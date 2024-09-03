@@ -153,7 +153,6 @@ export const RockPaperScissorsRoutes = async (
                             player_1.wallet_address,
                             player_2.wallet_address,
                             tier_id,
-                            true,
                             chain_id,
                         );
 

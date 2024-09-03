@@ -56,7 +56,6 @@ export class EthersService {
         player_1_address: MappedPlayer["wallet_address"],
         player_2_address: MappedPlayer["wallet_address"],
         game_tier_id: MappedPlayedGame["game_tier_id"],
-        is_betting_active: boolean,
         chain_id: MappedPlayedGame["chain_id"],
     ) {
         try {
@@ -67,7 +66,7 @@ export class EthersService {
                 player_1_address,
                 player_2_address,
                 BigInt(usd_amount * Math.pow(10, 6)),
-                is_betting_active,
+                usd_amount === 0 ? false : true,
             );
 
             await tx.wait();
