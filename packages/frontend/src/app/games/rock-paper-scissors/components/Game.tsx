@@ -10,7 +10,7 @@ import PlayerScreen from "./PlayerScreen";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import dynamic from "next/dynamic";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
-import Dialog from "@/shared/Dialog";
+import StakingModal from "@/shared/StakingModal";
 
 type Props = {
   tier: TIERS_IDS;
@@ -258,6 +258,12 @@ export default dynamic(
           }
         );
         socket.on(
+          "staking" satisfies RockPaperScissors.StakingEvent["type"],
+          (payload: RockPaperScissors.StakingEvent["payload"]) => {
+            dispatch({ type: "staking", payload });
+          }
+        );
+        socket.on(
           "game-start" satisfies RockPaperScissors.GameStartEvent["type"],
           (payload: RockPaperScissors.GameStartEvent["payload"]) => {
             dispatch({ type: "game-start", payload });
@@ -294,7 +300,6 @@ export default dynamic(
           socket.disconnect();
         };
       }, []);
-
       return (
         <main className="relative h-full flex flex-col bg-neutral-100">
           <EnemyScreen gameState={gameState} />
@@ -327,20 +332,21 @@ export default dynamic(
             )}
           </section>
 
-          {/* Staking logic */}
-          <Dialog>
-            <Dialog.DialogContent>
-              <Dialog.DialogHeader>
-                <Dialog.DialogTitle>
-                  Are you absolutely sure?
-                </Dialog.DialogTitle>
-                <Dialog.DialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </Dialog.DialogDescription>
-              </Dialog.DialogHeader>
-            </Dialog.DialogContent>
-          </Dialog>
+          <StakingModal
+            open={gameState.state === "staking"}
+            onSuccess={() => {
+              if (gameState.state !== "staking") return;
+
+              socketRef.current.emit(
+                "staked" satisfies RockPaperScissors.StakedEvent["type"],
+                {
+                  player_id: player_user_id,
+                  tier_id: tier,
+                  room_id: gameState.room_id,
+                } satisfies RockPaperScissors.StakedEvent["payload"]
+              );
+            }}
+          />
         </main>
       );
     }),

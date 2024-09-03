@@ -34,16 +34,20 @@ export default function RootLayout({
         className={clsx(
           inter.variable,
           bigShouldersDisplay.variable,
-          "h-screen mx-auto font-sans max-w-lg bg-neutral-800 text-neutral-100 flex flex-col"
+          "h-screen font-sans bg-neutral-800 text-neutral-100"
         )}
       >
-        <Web3AuthContextProvider>
-          <SelectedChainContextProvider>
-            <Header />
-            <div className="flex-1 min-h-0 overflow-y-auto">{children}</div>
-            <Footer />
-          </SelectedChainContextProvider>
-        </Web3AuthContextProvider>
+        <div className="mx-auto max-w-lg h-full flex flex-col">
+          <Web3AuthContextProvider>
+            <SelectedChainContextProvider>
+              <Header />
+              <div className="flex-1 min-h-0 overflow-y-auto relative">
+                {children}
+              </div>
+              <Footer />
+            </SelectedChainContextProvider>
+          </Web3AuthContextProvider>
+        </div>
       </body>
     </html>
   );

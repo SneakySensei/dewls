@@ -8,6 +8,7 @@ import { GameState } from "./Game";
 import Image from "next/image";
 import MoveImage, { MOVE_IMAGE_MAP } from "./MoveImage";
 import PlayerGameView from "@/shared/PlayerGameView";
+import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 
 type PlayerScreenProps = {
   gameState: GameState;
@@ -20,6 +21,7 @@ export default function PlayerScreen({
   socket,
   tier,
 }: PlayerScreenProps) {
+  const { selectedChain } = useSelectedChainContext();
   const { provider } = useWeb3AuthContext();
 
   const handleMove = (move: RockPaperScissors.Move) => {
@@ -30,6 +32,7 @@ export default function PlayerScreen({
         room_id: gameState.room_id,
         player_id: gameState.player.player_id,
         move,
+        chain_id: parseInt(selectedChain.chainId, 16),
       },
     };
     socket.emit(moveEvent.type, moveEvent.payload);
@@ -64,16 +67,15 @@ export default function PlayerScreen({
       <span className="absolute -z-10 bg-polkadots inset-0 bg-fixed" />
       {player && (
         <>
-          <div className="absolute bottom-0 left-0 w-full h-auto">
-            <h1>Player 1</h1>
-            <pre>{JSON.stringify(player, null, 2)}</pre>
+          <div className="absolute top-0 left-0 w-full h-auto">
+            <pre>{JSON.stringify(gameState, null, 2)}</pre>
           </div>
           <MoveImage move={player.currentMove} state={moveState} />
 
-          <section className="p-2 bottom-0 absolute right-0">
+          <section className="p-2 bottom-0 absolute right-0 flex flex-col gap-y-6 items-end">
             {/* CONTROLS */}
             <AnimatePresence>
-              {gameState.state === "ongoingRound" && (
+              {gameState.state !== "ongoingRound" && (
                 <motion.section
                   initial="hidden"
                   animate="show"
@@ -103,7 +105,11 @@ export default function PlayerScreen({
                 </motion.section>
               )}
             </AnimatePresence>
-            <PlayerGameView user_id={player.player_id} timerSeconds={10} />
+            <PlayerGameView
+              user_id={player.player_id}
+              timerSeconds={10}
+              showTimer={gameState.state === "ongoingRound"}
+            />
           </section>
         </>
       )}

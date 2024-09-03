@@ -1,6 +1,7 @@
 import { GameState } from "./Game";
 import { motion } from "framer-motion";
 import MoveImage from "./MoveImage";
+import PlayerGameView from "@/shared/PlayerGameView";
 
 type EnemyScreenProps = {
   gameState: GameState;
@@ -22,12 +23,11 @@ export default function EnemyScreen({ gameState }: EnemyScreenProps) {
       <span className="absolute -z-10 bg-polkadots inset-0 bg-fixed" />
       {enemy && (
         <>
-          <div className="absolute top-0 left-0 w-full h-auto">
-            <h1>Player 2</h1>
-            <pre>{JSON.stringify(gameState, null, 2)}</pre>
-          </div>
-
           <MoveImage move={enemy.currentMove} isEnemy state={moveState} />
+
+          <section className="p-2 top-0 absolute left-0 flex flex-col gap-y-6 items-end">
+            <PlayerGameView user_id={enemy.player_id} timerSeconds={10} />
+          </section>
         </>
       )}
 
