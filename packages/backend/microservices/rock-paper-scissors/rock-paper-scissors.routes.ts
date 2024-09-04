@@ -10,7 +10,10 @@ import {
     fetchPlayersDetailsForPlayedGame,
     setWinnerToGame,
 } from "../played-games/played-games.service";
-import { fetchCurrentSeason } from "../seasons/seasons.service";
+import {
+    addMoneyToSeasonPool,
+    fetchCurrentSeason,
+} from "../seasons/seasons.service";
 import { RockPaperScissors } from "common";
 import { type Namespace, type Socket } from "socket.io";
 
@@ -222,8 +225,7 @@ export const RockPaperScissorsRoutes = async (
                         updatedGameState.player1.staked &&
                         updatedGameState.player2.staked
                     ) {
-                        // FIXME: Breaking server
-                        // await addMoneyToSeasonPool(season_id, tier_id);
+                        await addMoneyToSeasonPool(season_id, tier_id);
 
                         const gameStartEvent: RockPaperScissors.GameStartEvent =
                             {

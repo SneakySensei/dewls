@@ -1,5 +1,6 @@
 import { SupabaseService } from "../../services";
 import { MappedGameTier, MappedSeason } from "../../utils/types/mappers.types";
+import { gameBetPoolPercentage } from "common";
 
 export const fetchAllSeasons = async () => {
     const { data, error } = await SupabaseService.getSupabase()
@@ -50,9 +51,8 @@ export const addMoneyToSeasonPool = async (
     const { data: seasonReadData, error: seasonReadError } =
         await SupabaseService.getSupabase()
             .from("seasons")
-            .update({})
-            .eq("season_id", season_id)
             .select()
+            .eq("season_id", season_id)
             .single();
 
     if (seasonReadError) {
@@ -60,12 +60,15 @@ export const addMoneyToSeasonPool = async (
         throw seasonReadError;
     }
 
+    const updatedPoolUsd =
+        seasonReadData.reward_pool_usd +
+        (gameBetPoolPercentage * tierData.usd_amount) / 100;
+
     const { data: seasonWriteData, error: seasonWriteError } =
         await SupabaseService.getSupabase()
             .from("seasons")
             .update({
-                reward_pool_usd:
-                    seasonReadData.reward_pool_usd + tierData.usd_amount,
+                reward_pool_usd: updatedPoolUsd,
             })
             .eq("season_id", season_id)
             .select()

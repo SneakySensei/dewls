@@ -2,6 +2,10 @@ import * as ConnectFour from "./connect-four";
 import * as Contracts from "./contracts";
 import * as RockPaperScissors from "./rock-paper-scissors";
 
+export const gameBetWinnerPercentage = 60;
+export const gameBetPoolPercentage = 20;
+export const gameBetCommissionPercentage = 20;
+
 export const rankOwnRewardPercentage = 50;
 export const rankTwoRewardPercentage = 35;
 export const rankThreeRewardPercentage = 15;
