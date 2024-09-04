@@ -1,23 +1,30 @@
 "use client";
 
 import { ProfileHero, WalletDetails } from "../components/profile";
-import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import SeasonStats from "../components/profile/SeasonStats";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const Profile: React.FC = () => {
-  const { selectedChain, setSelectedChain } = useSelectedChainContext();
+    const { user } = useWeb3AuthContext();
 
-  return (
-    <main className="text-neutral-100 flex flex-col gap-y-4 pb-10">
-      <ProfileHero />
-      <WalletDetails
-        selectedChain={selectedChain}
-        setSelectedChain={setSelectedChain}
-      />
+    const router = useRouter();
 
-      <SeasonStats />
-    </main>
-  );
+    useEffect(() => {
+        if (!user) router.replace("/");
+    }, []);
+
+    if (!user) return null;
+
+    return (
+        <main className="flex flex-col gap-y-4 pb-10 text-neutral-100">
+            <ProfileHero />
+            <WalletDetails />
+
+            <SeasonStats />
+        </main>
+    );
 };
 
 export default Profile;

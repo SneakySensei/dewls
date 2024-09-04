@@ -7,9 +7,9 @@ import { useRef, useState } from "react";
 type Props = {
     onSuccess: () => void;
     open: boolean;
-    tier: TIERS_IDS;
+    tier_id: string;
 };
-export default function StakingModal({ onSuccess, open, tier }: Props) {
+export default function StakingModal({ onSuccess, open, tier_id }: Props) {
     const [stakingInProgress, setStakingInProgress] = useState(false);
     const portalRef = useRef<HTMLDivElement>(null);
 
@@ -51,11 +51,11 @@ export default function StakingModal({ onSuccess, open, tier }: Props) {
                             ) : (
                                 <Button onClick={handleStake}>
                                     Stake{" "}
-                                    {tier === TIERS_IDS.ALPHA
+                                    {tier_id === TIERS_IDS.ALPHA
                                         ? "$10"
-                                        : tier === TIERS_IDS.BETA
+                                        : tier_id === TIERS_IDS.BETA
                                           ? "$5"
-                                          : tier === TIERS_IDS.GAMMA
+                                          : tier_id === TIERS_IDS.GAMMA
                                             ? "$1"
                                             : "$0"}
                                 </Button>

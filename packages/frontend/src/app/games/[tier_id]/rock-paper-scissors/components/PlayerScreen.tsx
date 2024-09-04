@@ -4,7 +4,7 @@ import EllipsisLoader from "@/shared/EllipsisLoader";
 import PlayerGameView from "@/shared/PlayerGameView";
 import StarIcon from "@/shared/icons/StarIcon";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
-import { RockPaperScissors, TIERS_IDS } from "common";
+import { RockPaperScissors } from "common";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { Socket } from "socket.io-client";
@@ -12,14 +12,12 @@ import { Socket } from "socket.io-client";
 type PlayerScreenProps = {
     gameState: GameState;
     socket: Socket;
-    tier: TIERS_IDS;
     onSubmitMove: () => void;
 };
 
 export default function PlayerScreen({
     gameState,
     socket,
-    tier,
     onSubmitMove,
 }: PlayerScreenProps) {
     const { selectedChain } = useSelectedChainContext();

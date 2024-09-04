@@ -3,20 +3,20 @@
 import Button from "./Button";
 import Dialog from "./Dialog";
 import EllipsisLoader from "./EllipsisLoader";
-import { GameState } from "@/app/games/rock-paper-scissors/components/Game";
+import { GameState } from "@/app/games/[tier_id]/rock-paper-scissors/components/Game";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { getWalletClient } from "@/utils/functions/ethers";
 import SignClient from "@/utils/service/sign-protocol.service";
-import { TIERS_IDS } from "common";
-import { redirect, RedirectType } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 type Props = {
     open: boolean;
     gameState: GameState;
-    tier: TIERS_IDS;
+    tier_id: string;
 };
-export default function AttestModal({ open, gameState, tier }: Props) {
+export default function AttestModal({ open, gameState, tier_id }: Props) {
+    const router = useRouter();
     const { provider } = useWeb3AuthContext();
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -46,7 +46,7 @@ export default function AttestModal({ open, gameState, tier }: Props) {
         const attestation = await signClient.attest({
             played_game_id: gameState.room_id,
             player_id: gameState.player.player_id,
-            tier_id: tier,
+            tier_id: tier_id,
         });
         console.log(attestation);
         setAttestingInProgress(false);
@@ -54,7 +54,7 @@ export default function AttestModal({ open, gameState, tier }: Props) {
     };
 
     const redirectToGameListing = () => {
-        redirect("/", RedirectType.replace);
+        router.replace("/");
     };
 
     return (

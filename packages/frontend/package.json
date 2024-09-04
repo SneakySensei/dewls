@@ -33,6 +33,7 @@
     "socket.io-client": "^4.7.5",
     "sp-sdk": "link:@types/@ethsign/sp-sdk",
     "tailwind-merge": "^2.5.2",
+    "vaul": "^0.9.1",
     "viem": "^2.21.1"
   },
   "devDependencies": {

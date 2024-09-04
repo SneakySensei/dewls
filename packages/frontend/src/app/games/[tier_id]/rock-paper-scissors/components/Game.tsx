@@ -13,7 +13,7 @@ import { useEffect, useReducer, useRef } from "react";
 import { Socket } from "socket.io-client";
 
 type Props = {
-    tier: TIERS_IDS;
+    tier_id: string;
 };
 
 type PlayerState = {
@@ -63,7 +63,7 @@ export type GameState =
 
 export default dynamic(
     () =>
-        Promise.resolve(function Game({ tier }: Props) {
+        Promise.resolve(function Game({ tier_id }: Props) {
             const { user } = useWeb3AuthContext();
             const { selectedChain } = useSelectedChainContext();
 
@@ -126,12 +126,12 @@ export default dynamic(
                                 : player2;
 
                         if (gameState.state === "waiting") {
-                            if (tier === TIERS_IDS.FREE) {
+                            if (tier_id === TIERS_IDS.FREE) {
                                 socketRef.current.emit(
                                     "staked" satisfies RockPaperScissors.StakedEvent["type"],
                                     {
                                         player_id: player_user_id,
-                                        tier_id: tier,
+                                        tier_id: tier_id,
                                         room_id: gameState.room_id,
                                     } satisfies RockPaperScissors.StakedEvent["payload"],
                                 );
@@ -345,14 +345,13 @@ export default dynamic(
                         dispatch({ type: "game-end", payload });
                     },
                 );
-                console.log("selectedChain", selectedChain);
 
                 socket.emit(
                     "join" satisfies RockPaperScissors.JoinEvent["type"],
                     {
                         player_id: player_user_id,
                         game_id: RockPaperScissors.gameId,
-                        tier_id: tier,
+                        tier_id: tier_id,
                         chain_id: parseInt(selectedChain.chainId, 16),
                     } satisfies RockPaperScissors.JoinEvent["payload"],
                 );
@@ -367,7 +366,6 @@ export default dynamic(
                     <PlayerScreen
                         gameState={gameState}
                         socket={socketRef.current}
-                        tier={tier}
                         onSubmitMove={() => dispatch({ type: "submit-move" })}
                     />
 
@@ -401,9 +399,9 @@ export default dynamic(
                     <StakingModal
                         open={
                             gameState.state === "staking" &&
-                            tier !== TIERS_IDS.FREE
+                            tier_id !== TIERS_IDS.FREE
                         }
-                        tier={tier}
+                        tier_id={tier_id}
                         onSuccess={() => {
                             if (gameState.state !== "staking") return;
 
@@ -411,7 +409,7 @@ export default dynamic(
                                 "staked" satisfies RockPaperScissors.StakedEvent["type"],
                                 {
                                     player_id: player_user_id,
-                                    tier_id: tier,
+                                    tier_id: tier_id,
                                     room_id: gameState.room_id,
                                 } satisfies RockPaperScissors.StakedEvent["payload"],
                             );
@@ -423,7 +421,7 @@ export default dynamic(
                             player_user_id === gameState.winner_id
                         }
                         gameState={gameState}
-                        tier={tier}
+                        tier_id={tier_id}
                     />
                 </main>
             );

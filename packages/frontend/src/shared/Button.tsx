@@ -3,18 +3,26 @@
 import { cn } from "@/utils/cn";
 import { ComponentPropsWithoutRef } from "react";
 
-type Props = Omit<ComponentPropsWithoutRef<"button">, "className"> & {
+type Props = Omit<ComponentPropsWithoutRef<"button">, "className" | "style"> & {
     variant?: "solid" | "text";
+    style?: "normal" | "danger";
 };
 
 export default function Button({
     children,
     variant = "solid",
+    style = "normal",
     ...props
 }: Props) {
     if (variant === "text")
         return (
-            <button className="text-center text-body-2 font-medium text-brand-400 transition-all will-change-transform hover:scale-105 active:scale-95 active:transition-none">
+            <button
+                {...props}
+                className={cn(
+                    "text-center !text-body-2 !font-medium text-brand-400 transition-all will-change-transform hover:scale-105 active:scale-95 active:transition-none",
+                    style === "danger" && "text-status-danger",
+                )}
+            >
                 {children}
             </button>
         );
@@ -22,7 +30,7 @@ export default function Button({
         <button
             {...props}
             className={cn(
-                "inline-block overflow-hidden rounded bg-graident-button px-3 py-2 text-center !text-body-2 font-medium text-neutral-100 transition-all will-change-auto hover:brightness-110 active:brightness-95 active:transition-none",
+                "inline-block overflow-hidden rounded bg-graident-button px-3 py-2 text-center !text-body-2 !font-medium text-neutral-100 transition-all will-change-auto hover:brightness-110 active:brightness-95 active:transition-none",
                 props.disabled
                     ? "bg-brand-950 text-brand-900"
                     : "rounded-gradient-border",
