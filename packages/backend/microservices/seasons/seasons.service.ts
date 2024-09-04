@@ -6,6 +6,7 @@ export const fetchAllSeasons = async () => {
     const { data, error } = await SupabaseService.getSupabase()
         .from("seasons")
         .select()
+        .lt("started_on", new Date().toISOString())
         .order("ended_on", { ascending: false });
 
     if (error) {
@@ -21,6 +22,7 @@ export const fetchCurrentSeason = async () => {
         .from("seasons")
         .select()
         .gt("ended_on", new Date().toISOString())
+        .lt("started_on", new Date().toISOString())
         .order("ended_on", { ascending: false })
         .single();
 
