@@ -1,6 +1,9 @@
 import Button from "./Button";
 import Dialog from "./Dialog";
 import EllipsisLoader from "./EllipsisLoader";
+import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
+import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import { ArcadeService } from "@/utils/service/arcade-contract.service";
 import { TIERS_IDS } from "common";
 import { useRef, useState } from "react";
 
@@ -8,17 +11,44 @@ type Props = {
     onSuccess: () => void;
     open: boolean;
     tier_id: string;
+    game_id: string;
 };
-export default function StakingModal({ onSuccess, open, tier_id }: Props) {
+export default function StakingModal({
+    onSuccess,
+    open,
+    game_id,
+    tier_id,
+}: Props) {
     const [stakingInProgress, setStakingInProgress] = useState(false);
     const portalRef = useRef<HTMLDivElement>(null);
+    const { provider } = useWeb3AuthContext();
+    const { selectedChain } = useSelectedChainContext();
 
-    const handleStake = () => {
-        setStakingInProgress(true);
+    const handleStake = async () => {
+        try {
+            setStakingInProgress(true);
+            const tier_amount =
+                tier_id === TIERS_IDS.ALPHA
+                    ? 10
+                    : tier_id === TIERS_IDS.BETA
+                      ? 5
+                      : tier_id === TIERS_IDS.GAMMA
+                        ? 1
+                        : 0;
+            await ArcadeService.init(
+                provider!,
+                parseInt(selectedChain.chainId, 16),
+            );
+            await ArcadeService.approveBet(tier_amount);
+            await ArcadeService.depositBet(game_id, tier_amount);
 
-        // TODO: Call this function once staking is done
-        // pass relevant data that needs to go with the event
-        onSuccess();
+            // TODO: Call this function once staking is done
+            // pass relevant data that needs to go with the event
+            onSuccess();
+            setStakingInProgress(false);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
