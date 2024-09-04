@@ -40,17 +40,35 @@ export default function AttestModal({ open, gameState, tier_id }: Props) {
         if (gameState.state !== "gameEnd") return;
         setAttestingInProgress(true);
 
-        const walletClient = await getWalletClient(provider!);
-        const signClient = new SignClient(walletClient);
+        try {
+            const walletClient = await getWalletClient(provider!);
+            const signClient = new SignClient(walletClient);
 
-        const attestation = await signClient.attest({
-            played_game_id: gameState.room_id,
-            player_id: gameState.player.player_id,
-            tier_id: tier_id,
-        });
-        console.log(attestation);
-        setAttestingInProgress(false);
-        setAttestingSuccess(true);
+            const attestation = await signClient.attest({
+                played_game_id: gameState.room_id,
+                player_id: gameState.player.player_id,
+                tier_id: tier_id,
+            });
+
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/played_games/${gameState.room_id}/attestation`,
+                {
+                    cache: "no-cache",
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        attestation_hash: attestation.txHash,
+                    }),
+                },
+            );
+            setAttestingSuccess(true);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setAttestingInProgress(false);
+        }
     };
 
     const redirectToGameListing = () => {
