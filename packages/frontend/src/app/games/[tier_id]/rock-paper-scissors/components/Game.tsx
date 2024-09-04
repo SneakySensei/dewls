@@ -403,7 +403,9 @@ export default dynamic(
                         }
                         tier_id={tier_id}
                         // ! Todo: Add game id to the staking modal
-                        game_id={"test"}
+                        game_id={
+                            "0xbca4cc033c6fc7a4eebc355a0473e863ef63427291fb322d24139fd430f87e4e"
+                        }
                         onSuccess={() => {
                             if (gameState.state !== "staking") return;
 
