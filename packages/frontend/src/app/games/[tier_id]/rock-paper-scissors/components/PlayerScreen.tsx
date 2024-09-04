@@ -23,7 +23,11 @@ export default function PlayerScreen({
     const { selectedChain } = useSelectedChainContext();
 
     const handleMove = (move: RockPaperScissors.Move) => {
-        if (gameState.state !== "ongoingRound" || gameState.moveSubmitted)
+        if (
+            gameState.state !== "ongoingRound" ||
+            gameState.moveSubmitted ||
+            !selectedChain
+        )
             return;
         const moveEvent: RockPaperScissors.MoveEvent = {
             type: "move",

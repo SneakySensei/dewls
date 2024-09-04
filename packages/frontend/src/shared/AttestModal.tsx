@@ -3,7 +3,6 @@
 import Button from "./Button";
 import Dialog from "./Dialog";
 import EllipsisLoader from "./EllipsisLoader";
-import { GameState } from "@/app/games/[tier_id]/rock-paper-scissors/components/Game";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { getWalletClient } from "@/utils/functions/ethers";
 import SignClient from "@/utils/service/sign-protocol.service";
@@ -12,10 +11,16 @@ import { useEffect, useRef, useState } from "react";
 
 type Props = {
     open: boolean;
-    gameState: GameState;
+    room_id?: string;
+    player_id?: string;
     tier_id: string;
 };
-export default function AttestModal({ open, gameState, tier_id }: Props) {
+export default function AttestModal({
+    open,
+    room_id,
+    player_id,
+    tier_id,
+}: Props) {
     const router = useRouter();
     const { provider } = useWeb3AuthContext();
     const [modalOpen, setModalOpen] = useState(false);
@@ -37,7 +42,7 @@ export default function AttestModal({ open, gameState, tier_id }: Props) {
     }, [open]);
 
     const handleAttest = async () => {
-        if (gameState.state !== "gameEnd") return;
+        if (!player_id || !room_id) return;
         setAttestingInProgress(true);
 
         try {
@@ -45,13 +50,13 @@ export default function AttestModal({ open, gameState, tier_id }: Props) {
             const signClient = new SignClient(walletClient);
 
             const attestation = await signClient.attest({
-                played_game_id: gameState.room_id,
-                player_id: gameState.player.player_id,
+                played_game_id: room_id,
+                player_id: player_id,
                 tier_id: tier_id,
             });
 
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/played_games/${gameState.room_id}/attestation`,
+                `${process.env.NEXT_PUBLIC_API_BASE_URL}/played_games/${room_id}/attestation`,
                 {
                     cache: "no-cache",
                     method: "POST",

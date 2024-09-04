@@ -427,7 +427,16 @@ export default dynamic(
                             gameState.state === "gameEnd" &&
                             player_user_id === gameState.winner_id
                         }
-                        gameState={gameState}
+                        player_id={
+                            gameState.state === "gameEnd"
+                                ? gameState.player.player_id
+                                : undefined
+                        }
+                        room_id={
+                            gameState.state === "gameEnd"
+                                ? gameState.room_id
+                                : undefined
+                        }
                         tier_id={tier_id}
                     />
                 </main>
