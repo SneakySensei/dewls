@@ -1,8 +1,11 @@
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import "./globals.css";
+import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 import { SelectedChainContextProvider } from "@/utils/context/selected-chain.context";
+import TierContextProvider from "@/utils/context/tiers.context";
 import { Web3AuthContextProvider } from "@/utils/context/web3auth.context";
+import { MappedGameTier, ResponseWithData } from "@/utils/types";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import { Big_Shoulders_Display, Inter } from "next/font/google";
@@ -23,11 +26,19 @@ export const metadata: Metadata = {
     description: "Games that make connections ツ",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const tierRes = await fetch(`${API_REST_BASE_URL}/game-tiers`, {
+        cache: "no-cache",
+    });
+    const tiersReponse = (await tierRes.json()) as ResponseWithData<
+        MappedGameTier[]
+    >;
+    const tiers = tiersReponse.success ? tiersReponse.data : [];
+
     return (
         <html lang="en">
             <body
@@ -41,15 +52,17 @@ export default function RootLayout({
                     vaul-drawer-wrapper="true"
                     className="mx-auto flex h-full max-w-lg flex-col"
                 >
-                    <Web3AuthContextProvider>
-                        <SelectedChainContextProvider>
-                            <Header />
-                            <div className="relative min-h-0 flex-1 overflow-y-auto">
-                                {children}
-                            </div>
-                            <Footer />
-                        </SelectedChainContextProvider>
-                    </Web3AuthContextProvider>
+                    <TierContextProvider tiers={tiers}>
+                        <Web3AuthContextProvider>
+                            <SelectedChainContextProvider>
+                                <Header />
+                                <div className="relative min-h-0 flex-1 overflow-y-auto">
+                                    {children}
+                                </div>
+                                <Footer />
+                            </SelectedChainContextProvider>
+                        </Web3AuthContextProvider>
+                    </TierContextProvider>
                 </div>
             </body>
         </html>

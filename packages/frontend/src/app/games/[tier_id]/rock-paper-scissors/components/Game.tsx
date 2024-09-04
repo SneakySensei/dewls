@@ -5,9 +5,10 @@ import PlayerScreen from "./PlayerScreen";
 import AttestModal from "@/shared/AttestModal";
 import StakingModal from "@/shared/StakingModal";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
+import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { getSocketManager } from "@/utils/websockets";
-import { RockPaperScissors, TIERS_IDS } from "common";
+import { RockPaperScissors } from "common";
 import dynamic from "next/dynamic";
 import { useEffect, useReducer, useRef } from "react";
 import { Socket } from "socket.io-client";
@@ -64,6 +65,11 @@ export type GameState =
 export default dynamic(
     () =>
         Promise.resolve(function Game({ tier_id }: Props) {
+            const { tiers } = useTierContext();
+            const isFreeTier =
+                tiers.find((tier) => tier.tier_id === tier_id)?.usd_amount ===
+                0;
+
             const { user } = useWeb3AuthContext();
             const { selectedChain } = useSelectedChainContext();
 
@@ -126,7 +132,7 @@ export default dynamic(
                                 : player2;
 
                         if (gameState.state === "waiting") {
-                            if (tier_id === TIERS_IDS.FREE) {
+                            if (isFreeTier) {
                                 socketRef.current.emit(
                                     "staked" satisfies RockPaperScissors.StakedEvent["type"],
                                     {
@@ -345,17 +351,17 @@ export default dynamic(
                         dispatch({ type: "game-end", payload });
                     },
                 );
-
-                socket.emit(
-                    "join" satisfies RockPaperScissors.JoinEvent["type"],
-                    {
-                        player_id: player_user_id,
-                        game_id: RockPaperScissors.gameId,
-                        tier_id: tier_id,
-                        chain_id: parseInt(selectedChain.chainId, 16),
-                    } satisfies RockPaperScissors.JoinEvent["payload"],
-                );
-
+                if (selectedChain) {
+                    socket.emit(
+                        "join" satisfies RockPaperScissors.JoinEvent["type"],
+                        {
+                            player_id: player_user_id,
+                            game_id: RockPaperScissors.gameId,
+                            tier_id: tier_id,
+                            chain_id: parseInt(selectedChain.chainId, 16),
+                        } satisfies RockPaperScissors.JoinEvent["payload"],
+                    );
+                }
                 return () => {
                     socket.disconnect();
                 };
@@ -397,10 +403,7 @@ export default dynamic(
                     </section>
 
                     <StakingModal
-                        open={
-                            gameState.state === "staking" &&
-                            tier_id !== TIERS_IDS.FREE
-                        }
+                        open={gameState.state === "staking" && !isFreeTier}
                         tier_id={tier_id}
                         // ! Todo: Add game id to the staking modal
                         game_id={

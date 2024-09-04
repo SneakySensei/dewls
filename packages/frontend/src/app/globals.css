@@ -3,73 +3,102 @@
 @tailwind utilities;
 
 @layer base {
-  .text-display-1,
-  .text-display-2,
-  .text-display-3 {
-    @apply font-display;
-  }
+    .text-display-1,
+    .text-display-2,
+    .text-display-3 {
+        @apply font-display;
+    }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .text-balance {
+        text-wrap: balance;
+    }
 
-  .circular-progress {
-    --size: 40px;
-    --half-size: calc(var(--size) / 2);
-    --stroke-width: 5.5px;
-    --radius: calc((var(--size) - var(--stroke-width)) / 2);
-    --circumference: calc(var(--radius) * pi * 2);
-    --dash: calc((var(--progress, 0) * var(--circumference)) / 100);
-    animation: progress-animation 5s linear 0s 1 forwards;
-  }
+    .circular-progress {
+        --size: 40px;
+        --half-size: calc(var(--size) / 2);
+        --stroke-width: 5.5px;
+        --radius: calc((var(--size) - var(--stroke-width)) / 2);
+        --circumference: calc(var(--radius) * pi * 2);
+        --dash: calc((var(--progress, 0) * var(--circumference)) / 100);
+        animation: progress-animation 5s linear 0s 1 forwards;
+    }
 
-  .circular-progress circle {
-    cx: var(--half-size);
-    cy: var(--half-size);
-    r: var(--radius);
-    stroke-width: var(--stroke-width);
-    fill: none;
-    stroke-linecap: round;
-  }
+    .circular-progress circle {
+        cx: var(--half-size);
+        cy: var(--half-size);
+        r: var(--radius);
+        stroke-width: var(--stroke-width);
+        fill: none;
+        stroke-linecap: round;
+    }
 
-  .circular-progress circle.bg {
-    @apply stroke-status-success;
-  }
+    .circular-progress circle.bg {
+        @apply stroke-status-success;
+    }
 
-  .circular-progress circle.fg {
-    transform: rotate(-90deg);
-    transform-origin: var(--half-size) var(--half-size);
-    stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash));
-    transition: stroke-dasharray 0.3s linear 0s;
-    @apply stroke-status-danger;
-  }
+    .circular-progress circle.fg {
+        transform: rotate(-90deg);
+        transform-origin: var(--half-size) var(--half-size);
+        stroke-dasharray: var(--dash) calc(var(--circumference) - var(--dash));
+        transition: stroke-dasharray 0.3s linear 0s;
+        @apply stroke-status-danger;
+    }
 
-  .rounded-gradient-border {
-    position: relative;
-  }
+    .button-rounded-gradient-border {
+        position: relative;
+    }
 
-  .rounded-gradient-border::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border: 1px solid transparent;
-    border-radius: inherit;
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.25) 0%,
-        rgba(255, 255, 255, 0.05) 100%
-      )
-      border-box;
+    .button-rounded-gradient-border::before {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        border: 1px solid transparent;
+        border-radius: inherit;
+        background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.25) 0%,
+                rgba(255, 255, 255, 0.05) 100%
+            )
+            border-box;
 
-    -webkit-mask: /*4*/
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; /*5'*/
-    mask-composite: exclude; /*5*/
-  }
+        -webkit-mask: /*4*/
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
+        mask:
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor; /*5'*/
+        mask-composite: exclude; /*5*/
+    }
+
+    .tier-card-rounded-gradient-border {
+        position: relative;
+    }
+
+    .tier-card-rounded-gradient-border::before {
+        content: "";
+        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        border: 2px solid transparent;
+        border-radius: inherit;
+        background: linear-gradient(
+                to right,
+                rgba(139, 129, 248, 0.5) 0%,
+                rgba(139, 129, 248, 0) 100%
+            )
+            border-box;
+
+        -webkit-mask: /*4*/
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
+        mask:
+            linear-gradient(#fff 0 0) padding-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor; /*5'*/
+        mask-composite: exclude; /*5*/
+    }
 }

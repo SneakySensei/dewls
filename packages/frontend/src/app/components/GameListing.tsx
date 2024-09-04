@@ -3,11 +3,16 @@
 import GameCard from "./GameCard";
 import TierSelector from "./TierSelector";
 import { SearchIcon } from "@/shared/icons";
+import { useTierContext } from "@/utils/context/tiers.context";
 import { MappedGame } from "@/utils/types";
 import { useState } from "react";
 
-type Props = { games: MappedGame[] };
+type Props = {
+    games: MappedGame[];
+};
 export default function GameListing({ games }: Props) {
+    const { tiers } = useTierContext();
+
     const [selectedGame, setSelecteGame] = useState<MappedGame>();
     const [keyword, setKeyword] = useState("");
     const filteredGames = games.filter((g) =>
@@ -40,6 +45,7 @@ export default function GameListing({ games }: Props) {
             </section>
 
             <TierSelector
+                tiers={tiers}
                 open={!!selectedGame}
                 selectedGame={selectedGame}
                 onClose={() => setSelecteGame(undefined)}

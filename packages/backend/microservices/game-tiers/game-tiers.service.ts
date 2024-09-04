@@ -4,7 +4,8 @@ import { MappedGameTier } from "../../utils/types/mappers.types";
 export const fetchGameTiers = async () => {
     const { data, error } = await SupabaseService.getSupabase()
         .from("game_tiers")
-        .select();
+        .select()
+        .order("usd_amount", { ascending: false });
 
     if (error) {
         console.error(error);

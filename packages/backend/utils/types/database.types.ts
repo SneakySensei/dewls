@@ -12,22 +12,28 @@ export type Database = {
       game_tiers: {
         Row: {
           created_at: string
+          icon: string
           name: string
           point_weight: number
+          popular: boolean
           tier_id: string
           usd_amount: number
         }
         Insert: {
           created_at?: string
+          icon?: string
           name: string
           point_weight: number
+          popular?: boolean
           tier_id?: string
           usd_amount: number
         }
         Update: {
           created_at?: string
+          icon?: string
           name?: string
           point_weight?: number
+          popular?: boolean
           tier_id?: string
           usd_amount?: number
         }

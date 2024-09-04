@@ -12,22 +12,28 @@ export type Database = {
       game_tiers: {
         Row: {
           created_at: string
+          icon: string
           name: string
           point_weight: number
+          popular: boolean
           tier_id: string
           usd_amount: number
         }
         Insert: {
           created_at?: string
+          icon?: string
           name: string
           point_weight: number
+          popular?: boolean
           tier_id?: string
           usd_amount: number
         }
         Update: {
           created_at?: string
+          icon?: string
           name?: string
           point_weight?: number
+          popular?: boolean
           tier_id?: string
           usd_amount?: number
         }
@@ -69,6 +75,7 @@ export type Database = {
       played_games: {
         Row: {
           attestation_hash: string | null
+          chain_id: number
           created_at: string
           game_id: string
           game_tier_id: string
@@ -81,6 +88,7 @@ export type Database = {
         }
         Insert: {
           attestation_hash?: string | null
+          chain_id?: number
           created_at?: string
           game_id?: string
           game_tier_id?: string
@@ -93,6 +101,7 @@ export type Database = {
         }
         Update: {
           attestation_hash?: string | null
+          chain_id?: number
           created_at?: string
           game_id?: string
           game_tier_id?: string
