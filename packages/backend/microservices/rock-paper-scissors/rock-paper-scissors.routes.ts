@@ -10,10 +10,7 @@ import {
     fetchPlayersDetailsForPlayedGame,
     setWinnerToGame,
 } from "../played-games/played-games.service";
-import {
-    addMoneyToSeasonPool,
-    fetchCurrentSeason,
-} from "../seasons/seasons.service";
+import { fetchCurrentSeason } from "../seasons/seasons.service";
 import { RockPaperScissors } from "common";
 import { type Namespace, type Socket } from "socket.io";
 
@@ -190,23 +187,50 @@ export const RockPaperScissorsRoutes = async (
 
                     if (gameState.player1.player_id === player_id) {
                         gameState.player1.staked = true;
+                        await RedisClient.hset(
+                            room_id,
+                            stringifyObjectValues<
+                                Pick<
+                                    RockPaperScissors.ServerGameState,
+                                    "player1"
+                                >
+                            >({ player1: gameState.player1 }),
+                        );
                     } else if (gameState.player2.player_id === player_id) {
                         gameState.player2.staked = true;
+                        await RedisClient.hset(
+                            room_id,
+                            stringifyObjectValues<
+                                Pick<
+                                    RockPaperScissors.ServerGameState,
+                                    "player2"
+                                >
+                            >({ player2: gameState.player2 }),
+                        );
                     } else {
                         throw Error(
                             `Player ${player_id} does not exist in room ${room_id}`,
                         );
                     }
 
-                    if (gameState.player1.staked && gameState.player2.staked) {
-                        await addMoneyToSeasonPool(season_id, tier_id);
+                    const updatedGameState =
+                        parseStringifiedValues<RockPaperScissors.ServerGameState>(
+                            await RedisClient.hgetall(room_id),
+                        );
+
+                    if (
+                        updatedGameState.player1.staked &&
+                        updatedGameState.player2.staked
+                    ) {
+                        // FIXME: Breaking server
+                        // await addMoneyToSeasonPool(season_id, tier_id);
 
                         const gameStartEvent: RockPaperScissors.GameStartEvent =
                             {
                                 type: "game-start",
                                 payload: {
-                                    ...gameState,
-                                    round: gameState.round as 0,
+                                    ...updatedGameState,
+                                    round: 0,
                                 },
                             };
                         io.to(room_id).emit(
@@ -239,12 +263,30 @@ export const RockPaperScissorsRoutes = async (
                     if (gameState.player1.player_id === player_id) {
                         if (gameState.player1.currentMove === null) {
                             gameState.player1.currentMove = move;
+                            await RedisClient.hset(
+                                room_id,
+                                stringifyObjectValues<
+                                    Pick<
+                                        RockPaperScissors.ServerGameState,
+                                        "player1"
+                                    >
+                                >({ player1: gameState.player1 }),
+                            );
                         } else {
                             return;
                         }
                     } else if (gameState.player2.player_id === player_id) {
                         if (gameState.player2.currentMove === null) {
                             gameState.player2.currentMove = move;
+                            await RedisClient.hset(
+                                room_id,
+                                stringifyObjectValues<
+                                    Pick<
+                                        RockPaperScissors.ServerGameState,
+                                        "player2"
+                                    >
+                                >({ player2: gameState.player2 }),
+                            );
                         } else {
                             return;
                         }
@@ -254,96 +296,126 @@ export const RockPaperScissorsRoutes = async (
                         );
                     }
 
+                    const updatedGameState =
+                        parseStringifiedValues<RockPaperScissors.ServerGameState>(
+                            await RedisClient.hgetall(room_id),
+                        );
+
                     if (
-                        gameState.player1.currentScore <
+                        updatedGameState.player1.currentScore <
                             RockPaperScissors.winScore &&
-                        gameState.player2.currentScore <
+                        updatedGameState.player2.currentScore <
                             RockPaperScissors.winScore &&
-                        gameState.player1.currentMove &&
-                        gameState.player2.currentMove
+                        updatedGameState.player1.currentMove &&
+                        updatedGameState.player2.currentMove
                     ) {
                         if (
-                            gameState.player1.currentMove ===
-                            gameState.player2.currentMove
+                            updatedGameState.player1.currentMove ===
+                            updatedGameState.player2.currentMove
                         ) {
-                            gameState.winner_id = null;
+                            updatedGameState.winner_id = null;
                         } else if (
-                            (gameState.player1.currentMove === "rock" &&
-                                gameState.player2.currentMove === "scissors") ||
-                            (gameState.player1.currentMove === "paper" &&
-                                gameState.player2.currentMove === "rock") ||
-                            (gameState.player1.currentMove === "scissors" &&
-                                gameState.player2.currentMove === "paper")
+                            updatedGameState.player1.currentMove === "skipped"
                         ) {
-                            gameState.winner_id = gameState.player1.player_id;
-                            gameState.player1.currentScore =
-                                gameState.player1.currentScore + 1;
+                            // player 2 wins round by default
+                            updatedGameState.winner_id =
+                                updatedGameState.player2.player_id;
+                            updatedGameState.player2.currentScore =
+                                updatedGameState.player2.currentScore + 1;
+                        } else if (
+                            updatedGameState.player2.currentMove === "skipped"
+                        ) {
+                            // player 1 wins round by default
+                            updatedGameState.winner_id =
+                                updatedGameState.player1.player_id;
+                            updatedGameState.player1.currentScore =
+                                updatedGameState.player1.currentScore + 1;
+                        } else if (
+                            (updatedGameState.player1.currentMove === "rock" &&
+                                updatedGameState.player2.currentMove ===
+                                    "scissors") ||
+                            (updatedGameState.player1.currentMove === "paper" &&
+                                updatedGameState.player2.currentMove ===
+                                    "rock") ||
+                            (updatedGameState.player1.currentMove ===
+                                "scissors" &&
+                                updatedGameState.player2.currentMove ===
+                                    "paper")
+                        ) {
+                            updatedGameState.winner_id =
+                                updatedGameState.player1.player_id;
+                            updatedGameState.player1.currentScore =
+                                updatedGameState.player1.currentScore + 1;
                         } else {
-                            gameState.winner_id = gameState.player2.player_id;
-                            gameState.player2.currentScore =
-                                gameState.player2.currentScore + 1;
+                            updatedGameState.winner_id =
+                                updatedGameState.player2.player_id;
+                            updatedGameState.player2.currentScore =
+                                updatedGameState.player2.currentScore + 1;
                         }
 
                         if (
-                            gameState.player1.currentScore <
+                            updatedGameState.player1.currentScore <
                                 RockPaperScissors.winScore &&
-                            gameState.player2.currentScore <
+                            updatedGameState.player2.currentScore <
                                 RockPaperScissors.winScore
                         ) {
                             const roundEndEvent: RockPaperScissors.RoundEndEvent =
                                 {
                                     type: "round-end",
-                                    payload: gameState,
+                                    payload: updatedGameState,
                                 };
                             io.to(room_id).emit(
                                 roundEndEvent.type,
                                 roundEndEvent.payload,
                             );
-                        } else {
-                            const { player_1, player_2 } =
-                                await fetchPlayersDetailsForPlayedGame(room_id);
 
-                            await EthersService.endGame(
+                            updatedGameState.player1.currentMove = null;
+                            updatedGameState.player2.currentMove = null;
+                            updatedGameState.winner_id = null;
+                            updatedGameState.round = updatedGameState.round + 1;
+
+                            await RedisClient.hset(
                                 room_id,
-                                gameState.winner_id === player_1.player_id
-                                    ? player_1.wallet_address
-                                    : player_2.wallet_address,
-                                gameState.winner_id === player_1.player_id
-                                    ? player_2.wallet_address
-                                    : player_1.wallet_address,
-                                chain_id,
+                                stringifyObjectValues<RockPaperScissors.ServerGameState>(
+                                    updatedGameState,
+                                ),
                             );
-
-                            await setWinnerToGame(room_id, gameState.winner_id);
-
-                            await RedisClient.del(room_id);
-
+                        } else {
                             const gameEndEvent: RockPaperScissors.GameEndEvent =
                                 {
                                     type: "game-end",
                                     payload:
-                                        gameState as RockPaperScissors.GameEndEvent["payload"],
+                                        updatedGameState as RockPaperScissors.GameEndEvent["payload"],
                                 };
                             io.to(room_id).emit(
                                 gameEndEvent.type,
                                 gameEndEvent.payload,
                             );
-                            updateGameState = false;
+
+                            const [{ player_1, player_2 }] = await Promise.all([
+                                fetchPlayersDetailsForPlayedGame(room_id),
+                                setWinnerToGame(
+                                    room_id,
+                                    updatedGameState.winner_id,
+                                ),
+                            ]);
+
+                            await EthersService.endGame(
+                                room_id,
+                                updatedGameState.winner_id ===
+                                    player_1.player_id
+                                    ? player_1.wallet_address
+                                    : player_2.wallet_address,
+                                updatedGameState.winner_id ===
+                                    player_1.player_id
+                                    ? player_2.wallet_address
+                                    : player_1.wallet_address,
+                                chain_id,
+                            );
+
+                            // safe to cleanup now that all prior calls have gone through
+                            await RedisClient.del(room_id);
                         }
-
-                        gameState.player1.currentMove = null;
-                        gameState.player2.currentMove = null;
-                        gameState.winner_id = null;
-                        gameState.round = gameState.round + 1;
-                    }
-
-                    if (updateGameState) {
-                        await RedisClient.hset(
-                            room_id,
-                            stringifyObjectValues<RockPaperScissors.ServerGameState>(
-                                gameState,
-                            ),
-                        );
                     }
                 } catch (error) {
                     WSError(socket, error);

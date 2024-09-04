@@ -106,7 +106,7 @@ export const Leaderboard: React.FC = () => {
                   </p>
 
                   <div className="w-full text-body-3 text-neutral-200 flex items-center gap-1 justify-center">
-                    <StarIcon />
+                    <StarIcon solid />
                     {leaderboard[1].total_points?.toLocaleString()}
                   </div>
 
@@ -136,7 +136,7 @@ export const Leaderboard: React.FC = () => {
                   </p>
 
                   <div className="w-full text-body-3 text-neutral-200 flex items-center gap-1 justify-center">
-                    <StarIcon />
+                    <StarIcon solid />
                     {leaderboard[0].total_points?.toLocaleString()}
                   </div>
 
@@ -166,7 +166,7 @@ export const Leaderboard: React.FC = () => {
                   </p>
 
                   <div className="w-full text-body-3 text-neutral-200 flex items-center gap-1 justify-center">
-                    <StarIcon />
+                    <StarIcon solid />
                     {leaderboard[2].total_points?.toLocaleString()}
                   </div>
 

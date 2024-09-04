@@ -1,8 +1,9 @@
 export const slug = "rock-paper-scissors";
 export const gameId = "ef392e1a-673c-4f6c-a259-20cff47d1dd9";
 export const winScore = 3;
+export const roundTime = 10;
 
-export type Move = "rock" | "paper" | "scissors";
+export type Move = "rock" | "paper" | "scissors" | "skipped";
 
 export type JoinEvent = {
   type: "join";

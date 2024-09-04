@@ -15,11 +15,13 @@ type Props = {
   user_id: string;
   timerSeconds: number;
   showTimer?: boolean;
+  onTimerEnd?: () => void;
 };
 export default function PlayerGameView({
   user_id,
   timerSeconds,
   showTimer,
+  onTimerEnd,
 }: Props) {
   const { user: authUser } = useWeb3AuthContext();
   const [userResponse, setUserResponse] =
@@ -46,7 +48,9 @@ export default function PlayerGameView({
       <div className="relative block p-1.5 size-11 overflow-hidden">
         {showTimer && (
           <Progress
-            onTimerEnd={() => console.log("MOVE SKIPPED LOGIC!")}
+            onTimerEnd={() => {
+              onTimerEnd?.();
+            }}
             timerSeconds={timerSeconds}
             className="absolute inset-0 size-full"
           />
@@ -88,7 +92,7 @@ const Progress = ({
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(() => {
-    animate(0, 100, {
+    const controls = animate(0, 100, {
       duration: timerSeconds,
       ease: "linear",
       type: "tween",
@@ -100,6 +104,10 @@ const Progress = ({
       },
       onComplete: onTimerEnd,
     });
+
+    return () => {
+      controls.cancel();
+    };
   }, []);
 
   return (

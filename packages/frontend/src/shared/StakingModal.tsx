@@ -1,42 +1,69 @@
-import { useRef } from "react";
-import Dialog from "./Dialog";
 import Button from "./Button";
+import Dialog from "./Dialog";
+import EllipsisLoader from "./EllipsisLoader";
+import { TIERS_IDS } from "common";
+import { useRef, useState } from "react";
 
 type Props = {
-  onSuccess: () => void;
-  open: boolean;
+    onSuccess: () => void;
+    open: boolean;
+    tier: TIERS_IDS;
 };
-export default function StakingModal({ onSuccess, open }: Props) {
-  const portalRef = useRef<HTMLDivElement>(null);
+export default function StakingModal({ onSuccess, open, tier }: Props) {
+    const [stakingInProgress, setStakingInProgress] = useState(false);
+    const portalRef = useRef<HTMLDivElement>(null);
 
-  const handleStake = () => {
-    // pass relevant data that needs to go with the event
-    onSuccess();
-  };
+    const handleStake = () => {
+        setStakingInProgress(true);
 
-  return (
-    <>
-      <div ref={portalRef} />
-      {/* Staking logic */}
-      <Dialog open={open}>
-        <Dialog.DialogPortal container={portalRef.current}>
-          <Dialog.DialogOverlay />
-          <Dialog.DialogContent>
-            <Dialog.DialogHeader>
-              <Dialog.DialogTitle>Stake your wagers</Dialog.DialogTitle>
-              <Dialog.DialogDescription>
-                To proceed with the game, please stake your wager amount. <br />
-                Once staked, your wager will be locked until the game concludes.
-                Confirm your stake to continue and start playing! Winner takes
-                it all!<sup>*</sup>
-              </Dialog.DialogDescription>
-            </Dialog.DialogHeader>
-            <Dialog.DialogFooter className="mt-4 text-center">
-              <Button>Stake $10</Button>
-            </Dialog.DialogFooter>
-          </Dialog.DialogContent>
-        </Dialog.DialogPortal>
-      </Dialog>
-    </>
-  );
+        // TODO: Call this function once staking is done
+        // pass relevant data that needs to go with the event
+        onSuccess();
+    };
+
+    return (
+        <>
+            <div ref={portalRef} />
+            {/* Staking logic */}
+            <Dialog open={open}>
+                <Dialog.DialogPortal container={portalRef.current}>
+                    <Dialog.DialogOverlay />
+                    <Dialog.DialogContent>
+                        <Dialog.DialogHeader>
+                            <Dialog.DialogTitle>
+                                Stake your wagers
+                            </Dialog.DialogTitle>
+                            <Dialog.DialogDescription>
+                                To proceed with the game, please stake your
+                                wager amount. <br />
+                                Once staked, your wager will be locked until the
+                                game concludes. Confirm your stake to continue
+                                and start playing! Winner takes it all!
+                                <sup>*</sup>
+                            </Dialog.DialogDescription>
+                        </Dialog.DialogHeader>
+                        <Dialog.DialogFooter className="mt-4 text-center">
+                            {stakingInProgress ? (
+                                <p className="text-body-2 italic text-neutral-200">
+                                    Staking in progress
+                                    <EllipsisLoader />
+                                </p>
+                            ) : (
+                                <Button onClick={handleStake}>
+                                    Stake{" "}
+                                    {tier === TIERS_IDS.ALPHA
+                                        ? "$10"
+                                        : tier === TIERS_IDS.BETA
+                                          ? "$5"
+                                          : tier === TIERS_IDS.GAMMA
+                                            ? "$1"
+                                            : "$0"}
+                                </Button>
+                            )}
+                        </Dialog.DialogFooter>
+                    </Dialog.DialogContent>
+                </Dialog.DialogPortal>
+            </Dialog>
+        </>
+    );
 }
