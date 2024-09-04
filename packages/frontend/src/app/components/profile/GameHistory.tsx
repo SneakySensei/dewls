@@ -3,6 +3,7 @@
 import { GamePlayer } from "./GamePlayer";
 import BattleIcon from "@/shared/icons/BattleIcon";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import { timestampParser } from "@/utils/functions/timestamp-parser";
 import { MappedPlayerGameHistory } from "@/utils/types";
 
 export const GameHistory: React.FC<{
@@ -56,7 +57,10 @@ export const GameHistory: React.FC<{
 
                     <span className="text-neutral-500">|</span>
 
-                    <p className="text-neutral-300">{playedGame.created_at}</p>
+                    <p className="text-neutral-300">
+                        {playedGame.created_at &&
+                            timestampParser(playedGame.created_at)}
+                    </p>
                 </div>
             </div>
         </div>
