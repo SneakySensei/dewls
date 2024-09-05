@@ -1,14 +1,16 @@
 "use client";
 
 import AttestModal from "@/shared/AttestModal";
+import PlayerGameView from "@/shared/PlayerGameView";
 import StakingModal from "@/shared/StakingModal";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { getSocketManager } from "@/utils/websockets";
 import { ConnectFour } from "common";
+import { emptyBoard } from "common/connect-four";
 import dynamic from "next/dynamic";
-import { useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import { Socket } from "socket.io-client";
 
 type Props = {
@@ -16,45 +18,48 @@ type Props = {
 };
 
 type PlayerState = {
-    currentMove: ConnectFour.Move;
-    currentScore: number;
+    currentMove: ConnectFour.Move | null;
     player_id: string;
 };
+
 export type GameState =
-    | { state: "initial"; player: PlayerState }
+    | { state: "initial"; player: PlayerState; board: ConnectFour.Board }
     | {
           state: "waiting";
           room_id: string;
-          player?: PlayerState;
+          board: ConnectFour.Board;
+          player: PlayerState;
           enemy?: PlayerState;
       }
     | {
           state: "staking";
           room_id: string;
-          round: number;
+          board: ConnectFour.Board;
           player: PlayerState;
           enemy: PlayerState;
       }
     | {
-          state: "ongoingRound";
+          state: "ongoingMove";
           room_id: string;
-          round: number;
+          active_player: string;
           moveSubmitted?: boolean;
+          board: ConnectFour.Board;
           player: PlayerState;
           enemy: PlayerState;
       }
     | {
-          state: "roundEnd";
+          state: "tie";
           room_id: string;
-          round: number;
+          active_player: string;
+          board: ConnectFour.Board;
           player: PlayerState;
           enemy: PlayerState;
-          winner_id: string | null;
       }
     | {
           state: "gameEnd";
           room_id: string;
-          round: number;
+          active_player: string;
+          board: ConnectFour.Board;
           player: PlayerState;
           enemy: PlayerState;
           winner_id: string;
@@ -84,288 +89,332 @@ export default dynamic(
 
             const reducer = (
                 gameState: GameState,
-                action:
-                    | ConnectFour.SERVER_EVENTS
-                    | { type: "next-round" }
-                    | { type: "submit-move" },
+                action: ConnectFour.SERVER_EVENTS | { type: "submit-move" },
             ): GameState => {
-                // switch (action.type) {
-                //     case "player-joined": {
-                //         const { room_id, player_id } = action.payload;
-                //         if (player_id === player_user_id) {
-                //             return {
-                //                 ...gameState,
-                //                 state: "waiting",
-                //                 player: {
-                //                     currentMove: "rock",
-                //                     currentScore: 0,
-                //                     player_id,
-                //                 },
-                //                 room_id,
-                //             };
-                //         }
-                //         return gameState;
-                //         // since staking event is not fired for second player for some time
-                //         // and first player sees the second player as joined, first player might think the game is stuck
-                //         // return {
-                //         //   ...gameState,
-                //         //   state: "waiting",
-                //         //   room_id,
-                //         //   enemy: {
-                //         //     currentMove: "rock",
-                //         //     currentScore: 0,
-                //         //     player_id: player_id,
-                //         //   },
-                //         // };
-                //     }
-                //     case "staking": {
-                //         const { round, player1, player2 } = action.payload;
-                //         const player =
-                //             player1.player_id === player_user_id
-                //                 ? player1
-                //                 : player2;
-                //         const enemy =
-                //             player1.player_id !== player_user_id
-                //                 ? player1
-                //                 : player2;
+                switch (action.type) {
+                    case "player-joined": {
+                        const { room_id, player_id } = action.payload;
+                        if (player_id === player_user_id) {
+                            return {
+                                ...gameState,
+                                state: "waiting",
+                                player: {
+                                    currentMove: null,
+                                    player_id,
+                                },
+                                room_id,
+                            };
+                        }
+                        return gameState;
+                        // since staking event is not fired for second player for some time
+                        // and first player sees the second player as joined, first player might think the game is stuck
+                        // return {
+                        //   ...gameState,
+                        //   state: "waiting",
+                        //   room_id,
+                        //   enemy: {
+                        //     currentMove: "rock",
+                        //     currentScore: 0,
+                        //     player_id: player_id,
+                        //   },
+                        // };
+                    }
+                    case "staking": {
+                        const { player1, player2, board } = action.payload;
+                        const player =
+                            player1.player_id === player_user_id
+                                ? player1
+                                : player2;
+                        const enemy =
+                            player1.player_id !== player_user_id
+                                ? player1
+                                : player2;
 
-                //         if (gameState.state === "waiting") {
-                //             if (isFreeTier) {
-                //                 socketRef.current.emit(
-                //                     "staked" satisfies ConnectFour.StakedEvent["type"],
-                //                     {
-                //                         player_id: player_user_id,
-                //                         tier_id: tier_id,
-                //                         room_id: gameState.room_id,
-                //                     } satisfies ConnectFour.StakedEvent["payload"],
-                //                 );
-                //             }
+                        if (gameState.state === "waiting") {
+                            if (isFreeTier) {
+                                socketRef.current.emit(
+                                    "staked" satisfies ConnectFour.StakedEvent["type"],
+                                    {
+                                        player_id: player_user_id,
+                                        tier_id: tier_id,
+                                        room_id: gameState.room_id,
+                                    } satisfies ConnectFour.StakedEvent["payload"],
+                                );
+                            }
 
-                //             return {
-                //                 ...gameState,
-                //                 state: "staking",
-                //                 round,
-                //                 player: {
-                //                     currentMove: "rock",
-                //                     currentScore: player.currentScore,
-                //                     player_id: player.player_id,
-                //                 },
-                //                 enemy: {
-                //                     currentMove: "rock",
-                //                     currentScore: enemy.currentScore,
-                //                     player_id: enemy.player_id,
-                //                 },
-                //             };
-                //         }
+                            return {
+                                ...gameState,
+                                state: "staking",
+                                player: {
+                                    currentMove: null,
+                                    player_id: player.player_id,
+                                },
+                                enemy: {
+                                    currentMove: null,
+                                    player_id: enemy.player_id,
+                                },
+                                board,
+                            };
+                        }
 
-                //         break;
-                //     }
+                        break;
+                    }
 
-                //     // ? Possible the game start fires before player joined event
-                //     case "game-start": {
-                //         const { round, player1, player2 } = action.payload;
-                //         const player =
-                //             player1.player_id === player_user_id
-                //                 ? player1
-                //                 : player2;
-                //         const enemy =
-                //             player1.player_id !== player_user_id
-                //                 ? player1
-                //                 : player2;
+                    // ? Possible the game start fires before player joined event
+                    case "game-start": {
+                        const { player1, player2, active_player, board } =
+                            action.payload;
+                        const player =
+                            player1.player_id === player_user_id
+                                ? player1
+                                : player2;
+                        const enemy =
+                            player1.player_id !== player_user_id
+                                ? player1
+                                : player2;
 
-                //         if (gameState.state === "staking") {
-                //             return {
-                //                 ...gameState,
-                //                 state: "ongoingRound",
-                //                 round,
-                //                 player: {
-                //                     currentMove: "rock",
-                //                     currentScore: player.currentScore,
-                //                     player_id: player.player_id,
-                //                 },
-                //                 enemy: {
-                //                     currentMove: "rock",
-                //                     currentScore: enemy.currentScore,
-                //                     player_id: enemy.player_id,
-                //                 },
-                //             };
-                //         }
-                //         break;
-                //     }
-                //     case "submit-move": {
-                //         if (gameState.state === "ongoingRound")
-                //             return { ...gameState, moveSubmitted: true };
-                //         break;
-                //     }
-                //     case "round-end": {
-                //         const { round, player1, player2, winner_id } =
-                //             action.payload;
+                        if (gameState.state === "staking") {
+                            return {
+                                ...gameState,
+                                state: "ongoingMove",
+                                player,
+                                enemy,
+                                moveSubmitted: false,
+                                active_player,
+                                board,
+                            };
+                        }
+                        break;
+                    }
+                    case "submit-move": {
+                        if (gameState.state === "ongoingMove")
+                            return { ...gameState, moveSubmitted: true };
+                        break;
+                    }
+                    case "move-end": {
+                        const { player1, player2, active_player, board } =
+                            action.payload;
 
-                //         const player =
-                //             player1.player_id === player_user_id
-                //                 ? player1
-                //                 : player2;
-                //         const enemy =
-                //             player1.player_id !== player_user_id
-                //                 ? player1
-                //                 : player2;
+                        const player =
+                            player1.player_id === player_user_id
+                                ? player1
+                                : player2;
+                        const enemy =
+                            player1.player_id !== player_user_id
+                                ? player1
+                                : player2;
 
-                //         if (
-                //             gameState.state === "ongoingRound" &&
-                //             player.currentMove &&
-                //             enemy.currentMove
-                //         ) {
-                //             return {
-                //                 ...gameState,
-                //                 state: "roundEnd",
-                //                 round,
-                //                 player: {
-                //                     ...player,
-                //                     currentMove: player.currentMove,
-                //                 },
-                //                 enemy: {
-                //                     ...enemy,
-                //                     currentMove: enemy.currentMove,
-                //                 },
-                //                 winner_id,
-                //             };
-                //         }
-                //         break;
-                //     }
-                //     case "next-round": {
-                //         if (gameState.state === "roundEnd") {
-                //             return {
-                //                 state: "ongoingRound",
-                //                 round: gameState.round + 1,
-                //                 enemy: {
-                //                     ...gameState.enemy,
-                //                     currentMove: "rock",
-                //                 },
-                //                 player: {
-                //                     ...gameState.player,
-                //                     currentMove: "rock",
-                //                 },
-                //                 room_id: gameState.room_id,
-                //             };
-                //         }
+                        if (gameState.state === "ongoingMove") {
+                            return {
+                                ...gameState,
+                                state: "ongoingMove",
+                                player,
+                                enemy,
+                                active_player,
+                                board,
+                                moveSubmitted: false,
+                            };
+                        }
+                        break;
+                    }
+                    case "tie": {
+                        const { player1, player2, active_player, board } =
+                            action.payload;
 
-                //         break;
-                //     }
-                //     case "game-end": {
-                //         const { player1, player2, round, winner_id } =
-                //             action.payload;
+                        const player =
+                            player1.player_id === player_user_id
+                                ? player1
+                                : player2;
+                        const enemy =
+                            player1.player_id !== player_user_id
+                                ? player1
+                                : player2;
 
-                //         const player =
-                //             player1.player_id === player_user_id
-                //                 ? player1
-                //                 : player2;
-                //         const enemy =
-                //             player1.player_id !== player_user_id
-                //                 ? player1
-                //                 : player2;
-                //         if (
-                //             gameState.state === "ongoingRound" &&
-                //             player.currentMove &&
-                //             enemy.currentMove
-                //         ) {
-                //             return {
-                //                 ...gameState,
-                //                 state: "gameEnd",
-                //                 round,
-                //                 player: {
-                //                     ...player,
-                //                     currentMove: player.currentMove,
-                //                 },
-                //                 enemy: {
-                //                     ...enemy,
-                //                     currentMove: enemy.currentMove,
-                //                 },
-                //                 winner_id,
-                //             };
-                //         }
-                //         break;
-                //     }
-                // }
+                        if (gameState.state === "ongoingMove") {
+                            return {
+                                ...gameState,
+                                state: "tie",
+                                player,
+                                enemy,
+                                active_player,
+                                board,
+                            };
+                        }
+
+                        break;
+                    }
+                    case "game-end": {
+                        const {
+                            player1,
+                            player2,
+                            winner_id,
+                            active_player,
+                            board,
+                        } = action.payload;
+
+                        const player =
+                            player1.player_id === player_user_id
+                                ? player1
+                                : player2;
+                        const enemy =
+                            player1.player_id !== player_user_id
+                                ? player1
+                                : player2;
+                        if (gameState.state === "ongoingMove") {
+                            return {
+                                ...gameState,
+                                state: "gameEnd",
+                                player,
+                                enemy,
+                                winner_id,
+                                active_player,
+                                board,
+                            };
+                        }
+                        break;
+                    }
+                }
 
                 return gameState;
             };
             const [gameState, dispatch] = useReducer(reducer, {
                 state: "initial",
                 player: {
-                    currentMove: { column: 0 },
-                    currentScore: 0,
+                    currentMove: null,
                     player_id: player_user_id,
                 },
-            });
+                board: emptyBoard,
+            } satisfies GameState);
 
-            // useEffect(() => {
-            //     const socket = socketRef.current;
-            //     socket.on("connect_error", (err) => {
-            //         console.log(err.message); // prints the message associated with the error
-            //     });
+            useEffect(() => {
+                const socket = socketRef.current;
+                socket.on("connect_error", (err) => {
+                    console.log(err.message); // prints the message associated with the error
+                });
 
-            //     socket.on("error", (err) => {
-            //         console.error(err); // prints the message associated with the error
-            //     });
+                socket.on("error", (err) => {
+                    console.error(err); // prints the message associated with the error
+                });
 
-            //     socket.onAny((event, ...args) => {
-            //         console.log("rx event", event, args);
-            //     });
-            //     socket.onAnyOutgoing((event, ...args) => {
-            //         console.log("tx event", event, args);
-            //     });
-            //     socket.on(
-            //         "player-joined" satisfies ConnectFour.PlayerJoinedEvent["type"],
-            //         (
-            //             payload: ConnectFour.PlayerJoinedEvent["payload"],
-            //         ) => {
-            //             dispatch({ type: "player-joined", payload });
-            //         },
-            //     );
-            //     socket.on(
-            //         "staking" satisfies ConnectFour.StakingEvent["type"],
-            //         (payload: ConnectFour.StakingEvent["payload"]) => {
-            //             dispatch({ type: "staking", payload });
-            //         },
-            //     );
-            //     socket.on(
-            //         "game-start" satisfies ConnectFour.GameStartEvent["type"],
-            //         (payload: ConnectFour.GameStartEvent["payload"]) => {
-            //             dispatch({ type: "game-start", payload });
-            //         },
-            //     );
-            //     socket.on(
-            //         "round-end" satisfies ConnectFour.RoundEndEvent["type"],
-            //         (payload: ConnectFour.RoundEndEvent["payload"]) => {
-            //             dispatch({ type: "round-end", payload });
-            //             setTimeout(() => {
-            //                 dispatch({ type: "next-round" });
-            //             }, 5000);
-            //         },
-            //     );
-            //     socket.on(
-            //         "game-end" satisfies ConnectFour.GameEndEvent["type"],
-            //         (payload: ConnectFour.GameEndEvent["payload"]) => {
-            //             dispatch({ type: "game-end", payload });
-            //         },
-            //     );
-            //     if (selectedChain) {
-            //         socket.emit(
-            //             "join" satisfies RockPaperScissors.JoinEvent["type"],
-            //             {
-            //                 player_id: player_user_id,
-            //                 game_id: RockPaperScissors.gameId,
-            //                 tier_id: tier_id,
-            //                 chain_id: parseInt(selectedChain.chainId, 16),
-            //             } satisfies RockPaperScissors.JoinEvent["payload"],
-            //         );
-            //     }
-            //     return () => {
-            //         socket.disconnect();
-            //     };
-            // }, []);
+                socket.onAny((event, ...args) => {
+                    console.log("rx event", event, args);
+                });
+                socket.onAnyOutgoing((event, ...args) => {
+                    console.log("tx event", event, args);
+                });
+                socket.on(
+                    "player-joined" satisfies ConnectFour.PlayerJoinedEvent["type"],
+                    (payload: ConnectFour.PlayerJoinedEvent["payload"]) => {
+                        dispatch({ type: "player-joined", payload });
+                    },
+                );
+                socket.on(
+                    "staking" satisfies ConnectFour.StakingEvent["type"],
+                    (payload: ConnectFour.StakingEvent["payload"]) => {
+                        dispatch({ type: "staking", payload });
+                    },
+                );
+                socket.on(
+                    "game-start" satisfies ConnectFour.GameStartEvent["type"],
+                    (payload: ConnectFour.GameStartEvent["payload"]) => {
+                        dispatch({ type: "game-start", payload });
+                    },
+                );
+                socket.on(
+                    "move-end" satisfies ConnectFour.MoveEndEvent["type"],
+                    (payload: ConnectFour.MoveEndEvent["payload"]) => {
+                        dispatch({ type: "move-end", payload });
+                    },
+                );
+                socket.on(
+                    "tie" satisfies ConnectFour.TieEvent["type"],
+                    (payload: ConnectFour.TieEvent["payload"]) => {
+                        dispatch({ type: "tie", payload });
+                    },
+                );
+
+                socket.on(
+                    "game-end" satisfies ConnectFour.GameEndEvent["type"],
+                    (payload: ConnectFour.GameEndEvent["payload"]) => {
+                        dispatch({ type: "game-end", payload });
+                    },
+                );
+                if (selectedChain) {
+                    socket.emit(
+                        "join" satisfies ConnectFour.JoinEvent["type"],
+                        {
+                            player_id: player_user_id,
+                            game_id: ConnectFour.gameId,
+                            tier_id: tier_id,
+                            chain_id: parseInt(selectedChain.chainId, 16),
+                        } satisfies ConnectFour.JoinEvent["payload"],
+                    );
+                }
+                return () => {
+                    socket.disconnect();
+                };
+            }, []);
+
+            const handleMove = (column: number) => () => {
+                if (
+                    gameState.state !== "ongoingMove" ||
+                    gameState.moveSubmitted ||
+                    !selectedChain
+                )
+                    return;
+
+                const moveEvent: ConnectFour.MoveEvent = {
+                    type: "move",
+                    payload: {
+                        room_id: gameState.room_id,
+                        player_id: gameState.player.player_id,
+                        move: { column },
+                        chain_id: parseInt(selectedChain.chainId, 16),
+                    },
+                };
+                socketRef.current.emit(moveEvent.type, moveEvent.payload);
+                dispatch({ type: "submit-move" });
+            };
+
+            const player = gameState.player;
+            const enemy =
+                gameState.state === "initial" ? undefined : gameState.enemy;
+            console.dir(gameState);
             return (
-                <main className="relative flex h-full flex-col bg-neutral-100">
+                <main className="relative flex h-full flex-col justify-center bg-[radial-gradient(#ABABFC,#8B81F8,#7863F1,#3F2E81)] p-4">
+                    <section className="grid w-full grid-cols-7 px-2">
+                        {Array(ConnectFour.columnCount)
+                            .fill(0)
+                            .map((_, index) => (
+                                <button
+                                    key={index}
+                                    className="block aspect-square w-full bg-blue-200/30 odd:bg-blue-200/25"
+                                    onClick={handleMove(index)}
+                                ></button>
+                            ))}
+                    </section>
+                    <section className="relative grid w-full grid-cols-7 grid-rows-6 p-2 after:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:border-8 after:border-blue-700 after:shadow-[inset_0_0_0_1px_#1d4ed8]">
+                        {gameState.board.flatMap((row) =>
+                            row.map((cell) => <Cell value={cell} />),
+                        )}
+                    </section>
+                    {enemy && (
+                        <section className="absolute left-0 top-0 p-2">
+                            <PlayerGameView
+                                timerSeconds={ConnectFour.moveTime}
+                                user_id={enemy.player_id}
+                            />
+                        </section>
+                    )}
+                    {player && (
+                        <section className="absolute bottom-0 right-0 p-2">
+                            <PlayerGameView
+                                timerSeconds={ConnectFour.moveTime}
+                                user_id={player.player_id}
+                            />
+                        </section>
+                    )}
+
                     {/* Middle text banner */}
                     {/* <section className="absolute left-0 top-1/2 w-full -translate-y-1/2 bg-neutral-500 p-1 text-center">
                         {gameState.state === "ongoingRound" && (
@@ -437,3 +486,12 @@ export default dynamic(
         ssr: false,
     },
 );
+
+function Cell({ value }: { value: string | null }) {
+    return (
+        <article className="relative aspect-square size-full">
+            <div className="connect-four-coin-mask absolute inset-0 bg-[linear-gradient(145deg,#a71919,#c61e1e)]" />
+            <div className="connect-four-cell-mask absolute inset-0 bg-blue-700" />
+        </article>
+    );
+}

@@ -101,4 +101,22 @@
         -webkit-mask-composite: xor; /*5'*/
         mask-composite: exclude; /*5*/
     }
+
+    .connect-four-cell-mask {
+        -webkit-mask:
+            url("../assets/connect-four-cell-mask.svg") 0/100% 100%,
+            linear-gradient(#fff, #fff);
+        -webkit-mask-composite: destination-out;
+        mask:
+            url("../assets/connect-four-cell-mask.svg") 0/100% 100%,
+            linear-gradient(#fff, #fff);
+        mask-composite: exclude;
+    }
+
+    .connect-four-coin-mask {
+        -webkit-mask: url("../assets/connect-four-coin-mask.svg") 0 0/100% 100%;
+        /* -webkit-mask-composite: destination-out; */
+        mask: url("../assets/connect-four-coin-mask.svg") 0 0/100% 100%;
+        /* mask-composite: exclude; */
+    }
 }

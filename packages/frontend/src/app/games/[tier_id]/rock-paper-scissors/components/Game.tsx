@@ -382,8 +382,31 @@ export default dynamic(
                     <EnemyScreen gameState={gameState} />
                     <PlayerScreen
                         gameState={gameState}
-                        socket={socketRef.current}
-                        onSubmitMove={() => dispatch({ type: "submit-move" })}
+                        onMove={(move) => {
+                            if (
+                                gameState.state !== "ongoingRound" ||
+                                gameState.moveSubmitted ||
+                                !selectedChain
+                            )
+                                return;
+                            const moveEvent: RockPaperScissors.MoveEvent = {
+                                type: "move",
+                                payload: {
+                                    room_id: gameState.room_id,
+                                    player_id: gameState.player.player_id,
+                                    move,
+                                    chain_id: parseInt(
+                                        selectedChain.chainId,
+                                        16,
+                                    ),
+                                },
+                            };
+                            socketRef.current.emit(
+                                moveEvent.type,
+                                moveEvent.payload,
+                            );
+                            dispatch({ type: "submit-move" });
+                        }}
                     />
 
                     {/* Middle text banner */}

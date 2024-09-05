@@ -3,48 +3,19 @@ import MoveImage, { MOVE_IMAGE_MAP } from "./MoveImage";
 import EllipsisLoader from "@/shared/EllipsisLoader";
 import PlayerGameView from "@/shared/PlayerGameView";
 import StarIcon from "@/shared/icons/StarIcon";
-import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import { RockPaperScissors } from "common";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { Socket } from "socket.io-client";
 
 type PlayerScreenProps = {
     gameState: GameState;
-    socket: Socket;
-    onSubmitMove: () => void;
+    onMove: (move: RockPaperScissors.Move) => void;
 };
 
-export default function PlayerScreen({
-    gameState,
-    socket,
-    onSubmitMove,
-}: PlayerScreenProps) {
-    const { selectedChain } = useSelectedChainContext();
-
-    const handleMove = (move: RockPaperScissors.Move) => {
-        if (
-            gameState.state !== "ongoingRound" ||
-            gameState.moveSubmitted ||
-            !selectedChain
-        )
-            return;
-        const moveEvent: RockPaperScissors.MoveEvent = {
-            type: "move",
-            payload: {
-                room_id: gameState.room_id,
-                player_id: gameState.player.player_id,
-                move,
-                chain_id: parseInt(selectedChain.chainId, 16),
-            },
-        };
-        socket.emit(moveEvent.type, moveEvent.payload);
-        onSubmitMove();
-    };
-
+export default function PlayerScreen({ gameState, onMove }: PlayerScreenProps) {
     const handleTimerEnd = () => {
         // Player didn't perform move on time
-        handleMove("skipped");
+        onMove("skipped");
     };
 
     const player = gameState.player;
@@ -115,9 +86,7 @@ export default function PlayerScreen({
                                                 }}
                                                 key={action}
                                                 className="block size-14 rounded-full border border-neutral-400 bg-black/50 p-2 shadow-md"
-                                                onClick={() =>
-                                                    handleMove(action)
-                                                }
+                                                onClick={() => onMove(action)}
                                             >
                                                 <Image
                                                     alt={action}

@@ -3,6 +3,7 @@ export const gameId = "94c14ce2-2110-4787-ab82-ec2945567f42";
 export const rowCount = 6;
 export const columnCount = 7;
 export const winCount = 4;
+export const moveTime = 30;
 
 export type Move = {
   column: number;
@@ -14,6 +15,16 @@ export type JoinEvent = {
     player_id: string;
     game_id: string;
     tier_id: string;
+    chain_id: number;
+  };
+};
+
+export type StakedEvent = {
+  type: "staked";
+  payload: {
+    player_id: string;
+    room_id: string;
+    tier_id: string;
   };
 };
 
@@ -23,10 +34,11 @@ export type MoveEvent = {
     player_id: string;
     room_id: string;
     move: Move;
+    chain_id: number;
   };
 };
 
-export type CLIENT_EVENTS = JoinEvent | MoveEvent;
+export type CLIENT_EVENTS = JoinEvent | StakedEvent | MoveEvent;
 
 export type PlayerJoinedEvent = {
   type: "player-joined";
@@ -34,6 +46,14 @@ export type PlayerJoinedEvent = {
     player_id: string;
     room_id: string;
   };
+};
+
+export type StakingEvent = {
+  type: "staking";
+  payload: Pick<
+    ServerGameState,
+    "active_player" | "board" | "player1" | "player2"
+  >;
 };
 
 export type GameStartEvent = {
@@ -69,6 +89,7 @@ export type GameEndEvent = {
 
 export type SERVER_EVENTS =
   | PlayerJoinedEvent
+  | StakingEvent
   | GameStartEvent
   | MoveEndEvent
   | TieEvent
