@@ -302,6 +302,13 @@ export default dynamic(
 
             useEffect(() => {
                 const socket = socketRef.current;
+
+                socket.connect();
+
+                socket.on("connect", () => {
+                    console.log("socket connected", socket.connected); // true
+                });
+
                 socket.on("connect_error", (err) => {
                     console.log(err.message); // prints the message associated with the error
                 });
@@ -363,6 +370,10 @@ export default dynamic(
                     );
                 }
                 return () => {
+                    socket.on("disconnect", (reason) => {
+                        console.log(reason);
+                    });
+
                     socket.disconnect();
                 };
             }, []);

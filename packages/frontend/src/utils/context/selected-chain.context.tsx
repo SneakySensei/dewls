@@ -47,7 +47,6 @@ export const SelectedChainContextProvider = ({
                         Number(selectedChain.chainId)
                     ],
                 );
-                console.log(balance);
                 setChainBalance(balance);
             } catch (error) {
                 console.error(error);

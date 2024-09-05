@@ -417,6 +417,7 @@ export const RockPaperScissorsRoutes = async (
 
                             // safe to cleanup now that all prior calls have gone through
                             await RedisClient.del(room_id);
+                            io.socketsLeave(room_id);
                         }
                     }
                 } catch (error) {
