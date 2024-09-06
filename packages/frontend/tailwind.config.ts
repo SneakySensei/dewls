@@ -65,6 +65,8 @@ const config: Config = {
             backgroundImage: {
                 "active-leaderboard": "url(/active-leaderboard.png)",
                 "leaderboard-coin": "url('/leaderboard-coin.svg')",
+                "coin-heads": "url('/not-found/heads.svg')",
+                "coin-tails": "url('/not-found/tails.svg')",
                 "gradient-active-tab":
                     "radial-gradient(50% 64.29% at 50% 117.86%, rgba(139, 129, 248, 0.75) 0%, rgba(63, 46, 129, 0) 75%)",
                 "gradient-logo-glow":
@@ -76,9 +78,27 @@ const config: Config = {
                 polkadots: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1.5'/%3E%3Ccircle cx='13' cy='13' r='1.5'/%3E%3C/g%3E%3C/svg%3E")`,
             },
             animation: {
+                "flip-heads": "flip-heads 3s ease-out forwards",
+                "flip-tails": "flip-tails 3s ease-out forwards",
                 shake: "shake 0.25s linear infinite",
             },
             keyframes: {
+                "flip-heads": {
+                    from: {
+                        transform: "rotateY(0deg)",
+                    },
+                    to: {
+                        transform: "rotateY(1800deg)",
+                    },
+                },
+                "flip-tails": {
+                    from: {
+                        transform: "rotateY(0deg)",
+                    },
+                    to: {
+                        transform: "rotateY(1980deg)",
+                    },
+                },
                 shake: {
                     "0%": { transform: "translate(0, 0) rotate(0deg)" },
                     "25%": { transform: "translate(5px, 5px) rotate(5deg)" },
