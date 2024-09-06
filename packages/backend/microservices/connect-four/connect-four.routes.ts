@@ -177,22 +177,35 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
 
                     if (gameState.player1.player_id === player_id) {
                         gameState.player1.staked = true;
+                        await RedisClient.hset(
+                            room_id,
+                            stringifyObjectValues<
+                                Pick<ConnectFour.ServerGameState, "player1">
+                            >({ player1: gameState.player1 }),
+                        );
                     } else if (gameState.player2.player_id === player_id) {
                         gameState.player2.staked = true;
+                        await RedisClient.hset(
+                            room_id,
+                            stringifyObjectValues<
+                                Pick<ConnectFour.ServerGameState, "player2">
+                            >({ player2: gameState.player2 }),
+                        );
                     } else {
                         throw Error(
                             `Player ${player_id} does not exist in room ${room_id}`,
                         );
                     }
 
-                    await RedisClient.hset(
-                        room_id,
-                        stringifyObjectValues<ConnectFour.ServerGameState>(
-                            gameState,
-                        ),
-                    );
+                    const updatedGameState =
+                        parseStringifiedValues<ConnectFour.ServerGameState>(
+                            await RedisClient.hgetall(room_id),
+                        );
 
-                    if (gameState.player1.staked && gameState.player2.staked) {
+                    if (
+                        updatedGameState.player1.staked &&
+                        updatedGameState.player2.staked
+                    ) {
                         await addMoneyToSeasonPool(season_id, tier_id);
 
                         const gameStartEvent: ConnectFour.GameStartEvent = {
