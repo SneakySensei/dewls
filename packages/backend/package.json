@@ -20,6 +20,10 @@
     "license": "ISC",
     "dependencies": {
         "@supabase/supabase-js": "^2.45.3",
+        "@xmtp/grpc-api-client": "^0.2.7",
+        "@xmtp/proto": "^3.68.0",
+        "@xmtp/redis-persistence": "^0.0.4",
+        "@xmtp/xmtp-js": "^12.1.0",
         "common": "workspace:*",
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
@@ -27,6 +31,7 @@
         "express": "^4.19.2",
         "ioredis": "^5.4.1",
         "jsonwebtoken": "^9.0.2",
+        "proto": "link:@types/@xmtp/proto",
         "socket.io": "^4.7.5",
         "yup": "^1.4.0"
     },
@@ -42,7 +47,9 @@
         "@typescript-eslint/parser": "^8.0.1",
         "eslint": "^9.8.0",
         "eslint-plugin-prettier": "^5.2.1",
+        "grpc-api-client": "link:@types/@xmtp/grpc-api-client",
         "prettier": "^3.3.3",
+        "redis-persistence": "link:@types/@xmtp/redis-persistence",
         "ts-node": "^10.9.2",
         "tsc-watch": "^6.2.0",
         "typescript": "^5.5.4"
