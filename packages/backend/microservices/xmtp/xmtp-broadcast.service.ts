@@ -46,7 +46,7 @@ export const subscribeBroadcast = async (
         throw new Error("Consent proof must be a string");
     }
 
-    const consentProofUint8Array = base64ToBytes(consentProof);
+    const consentProofUint8Array = base64ToBytes(consentProofString);
 
     const client = await XmtpClientService.getXmtpClient(broadcastAddress);
     const { greeting } = broadCastConfigEntities.map[broadcastAddress];

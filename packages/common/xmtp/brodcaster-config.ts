@@ -6,7 +6,7 @@ interface BroadcastConfig {
 
 const broadcastConfigs: BroadcastConfig[] = [
   {
-    address: "0x85583261a4c3ad6785Ac90BD8880393831F97F54",
+    address: "0x5b36284cE28c4EeE8edcB0E80A2999D3421960e1",
     greeting: "Welcome to Good morning XMTP Broadcasts",
     id: "XMTP",
   },
