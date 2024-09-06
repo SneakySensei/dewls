@@ -1,8 +1,6 @@
 import { broadCastConfigEntities } from "../../common/xmtp/brodcaster-config";
 import { base64ToBytes } from "../utils/functions";
 import { RedisService } from "./redis.service";
-import { GrpcApiClient } from "@xmtp/grpc-api-client";
-import { RedisPersistence } from "@xmtp/redis-persistence";
 import { Client, type XmtpEnv } from "@xmtp/xmtp-js";
 import { Redis } from "ioredis";
 
@@ -49,6 +47,13 @@ export class XmtpClientService {
                 }
 
                 try {
+                    const { GrpcApiClient } = await import(
+                        "@xmtp/grpc-api-client"
+                    );
+                    const { RedisPersistence } = await import(
+                        "@xmtp/redis-persistence"
+                    );
+
                     const client = await Client.create(null, {
                         privateKeyOverride: base64ToBytes(keyBundle),
                         apiClientFactory: GrpcApiClient.fromOptions as any,
