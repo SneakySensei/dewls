@@ -127,6 +127,7 @@ export type Board = [
 export type PlayerServerState = {
   currentMove: Move | null;
   player_id: string;
+  staked: boolean;
 };
 
 export const emptyBoard: Board = [

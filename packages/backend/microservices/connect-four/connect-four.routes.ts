@@ -1,4 +1,4 @@
-import { RedisService } from "../../services";
+import { EthersService, RedisService } from "../../services";
 import {
     parseStringifiedValues,
     stringifyObjectValues,
@@ -7,9 +7,13 @@ import {
 import {
     addPlayer2ToGame,
     createGame,
+    fetchPlayersDetailsForPlayedGame,
     setWinnerToGame,
 } from "../played-games/played-games.service";
-import { fetchCurrentSeason } from "../seasons/seasons.service";
+import {
+    addMoneyToSeasonPool,
+    fetchCurrentSeason,
+} from "../seasons/seasons.service";
 import { checkTie, checkWinner } from "./connect-four.service";
 import { ConnectFour } from "common";
 import { type Namespace, type Socket } from "socket.io";
@@ -31,15 +35,16 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                 game_id,
                 tier_id,
                 player_id,
+                chain_id,
             }: ConnectFour.JoinEvent["payload"]) => {
                 try {
-                    const roomKey: string = `${season_id}::${game_id}::${tier_id}`;
+                    const roomKey: string = `${season_id}::${game_id}::${tier_id}::${chain_id}`;
                     const logId: string = `[${season_id}][${game_id}][${tier_id}][${player_id}]`;
 
-                    let roomId: string | null =
+                    let room_id: string | null =
                         (await RedisClient.lpop(roomKey)) || null;
 
-                    if (!roomId) {
+                    if (!room_id) {
                         console.info(
                             logId,
                             `no room found for room key ${roomKey}`,
@@ -50,18 +55,19 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                             season_id,
                             game_id,
                             tier_id,
+                            chain_id,
                         );
 
-                        roomId = played_game_id;
+                        room_id = played_game_id;
 
-                        await RedisClient.rpush(roomKey, roomId);
+                        await RedisClient.rpush(roomKey, room_id);
                         console.info(
                             logId,
-                            `pushed room id ${roomId} in room key ${roomKey}`,
+                            `pushed room id ${room_id} in room key ${roomKey}`,
                         );
 
                         await RedisClient.hset(
-                            roomId,
+                            room_id,
                             stringifyObjectValues<
                                 Omit<ConnectFour.ServerGameState, "player2">
                             >({
@@ -70,6 +76,7 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                                 player1: {
                                     player_id,
                                     currentMove: null,
+                                    staked: false,
                                 },
                                 board: ConnectFour.emptyBoard,
                             }),
@@ -77,7 +84,7 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
 
                         console.info(
                             logId,
-                            `saved game state in hashmap ${roomId}`,
+                            `saved game state in hashmap ${room_id}`,
                         );
                     } else {
                         console.info(
@@ -87,65 +94,112 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
 
                         // TODO: fix self joining room
 
-                        await addPlayer2ToGame(roomId, player_id);
+                        await addPlayer2ToGame(room_id, player_id);
 
                         await RedisClient.hset(
-                            roomId,
+                            room_id,
                             stringifyObjectValues<
                                 Pick<ConnectFour.ServerGameState, "player2">
                             >({
                                 player2: {
                                     player_id,
                                     currentMove: null,
+                                    staked: false,
                                 },
                             }),
                         );
 
                         console.info(
                             logId,
-                            `updated game state in hashmap ${roomId}`,
+                            `updated game state in hashmap ${room_id}`,
                         );
                     }
 
-                    socket.join(roomId);
-                    console.info(logId, `user joined ${roomId}`);
+                    socket.join(room_id);
+                    console.info(logId, `user joined ${room_id}`);
 
                     const playerJoinedEvent: ConnectFour.PlayerJoinedEvent = {
                         type: "player-joined",
                         payload: {
-                            room_id: roomId,
+                            room_id: room_id,
                             player_id,
                         },
                     };
-                    io.to(roomId).emit(
+                    io.to(room_id).emit(
                         playerJoinedEvent.type,
                         playerJoinedEvent.payload,
                     );
 
-                    const { player1, player2, active_player, board } =
+                    const gameState =
                         parseStringifiedValues<ConnectFour.ServerGameState>(
-                            await RedisClient.hgetall(roomId),
+                            await RedisClient.hgetall(room_id),
                         );
 
-                    if (player1 && player2) {
-                        console.info(logId, `starting game ${roomId}`);
+                    if (gameState.player1 && gameState.player2) {
+                        const { player_1, player_2 } =
+                            await fetchPlayersDetailsForPlayedGame(room_id);
+
+                        await EthersService.createContractGame(
+                            room_id,
+                            player_1.wallet_address,
+                            player_2.wallet_address,
+                            tier_id,
+                            chain_id,
+                        );
+
+                        const stakingEvent: ConnectFour.StakingEvent = {
+                            type: "staking",
+                            payload: gameState,
+                        };
+                        io.to(room_id).emit(
+                            stakingEvent.type,
+                            stakingEvent.payload,
+                        );
+                    }
+                } catch (error) {
+                    WSError(socket, error);
+                }
+            },
+        );
+
+        socket.on(
+            "staked" satisfies ConnectFour.StakedEvent["type"],
+            async ({
+                room_id,
+                player_id,
+                tier_id,
+            }: ConnectFour.StakedEvent["payload"]) => {
+                try {
+                    const gameState =
+                        parseStringifiedValues<ConnectFour.ServerGameState>(
+                            await RedisClient.hgetall(room_id),
+                        );
+
+                    if (gameState.player1.player_id === player_id) {
+                        gameState.player1.staked = true;
+                    } else if (gameState.player2.player_id === player_id) {
+                        gameState.player2.staked = true;
+                    } else {
+                        throw Error(
+                            `Player ${player_id} does not exist in room ${room_id}`,
+                        );
+                    }
+
+                    await RedisClient.hset(
+                        room_id,
+                        stringifyObjectValues<ConnectFour.ServerGameState>(
+                            gameState,
+                        ),
+                    );
+
+                    if (gameState.player1.staked && gameState.player2.staked) {
+                        await addMoneyToSeasonPool(season_id, tier_id);
 
                         const gameStartEvent: ConnectFour.GameStartEvent = {
                             type: "game-start",
-                            payload: {
-                                player1: {
-                                    currentMove: null,
-                                    player_id: player1.player_id,
-                                },
-                                player2: {
-                                    currentMove: null,
-                                    player_id: player2.player_id,
-                                },
-                                active_player,
-                                board,
-                            },
+                            payload: gameState,
                         };
-                        io.to(roomId).emit(
+                        io.to(room_id).emit(
                             gameStartEvent.type,
                             gameStartEvent.payload,
                         );
@@ -162,6 +216,7 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                 move,
                 room_id,
                 player_id,
+                chain_id,
             }: ConnectFour.MoveEvent["payload"]) => {
                 try {
                     const gameState =
@@ -224,21 +279,18 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                     const win = checkWinner(gameState.board, player_id);
 
                     if (!win) {
-                        const moveEndEvent: ConnectFour.MoveEndEvent = {
-                            type: "move-end",
-                            payload: gameState,
-                        };
-                        io.to(room_id).emit(
-                            moveEndEvent.type,
-                            moveEndEvent.payload,
-                        );
-
-                        gameState.player1.currentMove = null;
-                        gameState.player2.currentMove = null;
-
                         const tie = checkTie(gameState.board);
 
-                        if (tie) {
+                        if (!tie) {
+                            const moveEndEvent: ConnectFour.MoveEndEvent = {
+                                type: "move-end",
+                                payload: gameState,
+                            };
+                            io.to(room_id).emit(
+                                moveEndEvent.type,
+                                moveEndEvent.payload,
+                            );
+                        } else {
                             gameState.board = ConnectFour.emptyBoard;
                             const tieEvent: ConnectFour.TieEvent = {
                                 type: "tie",
@@ -250,6 +302,9 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                             );
                         }
 
+                        gameState.player1.currentMove = null;
+                        gameState.player2.currentMove = null;
+
                         await RedisClient.hset(
                             room_id,
                             stringifyObjectValues<ConnectFour.ServerGameState>(
@@ -258,9 +313,6 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                         );
                     } else {
                         gameState.winner_id = activePlayer.player_id;
-                        await setWinnerToGame(room_id, gameState.winner_id);
-
-                        await RedisClient.del(room_id);
 
                         const gameEndEvent: ConnectFour.GameEndEvent = {
                             type: "game-end",
@@ -271,6 +323,25 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                             gameEndEvent.type,
                             gameEndEvent.payload,
                         );
+
+                        const [{ player_1, player_2 }] = await Promise.all([
+                            fetchPlayersDetailsForPlayedGame(room_id),
+                            setWinnerToGame(room_id, gameState.winner_id),
+                        ]);
+
+                        await EthersService.endGame(
+                            room_id,
+                            gameState.winner_id === player_1.player_id
+                                ? player_1.wallet_address
+                                : player_2.wallet_address,
+                            gameState.winner_id === player_1.player_id
+                                ? player_2.wallet_address
+                                : player_1.wallet_address,
+                            chain_id,
+                        );
+
+                        await RedisClient.del(room_id);
+                        io.socketsLeave(room_id);
                     }
                 } catch (error) {
                     WSError(socket, error);
