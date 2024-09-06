@@ -85,7 +85,7 @@ export const sendBroadcast = async (text: string, address: string) => {
         throw new Error("Client not initialized");
     }
 
-    const subscribers = getDevWalletAddresses();
+    const subscribers = [""];
     const broadcastId = addBroadcast(client.address, subscribers, text);
     startBroadcast(client, subscribers, text, broadcastId);
 
