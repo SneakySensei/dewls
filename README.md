@@ -31,8 +31,8 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 
 
 # ⏭️ **What's next for DEWL?**
-- With its proof-of-win mechanism and the ability to wager on oneself, DEWL$ could become an ideal platform for competitive esports. This could lead to partnerships with gaming organizations and sponsorship opportunities, as the platform could facilitate tournaments where players or teams bet on their own performance, creating higher stakes for professional gameplay.
-- With the multi-chain capability already part of the platform’s core, DEWL$ can expand by integrating with more blockchains, creating a truly cross-chain gaming ecosystem. This will allow players from different blockchain networks to participate seamlessly, increasing the platform’s user base and liquidity. 
+- With its proof-of-win mechanism and the ability to wager on oneself, DEWLS could become an ideal platform for competitive esports. This could lead to partnerships with gaming organizations and sponsorship opportunities, as the platform could facilitate tournaments where players or teams bet on their own performance, creating higher stakes for professional gameplay.
+- With the multi-chain capability already part of the platform’s core, DEWLS can expand by integrating with more blockchains, creating a truly cross-chain gaming ecosystem. This will allow players from different blockchain networks to participate seamlessly, increasing the platform’s user base and liquidity. 
 - DEWLS could collaborate with third-party developers to build a diverse library of arcade games that leverage the platform's betting and blockchain infrastructure. By providing incentives for developers to create games that align with DEWLS's vision, the platform could foster a larger ecosystem of blockchain-based arcade games, further driving user growth.
 
 
