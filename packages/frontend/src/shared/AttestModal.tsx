@@ -37,7 +37,7 @@ export default function AttestModal({
 
         const timeout = setTimeout(() => {
             setModalOpen(true);
-        }, 5000);
+        }, 3000);
 
         return () => {
             clearTimeout(timeout);
@@ -114,7 +114,7 @@ export default function AttestModal({
                                 </p>
                             ) : attestingSuccess ? (
                                 <Button onClick={redirectToGameListing}>
-                                    Play again
+                                    Home
                                 </Button>
                             ) : (
                                 <>

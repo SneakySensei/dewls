@@ -4,6 +4,8 @@ import EnemyScreen from "./EnemyScreen";
 import PlayerScreen from "./PlayerScreen";
 import useSocket from "@/hooks/useSocket";
 import AttestModal from "@/shared/AttestModal";
+import Countdown from "@/shared/Countdown";
+import LoseModal from "@/shared/LoseModal";
 import StakingModal from "@/shared/StakingModal";
 import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
@@ -331,7 +333,7 @@ export default function Game({ tier_id }: Props) {
             dispatch({ type: "round-end", payload });
             setTimeout(() => {
                 dispatch({ type: "next-round" });
-            }, 5000);
+            }, 3000);
         };
         const handleGameEnd = (
             payload: RockPaperScissors.GameEndEvent["payload"],
@@ -439,18 +441,37 @@ export default function Game({ tier_id }: Props) {
                 )}
                 {gameState.state === "roundEnd" && (
                     <h2 className="text-display-2">
-                        {gameState.winner_id
-                            ? gameState.winner_id === gameState.player.player_id
-                                ? "You win the round!"
-                                : "Enemy wins the round!"
-                            : "Draw!"}
+                        {gameState.winner_id ? (
+                            gameState.winner_id ===
+                            gameState.player.player_id ? (
+                                <>
+                                    You win the round! Next round in{" "}
+                                    <Countdown timeSeconds={3} />
+                                </>
+                            ) : (
+                                <>
+                                    Enemy wins the round. Next round in{" "}
+                                    <Countdown timeSeconds={3} />
+                                </>
+                            )
+                        ) : (
+                            "Draw!"
+                        )}
                     </h2>
                 )}
                 {gameState.state === "gameEnd" && (
                     <h2 className="text-display-2">
-                        {gameState.winner_id === gameState.player.player_id
-                            ? "You win!"
-                            : "Enemy wins!"}
+                        {gameState.winner_id === gameState.player.player_id ? (
+                            <>
+                                You win! Finalizing...
+                                <Countdown timeSeconds={3} />
+                            </>
+                        ) : (
+                            <>
+                                Enemy wins! Finalizing...
+                                <Countdown timeSeconds={3} />
+                            </>
+                        )}
                     </h2>
                 )}
             </section>
@@ -494,6 +515,13 @@ export default function Game({ tier_id }: Props) {
                     tier_id={tier_id}
                 />
             )}
+
+            <LoseModal
+                open={
+                    gameState.state === "gameEnd" &&
+                    player_user_id !== gameState.winner_id
+                }
+            />
         </main>
     );
 }

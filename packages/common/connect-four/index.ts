@@ -138,3 +138,100 @@ export const emptyBoard: Board = [
   [null, null, null, null, null, null, null],
   [null, null, null, null, null, null, null],
 ];
+
+const checkDirection = (
+  user_id: string,
+  [a, b, c, d]: [BoardCellState, BoardCellState, BoardCellState, BoardCellState]
+): boolean => {
+  return a === user_id && a == b && a == c && a == d;
+};
+
+export const getWinner = (board: Board, user_id: string) => {
+  // * INFO: check down
+  for (let r = 0; r <= rowCount - winCount; r++)
+    for (let c = 0; c < columnCount; c++)
+      if (
+        checkDirection(user_id, [
+          board[r][c],
+          board[r + 1][c],
+          board[r + 2][c],
+          board[r + 3][c],
+        ])
+      ) {
+        return [
+          { i: r, j: c },
+          { i: r + 2, j: c },
+          { i: r + 1, j: c },
+          { i: r + 3, j: c },
+        ];
+      }
+
+  // * INFO: check right
+  for (let r = 0; r < rowCount; r++)
+    for (let c = 0; c <= columnCount - winCount; c++)
+      if (
+        checkDirection(user_id, [
+          board[r][c],
+          board[r][c + 1],
+          board[r][c + 2],
+          board[r][c + 3],
+        ])
+      ) {
+        return [
+          { i: r, j: c },
+          { i: r, j: c + 1 },
+          { i: r, j: c + 2 },
+          { i: r, j: c + 3 },
+        ];
+      }
+
+  // * INFO: check down-right
+  for (let r = 0; r <= rowCount - winCount; r++)
+    for (let c = 0; c <= columnCount - winCount; c++)
+      if (
+        checkDirection(user_id, [
+          board[r][c],
+          board[r + 1][c + 1],
+          board[r + 2][c + 2],
+          board[r + 3][c + 3],
+        ])
+      ) {
+        return [
+          { i: r, j: c },
+          { i: r + 1, j: c + 1 },
+          { i: r + 2, j: c + 2 },
+          { i: r + 3, j: c + 3 },
+        ];
+      }
+
+  // * INFO: check down-left
+  for (let r = winCount - 1; r < rowCount; r++)
+    for (let c = 0; c <= columnCount - winCount; c++)
+      if (
+        checkDirection(user_id, [
+          board[r][c],
+          board[r - 1][c + 1],
+          board[r - 2][c + 2],
+          board[r - 3][c + 3],
+        ])
+      ) {
+        return [
+          { i: r, j: c },
+          { i: r - 1, j: c + 1 },
+          { i: r - 2, j: c + 2 },
+          { i: r - 3, j: c + 3 },
+        ];
+      }
+
+  return null;
+};
+
+export const checkTie = (board: Board): boolean => {
+  for (let j = 0; j < columnCount; j++) {
+    if (board[0][j] === null) {
+      return false;
+    }
+  }
+
+  return true;
+};

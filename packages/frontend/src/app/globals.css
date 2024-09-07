@@ -15,6 +15,10 @@
         text-wrap: balance;
     }
 
+    .h-screen {
+        height: 100dvh;
+    }
+
     .circular-progress {
         --size: 40px;
         --half-size: calc(var(--size) / 2);

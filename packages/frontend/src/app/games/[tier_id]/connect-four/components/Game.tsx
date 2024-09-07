@@ -1,7 +1,10 @@
 "use client";
 
+import Announcements from "./Announcements";
+import Board from "./Board";
 import useSocket from "@/hooks/useSocket";
 import AttestModal from "@/shared/AttestModal";
+import LoseModal from "@/shared/LoseModal";
 import PlayerGameView from "@/shared/PlayerGameView";
 import StakingModal from "@/shared/StakingModal";
 import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
@@ -9,7 +12,6 @@ import { useSelectedChainContext } from "@/utils/context/selected-chain.context"
 import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { ResponseWithData, MappedSeason } from "@/utils/types";
-import clsx from "clsx";
 import { ConnectFour } from "common";
 import { emptyBoard } from "common/connect-four";
 import dynamic from "next/dynamic";
@@ -89,7 +91,10 @@ export default dynamic(
 
             const reducer = (
                 gameState: GameState,
-                action: ConnectFour.SERVER_EVENTS | { type: "submit-move" },
+                action:
+                    | ConnectFour.SERVER_EVENTS
+                    | { type: "submit-move" }
+                    | { type: "restart" },
             ): GameState => {
                 switch (action.type) {
                     case "player-joined": {
@@ -231,16 +236,33 @@ export default dynamic(
                                 : player2;
 
                         if (gameState.state === "ongoingMove") {
+                            setTimeout(() => {
+                                dispatch({ type: "restart" });
+                            }, 3000);
                             return {
-                                ...gameState,
                                 state: "tie",
+                                room_id: gameState.room_id,
                                 player,
                                 enemy,
                                 active_player,
-                                board,
+                                board: gameState.board,
                             };
                         }
 
+                        break;
+                    }
+                    case "restart": {
+                        if (gameState.state === "tie") {
+                            return {
+                                state: "ongoingMove",
+                                room_id: gameState.room_id,
+                                board: ConnectFour.emptyBoard,
+                                active_player: gameState.active_player,
+                                moveSubmitted: false,
+                                enemy: gameState.enemy,
+                                player: gameState.player,
+                            };
+                        }
                         break;
                     }
                     case "game-end": {
@@ -418,10 +440,11 @@ export default dynamic(
                 };
             }, [socket.connected]);
 
-            const handleMove = (column: number) => () => {
+            const handleMove = (column: number) => {
                 if (
                     gameState.state !== "ongoingMove" ||
                     gameState.moveSubmitted ||
+                    gameState.active_player !== player.player_id ||
                     !socket.connected ||
                     !selectedChain
                 )
@@ -446,32 +469,15 @@ export default dynamic(
             console.log(gameState);
             return (
                 <main className="relative flex h-full flex-col justify-center bg-[radial-gradient(#ABABFC,#8B81F8,#7863F1,#3F2E81)] p-4">
-                    <section className="grid w-full grid-cols-7 px-2">
-                        {Array(ConnectFour.columnCount)
-                            .fill(0)
-                            .map((_, index) => (
-                                <button
-                                    key={index}
-                                    className="block aspect-square w-full bg-blue-200/30 odd:bg-blue-200/25"
-                                    onClick={handleMove(index)}
-                                ></button>
-                            ))}
-                    </section>
-                    <section className="relative grid w-full grid-cols-7 grid-rows-6 p-2 after:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:border-8 after:border-blue-700 after:shadow-[inset_0_0_0_1px_#1d4ed8]">
-                        {gameState.board.flatMap((row, i) =>
-                            row.map((cell, j) => (
-                                <Cell
-                                    gameState={gameState}
-                                    value={cell}
-                                    key={`${i},${j}`}
-                                />
-                            )),
-                        )}
-                    </section>
+                    <Board gameState={gameState} onMove={handleMove} />
                     {enemy && (
                         <section className="absolute left-0 top-0 p-2">
                             <PlayerGameView
                                 timerSeconds={ConnectFour.moveTime}
+                                showTimer={
+                                    gameState.state === "ongoingMove" &&
+                                    gameState.active_player === enemy.player_id
+                                }
                                 user_id={enemy.player_id}
                             />
                         </section>
@@ -480,18 +486,23 @@ export default dynamic(
                         <section className="absolute bottom-0 right-0 p-2">
                             <PlayerGameView
                                 timerSeconds={ConnectFour.moveTime}
+                                showTimer={
+                                    gameState.state === "ongoingMove" &&
+                                    gameState.active_player ===
+                                        player.player_id &&
+                                    !gameState.moveSubmitted
+                                }
+                                onTimerEnd={() => handleMove(-1)}
                                 user_id={player.player_id}
                             />
                         </section>
                     )}
 
+                    <Announcements gameState={gameState} />
+
                     {/* Middle text banner */}
                     {/* <section className="absolute left-0 top-1/2 w-full -translate-y-1/2 bg-neutral-500 p-1 text-center">
-                        {gameState.state === "ongoingRound" && (
-                            <h2 className="text-display-2">
-                                Round {gameState.round + 1}
-                            </h2>
-                        )}
+                        
                         {gameState.state === "roundEnd" && (
                             <h2 className="text-display-2">
                                 {gameState.winner_id
@@ -554,6 +565,12 @@ export default dynamic(
                             tier_id={tier_id}
                         />
                     )}
+                    <LoseModal
+                        open={
+                            gameState.state === "gameEnd" &&
+                            player_user_id !== gameState.winner_id
+                        }
+                    />
                 </main>
             );
         }),
@@ -561,31 +578,3 @@ export default dynamic(
         ssr: false,
     },
 );
-
-function Cell({
-    value,
-    gameState,
-}: {
-    value: ConnectFour.BoardCellState;
-    gameState: GameState;
-}) {
-    const isPlayerOccupied = gameState.player.player_id === value;
-    const isEnemyOccupied =
-        gameState.state !== "initial" && gameState.enemy?.player_id === value;
-
-    return (
-        <article className="relative aspect-square size-full">
-            {(isPlayerOccupied || isEnemyOccupied) && (
-                <div
-                    className={clsx(
-                        "connect-four-coin-mask absolute inset-0",
-                        isEnemyOccupied &&
-                            "bg-[linear-gradient(145deg,#a71919,#c61e1e)]",
-                        isPlayerOccupied && "bg-amber-400",
-                    )}
-                />
-            )}
-            <div className="connect-four-cell-mask absolute inset-0 bg-blue-700" />
-        </article>
-    );
-}

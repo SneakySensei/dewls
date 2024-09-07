@@ -16,7 +16,6 @@ import {
     addMoneyToSeasonPool,
     fetchCurrentSeason,
 } from "../seasons/seasons.service";
-import { checkTie, checkWinner } from "./connect-four.service";
 import { ConnectFour } from "common";
 import { type Namespace, type Socket } from "socket.io";
 
@@ -324,10 +323,10 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                     }
                 }
 
-                const win = checkWinner(gameState.board, player_id);
+                const win = ConnectFour.getWinner(gameState.board, player_id);
 
                 if (!win) {
-                    const tie = checkTie(gameState.board);
+                    const tie = ConnectFour.checkTie(gameState.board);
 
                     if (!tie) {
                         const moveEndEvent: ConnectFour.MoveEndEvent = {

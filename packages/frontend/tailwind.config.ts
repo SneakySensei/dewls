@@ -81,6 +81,7 @@ const config: Config = {
                 "flip-heads": "flip-heads 3s ease-out forwards",
                 "flip-tails": "flip-tails 3s ease-out forwards",
                 shake: "shake 0.25s linear infinite",
+                blink: "blink 1s step-start forwards",
             },
             keyframes: {
                 "flip-heads": {
@@ -105,6 +106,10 @@ const config: Config = {
                     "50%": { transform: "translate(0, 0) rotate(0eg)" },
                     "75%": { transform: "translate(-5px, 5px) rotate(-5deg)" },
                     "100%": { transform: "translate(0, 0) rotate(0deg)" },
+                },
+                blink: {
+                    "0%,33.33%,66.66%, 100%": { opacity: "1" },
+                    "16.66%,50%,83.33%": { opacity: "0" },
                 },
             },
         },
