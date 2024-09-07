@@ -8,7 +8,7 @@
         "build": "([ ! -d dist ] || rm -r dist) && tsc",
         "lint": "eslint .",
         "pretty": "prettier . --write",
-        "start": "node --experimental-modules ./dist/backend/app.js",
+        "start": "node ./dist/app.js",
         "types:database": "node ./scripts/generate-supabase-types.js"
     },
     "engines": {
