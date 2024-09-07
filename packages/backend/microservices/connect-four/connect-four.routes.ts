@@ -271,6 +271,10 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                     return;
                 }
 
+                // validate invalid move
+                if (move.column < -1 || move.column >= ConnectFour.columnCount)
+                    return;
+
                 if (gameState.winner_id) {
                     return;
                 }
