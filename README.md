@@ -23,7 +23,18 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 
 
 # 💻 **Tech Stack**
-
+- NextJS
+- ReactJS
+- TypeScript 
+- NodeJS
+- ExpressJS
+- Solidity
+- Supabase
+- Redis
+- Socket.IO Protocol
+- Hedera HCSC
+- Hedera HTS
+- XMTP Subscribe
 
 
 # 📦 **Inside the box**
