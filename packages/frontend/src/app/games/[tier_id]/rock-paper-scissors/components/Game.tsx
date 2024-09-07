@@ -2,6 +2,7 @@
 
 import EnemyScreen from "./EnemyScreen";
 import PlayerScreen from "./PlayerScreen";
+import useSocket from "@/hooks/useSocket";
 import AttestModal from "@/shared/AttestModal";
 import StakingModal from "@/shared/StakingModal";
 import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
@@ -9,11 +10,9 @@ import { useSelectedChainContext } from "@/utils/context/selected-chain.context"
 import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { MappedSeason, ResponseWithData } from "@/utils/types";
-import { getSocketManager } from "@/utils/websockets";
 import { RockPaperScissors } from "common";
 import dynamic from "next/dynamic";
-import { useEffect, useReducer, useRef, useState } from "react";
-import { Socket } from "socket.io-client";
+import { useEffect, useReducer, useState } from "react";
 
 type Props = {
     tier_id: string;
@@ -80,13 +79,10 @@ export default dynamic(
             const player_user_id = user!.data.player_id;
             const player_token = user!.token;
 
-            const socketRef = useRef<Socket>(
-                getSocketManager().socket(`/${RockPaperScissors.slug}`, {
-                    auth: {
-                        token: player_token,
-                    },
-                }),
-            );
+            const socket = useSocket({
+                namespace: RockPaperScissors.slug,
+                auth_token: player_token,
+            });
 
             const reducer = (
                 gameState: GameState,
@@ -137,7 +133,7 @@ export default dynamic(
 
                         if (gameState.state === "waiting") {
                             if (isFreeTier) {
-                                socketRef.current.emit(
+                                socket.handle.emit(
                                     "staked" satisfies RockPaperScissors.StakedEvent["type"],
                                     {
                                         player_id: player_user_id,
@@ -318,82 +314,113 @@ export default dynamic(
             }, []);
 
             useEffect(() => {
-                const socket = socketRef.current;
+                if (!socket.connected || !selectedChain) return;
 
-                socket.connect();
-
-                socket.on("connect", () => {
-                    console.log("socket connected", socket.connected); // true
-                });
-
-                socket.on("connect_error", (err) => {
+                const handleConnectError = (err: Error) => {
                     console.log(err.message); // prints the message associated with the error
-                });
-
-                socket.on("error", (err) => {
-                    console.error(err); // prints the message associated with the error
-                });
-
-                socket.onAny((event, ...args) => {
-                    console.log("rx event", event, args);
-                });
-                socket.onAnyOutgoing((event, ...args) => {
-                    console.log("tx event", event, args);
-                });
-                socket.on(
-                    "player-joined" satisfies RockPaperScissors.PlayerJoinedEvent["type"],
-                    (
-                        payload: RockPaperScissors.PlayerJoinedEvent["payload"],
-                    ) => {
-                        dispatch({ type: "player-joined", payload });
-                    },
-                );
-                socket.on(
-                    "staking" satisfies RockPaperScissors.StakingEvent["type"],
-                    (payload: RockPaperScissors.StakingEvent["payload"]) => {
-                        dispatch({ type: "staking", payload });
-                    },
-                );
-                socket.on(
-                    "game-start" satisfies RockPaperScissors.GameStartEvent["type"],
-                    (payload: RockPaperScissors.GameStartEvent["payload"]) => {
-                        dispatch({ type: "game-start", payload });
-                    },
-                );
-                socket.on(
-                    "round-end" satisfies RockPaperScissors.RoundEndEvent["type"],
-                    (payload: RockPaperScissors.RoundEndEvent["payload"]) => {
-                        dispatch({ type: "round-end", payload });
-                        setTimeout(() => {
-                            dispatch({ type: "next-round" });
-                        }, 5000);
-                    },
-                );
-                socket.on(
-                    "game-end" satisfies RockPaperScissors.GameEndEvent["type"],
-                    (payload: RockPaperScissors.GameEndEvent["payload"]) => {
-                        dispatch({ type: "game-end", payload });
-                    },
-                );
-                if (selectedChain) {
-                    socket.emit(
-                        "join" satisfies RockPaperScissors.JoinEvent["type"],
-                        {
-                            player_id: player_user_id,
-                            game_id: RockPaperScissors.gameId,
-                            tier_id: tier_id,
-                            chain_id: parseInt(selectedChain.chainId, 16),
-                        } satisfies RockPaperScissors.JoinEvent["payload"],
-                    );
-                }
-                return () => {
-                    socket.on("disconnect", (reason) => {
-                        console.log(reason);
-                    });
-
-                    socket.disconnect();
                 };
-            }, []);
+                const handleError = (err: any) => {
+                    console.error(err); // prints the message associated with the error
+                };
+                const handleAny = (event: any, ...args: any[]) => {
+                    console.log("rx event", event, args);
+                };
+                const handleAnyOutgoing = (event: any, ...args: any[]) => {
+                    console.log("tx event", event, args);
+                };
+
+                const handlePlayerJoined = (
+                    payload: RockPaperScissors.PlayerJoinedEvent["payload"],
+                ) => {
+                    dispatch({ type: "player-joined", payload });
+                };
+                const handleStaking = (
+                    payload: RockPaperScissors.StakingEvent["payload"],
+                ) => {
+                    dispatch({ type: "staking", payload });
+                };
+                const handleGameStart = (
+                    payload: RockPaperScissors.GameStartEvent["payload"],
+                ) => {
+                    dispatch({ type: "game-start", payload });
+                };
+                const handleRoundEnd = (
+                    payload: RockPaperScissors.RoundEndEvent["payload"],
+                ) => {
+                    dispatch({ type: "round-end", payload });
+                    setTimeout(() => {
+                        dispatch({ type: "next-round" });
+                    }, 5000);
+                };
+                const handleGameEnd = (
+                    payload: RockPaperScissors.GameEndEvent["payload"],
+                ) => {
+                    dispatch({ type: "game-end", payload });
+                };
+
+                socket.handle.on("connect_error", handleConnectError);
+                socket.handle.on("error", handleError);
+                socket.handle.onAny(handleAny);
+                socket.handle.onAnyOutgoing(handleAnyOutgoing);
+                socket.handle.on(
+                    "player-joined" satisfies RockPaperScissors.PlayerJoinedEvent["type"],
+                    handlePlayerJoined,
+                );
+                socket.handle.on(
+                    "staking" satisfies RockPaperScissors.StakingEvent["type"],
+                    handleStaking,
+                );
+                socket.handle.on(
+                    "game-start" satisfies RockPaperScissors.GameStartEvent["type"],
+                    handleGameStart,
+                );
+                socket.handle.on(
+                    "round-end" satisfies RockPaperScissors.RoundEndEvent["type"],
+                    handleRoundEnd,
+                );
+                socket.handle.on(
+                    "game-end" satisfies RockPaperScissors.GameEndEvent["type"],
+                    handleGameEnd,
+                );
+
+                socket.handle.emit(
+                    "join" satisfies RockPaperScissors.JoinEvent["type"],
+                    {
+                        player_id: player_user_id,
+                        game_id: RockPaperScissors.gameId,
+                        tier_id: tier_id,
+                        chain_id: parseInt(selectedChain.chainId, 16),
+                    } satisfies RockPaperScissors.JoinEvent["payload"],
+                );
+
+                return () => {
+                    socket.handle.off("connect_error", handleConnectError);
+                    socket.handle.off("error", handleError);
+                    socket.handle.offAny(handleAny);
+                    socket.handle.offAnyOutgoing(handleAnyOutgoing);
+                    socket.handle.off(
+                        "player-joined" satisfies RockPaperScissors.PlayerJoinedEvent["type"],
+                        handlePlayerJoined,
+                    );
+                    socket.handle.off(
+                        "staking" satisfies RockPaperScissors.StakingEvent["type"],
+                        handleStaking,
+                    );
+                    socket.handle.off(
+                        "game-start" satisfies RockPaperScissors.GameStartEvent["type"],
+                        handleGameStart,
+                    );
+                    socket.handle.off(
+                        "round-end" satisfies RockPaperScissors.RoundEndEvent["type"],
+                        handleRoundEnd,
+                    );
+                    socket.handle.off(
+                        "game-end" satisfies RockPaperScissors.GameEndEvent["type"],
+                        handleGameEnd,
+                    );
+                };
+            }, [socket.connected]);
+
             return (
                 <main className="relative flex h-full flex-col bg-neutral-100">
                     <EnemyScreen gameState={gameState} />
@@ -403,7 +430,8 @@ export default dynamic(
                             if (
                                 gameState.state !== "ongoingRound" ||
                                 gameState.moveSubmitted ||
-                                !selectedChain
+                                !selectedChain ||
+                                !socket.connected
                             )
                                 return;
                             const moveEvent: RockPaperScissors.MoveEvent = {
@@ -418,7 +446,8 @@ export default dynamic(
                                     ),
                                 },
                             };
-                            socketRef.current.emit(
+
+                            socket.handle.emit(
                                 moveEvent.type,
                                 moveEvent.payload,
                             );
@@ -463,9 +492,13 @@ export default dynamic(
                                 : ""
                         }
                         onSuccess={() => {
-                            if (gameState.state !== "staking") return;
+                            if (
+                                gameState.state !== "staking" ||
+                                !socket.connected
+                            )
+                                return;
 
-                            socketRef.current.emit(
+                            socket.handle.emit(
                                 "staked" satisfies RockPaperScissors.StakedEvent["type"],
                                 {
                                     player_id: player_user_id,

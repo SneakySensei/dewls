@@ -36,7 +36,8 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     await RedisClient.hgetall(currentSeasonKey),
                 );
 
-                if (!season) {
+                console.log("season", season);
+                if (!season.season_id) {
                     const data = await fetchCurrentSeason();
                     if (data) {
                         season = data;
@@ -47,7 +48,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     }
                 }
 
-                if (!season) {
+                if (!season.season_id) {
                     throw Error(
                         "Internal server error. No Current Season found.",
                     );
@@ -194,7 +195,7 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     await RedisClient.hgetall(currentSeasonKey),
                 );
 
-                if (!season) {
+                if (!season.season_id) {
                     throw Error(
                         "Internal server error. No Current Season found.",
                     );
