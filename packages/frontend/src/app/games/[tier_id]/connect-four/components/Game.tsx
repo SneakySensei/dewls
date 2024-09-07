@@ -1,5 +1,6 @@
 "use client";
 
+import useSocket from "@/hooks/useSocket";
 import AttestModal from "@/shared/AttestModal";
 import PlayerGameView from "@/shared/PlayerGameView";
 import StakingModal from "@/shared/StakingModal";
@@ -8,12 +9,11 @@ import { useSelectedChainContext } from "@/utils/context/selected-chain.context"
 import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { ResponseWithData, MappedSeason } from "@/utils/types";
-import { getSocketManager } from "@/utils/websockets";
+import clsx from "clsx";
 import { ConnectFour } from "common";
 import { emptyBoard } from "common/connect-four";
 import dynamic from "next/dynamic";
-import { useEffect, useReducer, useRef, useState } from "react";
-import { Socket } from "socket.io-client";
+import { useEffect, useReducer, useState } from "react";
 
 type Props = {
     tier_id: string;
@@ -82,13 +82,10 @@ export default dynamic(
             const player_user_id = user!.data.player_id;
             const player_token = user!.token;
 
-            const socketRef = useRef<Socket>(
-                getSocketManager().socket(`/${ConnectFour.slug}`, {
-                    auth: {
-                        token: player_token,
-                    },
-                }),
-            );
+            const socket = useSocket({
+                namespace: ConnectFour.slug,
+                auth_token: player_token,
+            });
 
             const reducer = (
                 gameState: GameState,
@@ -135,7 +132,7 @@ export default dynamic(
 
                         if (gameState.state === "waiting") {
                             if (isFreeTier) {
-                                socketRef.current.emit(
+                                socket.handle.emit(
                                     "staked" satisfies ConnectFour.StakedEvent["type"],
                                     {
                                         player_id: player_user_id,
@@ -303,78 +300,129 @@ export default dynamic(
             }, []);
 
             useEffect(() => {
-                const socket = socketRef.current;
-                socket.on("connect_error", (err) => {
+                if (!socket.connected || !selectedChain) return;
+
+                const handleConnectError = (err: Error) => {
                     console.log(err.message); // prints the message associated with the error
-                });
-
-                socket.on("error", (err) => {
-                    console.error(err); // prints the message associated with the error
-                });
-
-                socket.onAny((event, ...args) => {
-                    console.log("rx event", event, args);
-                });
-                socket.onAnyOutgoing((event, ...args) => {
-                    console.log("tx event", event, args);
-                });
-                socket.on(
-                    "player-joined" satisfies ConnectFour.PlayerJoinedEvent["type"],
-                    (payload: ConnectFour.PlayerJoinedEvent["payload"]) => {
-                        dispatch({ type: "player-joined", payload });
-                    },
-                );
-                socket.on(
-                    "staking" satisfies ConnectFour.StakingEvent["type"],
-                    (payload: ConnectFour.StakingEvent["payload"]) => {
-                        dispatch({ type: "staking", payload });
-                    },
-                );
-                socket.on(
-                    "game-start" satisfies ConnectFour.GameStartEvent["type"],
-                    (payload: ConnectFour.GameStartEvent["payload"]) => {
-                        dispatch({ type: "game-start", payload });
-                    },
-                );
-                socket.on(
-                    "move-end" satisfies ConnectFour.MoveEndEvent["type"],
-                    (payload: ConnectFour.MoveEndEvent["payload"]) => {
-                        dispatch({ type: "move-end", payload });
-                    },
-                );
-                socket.on(
-                    "tie" satisfies ConnectFour.TieEvent["type"],
-                    (payload: ConnectFour.TieEvent["payload"]) => {
-                        dispatch({ type: "tie", payload });
-                    },
-                );
-
-                socket.on(
-                    "game-end" satisfies ConnectFour.GameEndEvent["type"],
-                    (payload: ConnectFour.GameEndEvent["payload"]) => {
-                        dispatch({ type: "game-end", payload });
-                    },
-                );
-                if (selectedChain) {
-                    socket.emit(
-                        "join" satisfies ConnectFour.JoinEvent["type"],
-                        {
-                            player_id: player_user_id,
-                            game_id: ConnectFour.gameId,
-                            tier_id: tier_id,
-                            chain_id: parseInt(selectedChain.chainId, 16),
-                        } satisfies ConnectFour.JoinEvent["payload"],
-                    );
-                }
-                return () => {
-                    socket.disconnect();
                 };
-            }, []);
+                const handleError = (err: any) => {
+                    console.error(err); // prints the message associated with the error
+                };
+                const handleAny = (event: any, ...args: any[]) => {
+                    console.log("rx event", event, args);
+                };
+                const handleAnyOutgoing = (event: any, ...args: any[]) => {
+                    console.log("tx event", event, args);
+                };
+                const handlePlayerJoined = (
+                    payload: ConnectFour.PlayerJoinedEvent["payload"],
+                ) => {
+                    dispatch({ type: "player-joined", payload });
+                };
+                const handleStaking = (
+                    payload: ConnectFour.StakingEvent["payload"],
+                ) => {
+                    dispatch({ type: "staking", payload });
+                };
+                const handleGameStart = (
+                    payload: ConnectFour.GameStartEvent["payload"],
+                ) => {
+                    dispatch({ type: "game-start", payload });
+                };
+                const handleMoveEnd = (
+                    payload: ConnectFour.MoveEndEvent["payload"],
+                ) => {
+                    dispatch({ type: "move-end", payload });
+                };
+                const handleTie = (
+                    payload: ConnectFour.TieEvent["payload"],
+                ) => {
+                    dispatch({ type: "tie", payload });
+                };
+                const handleGameEnd = (
+                    payload: ConnectFour.GameEndEvent["payload"],
+                ) => {
+                    dispatch({ type: "game-end", payload });
+                };
+
+                socket.handle.on("connect_error", handleConnectError);
+                socket.handle.on("error", handleError);
+                socket.handle.onAny(handleAny);
+                socket.handle.onAnyOutgoing(handleAnyOutgoing);
+                socket.handle.on(
+                    "player-joined" satisfies ConnectFour.PlayerJoinedEvent["type"],
+                    handlePlayerJoined,
+                );
+                socket.handle.on(
+                    "staking" satisfies ConnectFour.StakingEvent["type"],
+                    handleStaking,
+                );
+                socket.handle.on(
+                    "game-start" satisfies ConnectFour.GameStartEvent["type"],
+                    handleGameStart,
+                );
+                socket.handle.on(
+                    "move-end" satisfies ConnectFour.MoveEndEvent["type"],
+                    handleMoveEnd,
+                );
+                socket.handle.on(
+                    "tie" satisfies ConnectFour.TieEvent["type"],
+                    handleTie,
+                );
+
+                socket.handle.on(
+                    "game-end" satisfies ConnectFour.GameEndEvent["type"],
+                    handleGameEnd,
+                );
+
+                socket.handle.emit(
+                    "join" satisfies ConnectFour.JoinEvent["type"],
+                    {
+                        player_id: player_user_id,
+                        game_id: ConnectFour.gameId,
+                        tier_id: tier_id,
+                        chain_id: parseInt(selectedChain.chainId, 16),
+                    } satisfies ConnectFour.JoinEvent["payload"],
+                );
+
+                return () => {
+                    socket.handle.off("connect_error", handleConnectError);
+                    socket.handle.off("error", handleError);
+                    socket.handle.offAny(handleAny);
+                    socket.handle.offAnyOutgoing(handleAnyOutgoing);
+                    socket.handle.off(
+                        "player-joined" satisfies ConnectFour.PlayerJoinedEvent["type"],
+                        handlePlayerJoined,
+                    );
+                    socket.handle.off(
+                        "staking" satisfies ConnectFour.StakingEvent["type"],
+                        handleStaking,
+                    );
+                    socket.handle.off(
+                        "game-start" satisfies ConnectFour.GameStartEvent["type"],
+                        handleGameStart,
+                    );
+                    socket.handle.off(
+                        "move-end" satisfies ConnectFour.MoveEndEvent["type"],
+                        handleMoveEnd,
+                    );
+                    socket.handle.off(
+                        "tie" satisfies ConnectFour.TieEvent["type"],
+                        handleTie,
+                    );
+
+                    socket.handle.off(
+                        "game-end" satisfies ConnectFour.GameEndEvent["type"],
+                        handleGameEnd,
+                    );
+                };
+            }, [socket.connected]);
 
             const handleMove = (column: number) => () => {
                 if (
                     gameState.state !== "ongoingMove" ||
                     gameState.moveSubmitted ||
+                    !socket.connected ||
                     !selectedChain
                 )
                     return;
@@ -388,14 +436,14 @@ export default dynamic(
                         chain_id: parseInt(selectedChain.chainId, 16),
                     },
                 };
-                socketRef.current.emit(moveEvent.type, moveEvent.payload);
+                socket.handle.emit(moveEvent.type, moveEvent.payload);
                 dispatch({ type: "submit-move" });
             };
 
             const player = gameState.player;
             const enemy =
                 gameState.state === "initial" ? undefined : gameState.enemy;
-            console.dir(gameState);
+            console.log(gameState);
             return (
                 <main className="relative flex h-full flex-col justify-center bg-[radial-gradient(#ABABFC,#8B81F8,#7863F1,#3F2E81)] p-4">
                     <section className="grid w-full grid-cols-7 px-2">
@@ -411,7 +459,13 @@ export default dynamic(
                     </section>
                     <section className="relative grid w-full grid-cols-7 grid-rows-6 p-2 after:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:border-8 after:border-blue-700 after:shadow-[inset_0_0_0_1px_#1d4ed8]">
                         {gameState.board.flatMap((row, i) =>
-                            row.map((cell) => <Cell value={cell} key={i} />),
+                            row.map((cell, j) => (
+                                <Cell
+                                    gameState={gameState}
+                                    value={cell}
+                                    key={`${i},${j}`}
+                                />
+                            )),
                         )}
                     </section>
                     {enemy && (
@@ -508,10 +562,29 @@ export default dynamic(
     },
 );
 
-function Cell({ value }: { value: string | null }) {
+function Cell({
+    value,
+    gameState,
+}: {
+    value: ConnectFour.BoardCellState;
+    gameState: GameState;
+}) {
+    const isPlayerOccupied = gameState.player.player_id === value;
+    const isEnemyOccupied =
+        gameState.state !== "initial" && gameState.enemy?.player_id === value;
+
     return (
         <article className="relative aspect-square size-full">
-            <div className="connect-four-coin-mask absolute inset-0 bg-[linear-gradient(145deg,#a71919,#c61e1e)]" />
+            {(isPlayerOccupied || isEnemyOccupied) && (
+                <div
+                    className={clsx(
+                        "connect-four-coin-mask absolute inset-0",
+                        isEnemyOccupied &&
+                            "bg-[linear-gradient(145deg,#a71919,#c61e1e)]",
+                        isPlayerOccupied && "bg-amber-400",
+                    )}
+                />
+            )}
             <div className="connect-four-cell-mask absolute inset-0 bg-blue-700" />
         </article>
     );
