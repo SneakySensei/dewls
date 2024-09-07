@@ -1,6 +1,7 @@
 import * as ConnectFour from "./connect-four";
 import * as Contracts from "./contracts";
 import * as RockPaperScissors from "./rock-paper-scissors";
+export { broadCastConfigEntities } from "./xmtp/brodcaster-config";
 
 export const gameBetWinnerPercentage = 60;
 export const gameBetPoolPercentage = 20;

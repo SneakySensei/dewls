@@ -1,6 +1,6 @@
-import { broadCastConfigEntities } from "../../../common/xmtp/brodcaster-config";
 import { Broadcast as BroadcastService } from "../../services/broadcast.service";
 import type { Client } from "@xmtp/xmtp-js";
+import { broadCastConfigEntities } from "common";
 
 const XMTP_RATE_LIMIT = 1000;
 const XMTP_RATE_LIMIT_TIME = 60 * 1000; // 1 minute

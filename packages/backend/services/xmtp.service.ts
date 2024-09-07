@@ -1,7 +1,7 @@
-import { broadCastConfigEntities } from "../../common/xmtp/brodcaster-config";
 import { base64ToBytes } from "../utils/functions";
 import { RedisService } from "./redis.service";
 import { Client, type XmtpEnv } from "@xmtp/xmtp-js";
+import { broadCastConfigEntities } from "common";
 import { Redis } from "ioredis";
 
 export class XmtpClientService {
@@ -45,6 +45,10 @@ export class XmtpClientService {
                     console.error(`Missing ${config.id}_FILE_PERSISTENCE_PATH`);
                     return;
                 }
+                const { GrpcApiClient } = await import("@xmtp/grpc-api-client");
+                const { RedisPersistence } = await import(
+                    "@xmtp/redis-persistence"
+                );
 
                 try {
                     const { GrpcApiClient } = await import(
