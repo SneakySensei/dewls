@@ -394,8 +394,8 @@ export default dynamic(
                             ))}
                     </section>
                     <section className="relative grid w-full grid-cols-7 grid-rows-6 p-2 after:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:border-8 after:border-blue-700 after:shadow-[inset_0_0_0_1px_#1d4ed8]">
-                        {gameState.board.flatMap((row) =>
-                            row.map((cell) => <Cell value={cell} />),
+                        {gameState.board.flatMap((row, i) =>
+                            row.map((cell) => <Cell value={cell} key={i} />),
                         )}
                     </section>
                     {enemy && (
@@ -447,7 +447,9 @@ export default dynamic(
                         tier_id={tier_id}
                         // ! Todo: Add game id to the staking modal
                         game_id={
-                            "0xbca4cc033c6fc7a4eebc355a0473e863ef63427291fb322d24139fd430f87e4e"
+                            gameState.state === "staking"
+                                ? gameState.room_id
+                                : ""
                         }
                         onSuccess={() => {
                             if (gameState.state !== "staking") return;

@@ -13,7 +13,6 @@ export class ArcadeService {
         chain_id: number,
     ): Promise<void> {
         try {
-            console.log(chain_id);
             console.log("Initializing ArcadeService");
             console.log("Provider: ", provider);
             this.provider = new ethers.BrowserProvider(provider);
