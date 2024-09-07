@@ -1,4 +1,5 @@
 import { EthersService, RedisService } from "../../services";
+import { currentSeasonKey } from "../../utils/constants";
 import {
     parseStringifiedValues,
     stringifyObjectValues,
@@ -18,8 +19,6 @@ import {
 import { RockPaperScissors } from "common";
 import { type Namespace, type Socket } from "socket.io";
 
-const currentSeasonKey = "current-season";
-
 export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     socket.on(
         "join" satisfies RockPaperScissors.JoinEvent["type"],
@@ -36,7 +35,6 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
                     await RedisClient.hgetall(currentSeasonKey),
                 );
 
-                console.log("season", season);
                 if (!season.season_id) {
                     const data = await fetchCurrentSeason();
                     if (data) {
