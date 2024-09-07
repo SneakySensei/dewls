@@ -7,7 +7,7 @@
 
 # 💡 **Problem Statement**
 
-
+Traditional arcade gaming lacks a mechanism for players to bet across various chains on their own performance in a secure and transparent way, limiting the potential for true competitive play and financial engagement. Additionally, current systems lack the ability to verify wins and results in a provable, immutable manner, leading to trust issues in competitive scenarios.
 
 
 # 🧠 **Knowledge Primer**
