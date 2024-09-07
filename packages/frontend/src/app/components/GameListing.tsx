@@ -27,13 +27,13 @@ export default function GameListing({ games }: Props) {
                         <SearchIcon className="size-4 text-neutral-300 transition-colors delay-75 duration-300 group-focus-within:text-brand-100" />
                         <input
                             className="block min-w-0 flex-1 bg-transparent text-body-1 placeholder:text-neutral-300 focus:outline-none"
-                            placeholder="Find you next adventure"
+                            placeholder="Find your next adventure"
                             value={keyword}
                             onChange={(e) => setKeyword(e.target.value)}
                         />
                     </label>
                 </section>
-                <section className="space-y-3 px-4 py-4">
+                <section className="space-y-3 px-4 py-7">
                     {filteredGames.map((game) => (
                         <GameCard
                             key={game.game_id}

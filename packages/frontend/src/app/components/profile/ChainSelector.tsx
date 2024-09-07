@@ -48,7 +48,7 @@ export function ChainSelector() {
                                     isSelectedChain
                                         ? "bg-neutral-500 text-neutral-100"
                                         : "text-neutral-300"
-                                } my-4 flex w-full cursor-pointer items-center gap-x-4 rounded-lg px-4 py-3 transition-all hover:text-neutral-100`}
+                                } my-2 flex w-full cursor-pointer items-center gap-x-4 rounded-lg px-4 py-3 transition-all hover:text-neutral-100`}
                                 onClick={() => {
                                     handleChainChange(chain);
                                 }}
@@ -70,7 +70,7 @@ export function ChainSelector() {
             ]}
             dropdownClassname="w-full"
         >
-            <div className="flex cursor-pointer items-center justify-between rounded-lg border border-neutral-400 p-4">
+            <div className="flex cursor-pointer items-center justify-between rounded-lg border border-neutral-400 px-4 py-3">
                 {loading ? (
                     <p className="py-1 text-body-2 text-neutral-200">
                         Updating the chain...

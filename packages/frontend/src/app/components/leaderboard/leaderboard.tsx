@@ -66,7 +66,7 @@ export const Leaderboard: React.FC = () => {
 
     return (
         <main className="gap-y-6 text-neutral-100">
-            <h1 className="text-center font-display text-heading-1 font-bold tracking-widest">
+            <h1 className="py-4 text-center font-display text-heading-1 font-bold tracking-widest">
                 Leaderboard
             </h1>
 
@@ -81,7 +81,7 @@ export const Leaderboard: React.FC = () => {
                         selectedSeasonActive
                             ? "bg-[linear-gradient(90deg,_rgba(18,18,21,0.2)_0%,_rgba(232,157,15,0.2)_30%,_rgba(232,157,15,0.2)_60%,_rgba(18,18,21,0.2)_100%)]"
                             : "bg-[linear-gradient(90deg,_rgba(18,18,21,0.2)_0%,_#1F1F24_30%,_#1F1F24_60%,_rgba(18,18,21,0.2)_100%)] text-neutral-200"
-                    } mb-4 mt-2 py-2 text-center`}
+                    } mb-4 mt-2 py-2 text-center text-body-3 font-light`}
                 >
                     {selectedSeason &&
                         (selectedSeasonActive
@@ -198,8 +198,8 @@ export const Leaderboard: React.FC = () => {
                                 </div>
                             </div>
                         ) : (
-                            <div className="mb-4 h-72 w-full overflow-hidden rounded-xl border border-purple-800 bg-active-leaderboard bg-cover bg-center">
-                                <figure className="mx-auto h-48 scale-[2]">
+                            <div className="mb-4 h-48 w-full overflow-hidden rounded-xl border border-purple-800 bg-active-leaderboard bg-cover bg-center">
+                                <figure className="mx-auto h-28 scale-[2]">
                                     <Lottie
                                         options={{
                                             loop: true,
@@ -209,13 +209,13 @@ export const Leaderboard: React.FC = () => {
                                     />
                                 </figure>
 
-                                <div className="mt-6 gap-y-2 text-center">
+                                <div className="mt-4 text-center">
                                     <p className="text-heading-1 font-semibold text-neutral-100">
                                         $
                                         {selectedSeason.reward_pool_usd.toLocaleString()}
                                     </p>
 
-                                    <p className="mt-2 text-body-3 font-normal text-neutral-200">
+                                    <p className="mt-1 text-body-3 font-normal text-neutral-200">
                                         Amount Pooled
                                     </p>
                                 </div>

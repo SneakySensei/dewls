@@ -3,47 +3,49 @@ import { truncate } from "@/utils/functions/truncate";
 import Image from "next/image";
 
 export const GamePlayer: React.FC<{
-  profile_photo: string | null;
-  won: boolean;
-  name: string;
-  wallet_address: string;
-  you: boolean;
+    profile_photo: string | null;
+    won: boolean;
+    name: string;
+    wallet_address: string;
+    you: boolean;
 }> = ({ profile_photo, won, name, wallet_address, you }) => {
-  return (
-    <div className="flex flex-col items-center w-full gap-2 relative">
-      {won && (
-        <span className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full">
-          <Crown className="w-4 h-4" />
-        </span>
-      )}
+    return (
+        <div className="relative flex w-full flex-col items-center gap-2">
+            {won && (
+                <span className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-full">
+                    <Crown className="h-4 w-4" />
+                </span>
+            )}
 
-      <figure
-        className={`${
-          won ? "border-semantic-launch" : "border-transparent"
-        } border rounded-full`}
-      >
-        {profile_photo && (
-          <Image
-            alt=""
-            src={profile_photo}
-            height={80}
-            width={80}
-            className="rounded-full border-8 p-2 bg-neutral-500 border-neutral-500"
-          />
-        )}
-      </figure>
+            <figure
+                className={`${
+                    won
+                        ? "border-semantic-launch shadow-md shadow-semantic-launch"
+                        : "border-transparent"
+                } rounded-full border`}
+            >
+                {profile_photo && (
+                    <Image
+                        alt=""
+                        src={profile_photo}
+                        height={64}
+                        width={64}
+                        className="border-6 rounded-full border-neutral-500 bg-neutral-500 p-2"
+                    />
+                )}
+            </figure>
 
-      <div className="text-center">
-        <h3
-          className={`${you ? "text-brand-400" : ""} text-body-1 font-medium`}
-        >
-          {name}
-        </h3>
+            <div className="text-center">
+                <h3
+                    className={`${you ? "text-brand-400" : ""} text-body-1 font-medium`}
+                >
+                    {name}
+                </h3>
 
-        <p className="text-neutral-300 text-body-3">
-          {truncate(wallet_address).toUpperCase()}
-        </p>
-      </div>
-    </div>
-  );
+                <p className="text-body-3 text-neutral-300">
+                    {truncate(wallet_address).toUpperCase()}
+                </p>
+            </div>
+        </div>
+    );
 };
