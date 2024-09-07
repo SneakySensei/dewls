@@ -248,12 +248,16 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                     if (player_id === gameState.player1.player_id) {
                         if (gameState.player1.currentMove === null) {
                             gameState.player1.currentMove = move;
+                            gameState.active_player =
+                                gameState.player2.player_id;
                         } else {
                             return;
                         }
                     } else if (player_id === gameState.player2.player_id) {
                         if (gameState.player2.currentMove === null) {
                             gameState.player2.currentMove = move;
+                            gameState.active_player =
+                                gameState.player1.player_id;
                         } else {
                             return;
                         }
