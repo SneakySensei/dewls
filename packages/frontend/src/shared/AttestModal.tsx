@@ -60,7 +60,7 @@ export default function AttestModal({
             });
 
             const res = await fetch(
-                `${API_REST_BASE_URL}/played_games/${room_id}/attestation`,
+                `${API_REST_BASE_URL}/played-games/${room_id}/attestation`,
                 {
                     cache: "no-cache",
                     method: "POST",

@@ -189,7 +189,7 @@ contract Arcade {
         uint256 _amount
     ) external onlyOwner {
         uint256 balance = userBalances[_userAddress];
-        require(balance < _amount, "No rewards to withdraw");
+        require(balance > _amount, "No rewards to withdraw");
 
         userBalances[_userAddress] -= _amount;
         token.approve(address(this), _amount);
