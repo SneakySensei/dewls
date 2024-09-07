@@ -770,7 +770,7 @@ export const ERC_20_ABI = [
 
 export const ARCADE_CONTRACT_ADDRESS: { [chainId: number]: string } = {
   296: "0xdD049Fc4b926A7857c012354e578c6da1c5B8316", // * INFO: Hedera
-  31: "0x79a24817Ac317549A2D1e00109f0fa7424E45838", // * INFO: Rootstock
+  31: "0x79A24817Ac317549A2d1e00109f0FA7424E45838", // * INFO: Rootstock
   2810: "0xfCC7234233082346398D2087f790C48677b8DdA6", // * INFO: Morph L2
 };
 
