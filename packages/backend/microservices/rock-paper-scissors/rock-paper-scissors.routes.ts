@@ -4,6 +4,7 @@ import {
     stringifyObjectValues,
     WSError,
 } from "../../utils/functions";
+import { MappedSeason } from "../../utils/types/mappers.types";
 import {
     addPlayer2ToGame,
     createDBGame,
@@ -17,6 +18,8 @@ import {
 import { RockPaperScissors } from "common";
 import { type Namespace, type Socket } from "socket.io";
 
+const currentSeasonKey = "current-season";
+
 export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
     socket.on(
         "join" satisfies RockPaperScissors.JoinEvent["type"],
@@ -28,7 +31,21 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
         }: RockPaperScissors.JoinEvent["payload"]) => {
             try {
                 const RedisClient = RedisService.getRedisClient();
-                const season = await fetchCurrentSeason();
+
+                let season = parseStringifiedValues<MappedSeason>(
+                    await RedisClient.hgetall(currentSeasonKey),
+                );
+
+                if (!season) {
+                    const data = await fetchCurrentSeason();
+                    if (data) {
+                        season = data;
+                        await RedisClient.hset(
+                            currentSeasonKey,
+                            stringifyObjectValues<MappedSeason>(season),
+                        );
+                    }
+                }
 
                 if (!season) {
                     throw Error(
@@ -172,7 +189,10 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
         }: RockPaperScissors.StakedEvent["payload"]) => {
             try {
                 const RedisClient = RedisService.getRedisClient();
-                const season = await fetchCurrentSeason();
+
+                const season = parseStringifiedValues<MappedSeason>(
+                    await RedisClient.hgetall(currentSeasonKey),
+                );
 
                 if (!season) {
                     throw Error(
@@ -248,15 +268,6 @@ export const RockPaperScissorsRoutes = (socket: Socket, io: Namespace) => {
         }: RockPaperScissors.MoveEvent["payload"]) => {
             try {
                 const RedisClient = RedisService.getRedisClient();
-                const season = await fetchCurrentSeason();
-
-                if (!season) {
-                    throw Error(
-                        "Internal server error. No Current Season found.",
-                    );
-                }
-
-                const { season_id } = season;
 
                 const gameState =
                     parseStringifiedValues<RockPaperScissors.ServerGameState>(
