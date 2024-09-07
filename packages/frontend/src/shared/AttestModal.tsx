@@ -3,6 +3,7 @@
 import Button from "./Button";
 import Dialog from "./Dialog";
 import EllipsisLoader from "./EllipsisLoader";
+import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { getWalletClient } from "@/utils/functions/ethers";
 import SignClient from "@/utils/service/sign-protocol.service";
@@ -13,12 +14,14 @@ type Props = {
     open: boolean;
     room_id?: string;
     player_id?: string;
+    season_id: string;
     tier_id: string;
 };
 export default function AttestModal({
     open,
     room_id,
     player_id,
+    season_id,
     tier_id,
 }: Props) {
     const router = useRouter();
@@ -50,13 +53,14 @@ export default function AttestModal({
             const signClient = new SignClient(walletClient);
 
             const attestation = await signClient.attest({
+                season_id: season_id,
                 played_game_id: room_id,
                 player_id: player_id,
                 tier_id: tier_id,
             });
 
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}/played_games/${room_id}/attestation`,
+                `${API_REST_BASE_URL}/played_games/${room_id}/attestation`,
                 {
                     cache: "no-cache",
                     method: "POST",

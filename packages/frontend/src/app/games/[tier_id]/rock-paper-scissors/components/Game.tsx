@@ -4,13 +4,15 @@ import EnemyScreen from "./EnemyScreen";
 import PlayerScreen from "./PlayerScreen";
 import AttestModal from "@/shared/AttestModal";
 import StakingModal from "@/shared/StakingModal";
+import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import { MappedSeason, ResponseWithData } from "@/utils/types";
 import { getSocketManager } from "@/utils/websockets";
 import { RockPaperScissors } from "common";
 import dynamic from "next/dynamic";
-import { useEffect, useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { Socket } from "socket.io-client";
 
 type Props = {
@@ -69,6 +71,8 @@ export default dynamic(
             const isFreeTier =
                 tiers.find((tier) => tier.tier_id === tier_id)?.usd_amount ===
                 0;
+            const [currentSeason, setCurrentSeason] =
+                useState<MappedSeason | null>(null);
 
             const { user } = useWeb3AuthContext();
             const { selectedChain } = useSelectedChainContext();
@@ -301,6 +305,19 @@ export default dynamic(
             });
 
             useEffect(() => {
+                (async () => {
+                    const seasonsRes = await fetch(
+                        `${API_REST_BASE_URL}/seasons/current`,
+                    );
+                    const seasonsResponse =
+                        (await seasonsRes.json()) as ResponseWithData<MappedSeason>;
+                    if (seasonsResponse.success) {
+                        setCurrentSeason(seasonsResponse.data);
+                    }
+                })();
+            }, []);
+
+            useEffect(() => {
                 const socket = socketRef.current;
 
                 socket.connect();
@@ -458,23 +475,26 @@ export default dynamic(
                             );
                         }}
                     />
-                    <AttestModal
-                        open={
-                            gameState.state === "gameEnd" &&
-                            player_user_id === gameState.winner_id
-                        }
-                        player_id={
-                            gameState.state === "gameEnd"
-                                ? gameState.player.player_id
-                                : undefined
-                        }
-                        room_id={
-                            gameState.state === "gameEnd"
-                                ? gameState.room_id
-                                : undefined
-                        }
-                        tier_id={tier_id}
-                    />
+                    {currentSeason && (
+                        <AttestModal
+                            open={
+                                gameState.state === "gameEnd" &&
+                                player_user_id === gameState.winner_id
+                            }
+                            season_id={currentSeason?.season_id}
+                            player_id={
+                                gameState.state === "gameEnd"
+                                    ? gameState.winner_id
+                                    : undefined
+                            }
+                            room_id={
+                                gameState.state === "gameEnd"
+                                    ? gameState.room_id
+                                    : undefined
+                            }
+                            tier_id={tier_id}
+                        />
+                    )}
                 </main>
             );
         }),
