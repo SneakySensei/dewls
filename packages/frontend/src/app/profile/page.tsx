@@ -6,6 +6,8 @@ import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
+export const dynamic = "force-dynamic";
+
 const Profile: React.FC = () => {
     const { user } = useWeb3AuthContext();
 

@@ -4,6 +4,7 @@ import { ChainSelector } from "./ChainSelector";
 import CopyIcon from "@/shared/icons/CopyIcon";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import { toast } from "sonner";
 
 export function WalletDetails() {
     const { user } = useWeb3AuthContext();
@@ -29,14 +30,16 @@ export function WalletDetails() {
                     <p className="text-body-2 text-neutral-200">
                         {user.data.wallet_address.toUpperCase()}
                     </p>
-                    <CopyIcon
-                        className="cursor-pointer"
+                    <button
                         onClick={() => {
                             navigator.clipboard.writeText(
                                 user.data.wallet_address,
                             );
+                            toast("Copied to clipboard");
                         }}
-                    />
+                    >
+                        <CopyIcon className="cursor-pointer" />
+                    </button>
                 </div>
                 <div className="flex w-full justify-between gap-x-2 px-8 py-4">
                     <div className="flex flex-col gap-2">

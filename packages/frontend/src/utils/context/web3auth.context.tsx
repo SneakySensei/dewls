@@ -12,6 +12,7 @@ import {
     useEffect,
     useState,
 } from "react";
+import { toast } from "sonner";
 
 export type AuthUser = { data: MappedPlayer; token: string };
 
@@ -80,6 +81,7 @@ export const Web3AuthContextProvider = ({
     };
 
     const handleWeb3Auth = async () => {
+        setIsAuthenticating(true);
         try {
             if (web3auth.connected && web3auth.provider) {
                 const [userInfo, wallet_address] = await Promise.all([
@@ -94,11 +96,12 @@ export const Web3AuthContextProvider = ({
 
                 if (!authResponse) return;
                 setUser({ data: authResponse.user, token: authResponse.token });
+                toast.success("Logged in!");
             }
         } catch (error) {
             console.error(error);
-            setIsAuthenticating(false);
         }
+        setIsAuthenticating(false);
     };
 
     useEffect(() => {

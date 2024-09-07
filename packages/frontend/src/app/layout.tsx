@@ -9,6 +9,7 @@ import { MappedGameTier, ResponseWithData } from "@/utils/types";
 import clsx from "clsx";
 import type { Metadata } from "next";
 import { Big_Shoulders_Display, Inter } from "next/font/google";
+import { Toaster } from "sonner";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -55,6 +56,7 @@ export default async function RootLayout({
                     <TierContextProvider tiers={tiers}>
                         <Web3AuthContextProvider>
                             <SelectedChainContextProvider>
+                                <Toaster richColors />
                                 <Header />
                                 <div className="relative min-h-0 flex-1 overflow-y-auto">
                                     {children}

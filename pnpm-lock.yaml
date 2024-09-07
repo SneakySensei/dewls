@@ -183,6 +183,9 @@ importers:
       socket.io-client:
         specifier: ^4.7.5
         version: 4.7.5
+      sonner:
+        specifier: ^1.5.0
+        version: 1.5.0(react-dom@18.3.1)(react@18.3.1)
       sp-sdk:
         specifier: link:@types/@ethsign/sp-sdk
         version: link:@types/@ethsign/sp-sdk
@@ -8782,6 +8785,16 @@ packages:
     resolution: {integrity: sha512-y4Z8LCDBuum+PBP3lSV7RHrXscqksve/bi0as7mhwVnBW+/wUqKT/2Kb7um8yqcFy0duYbbPxzt89Zy2nOCaxg==}
     dependencies:
       atomic-sleep: 1.0.0
+    dev: false
+
+  /sonner@1.5.0(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-FBjhG/gnnbN6FY0jaNnqZOMmB73R+5IiyYAw8yBj7L54ER7HB3fOSE5OFiQiE2iXWxeXKvg6fIP4LtVppHEdJA==}
+    peerDependencies:
+      react: ^18.0.0
+      react-dom: ^18.0.0
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
     dev: false
 
   /source-map-js@1.2.0:
