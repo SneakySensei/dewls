@@ -6,7 +6,7 @@ import {
 } from "../../utils/functions";
 import {
     addPlayer2ToGame,
-    createGame,
+    createDBGame,
     fetchPlayersDetailsForPlayedGame,
     setWinnerToGame,
 } from "../played-games/played-games.service";
@@ -52,7 +52,7 @@ export const RockPaperScissorsRoutes = async (
                             `no room found for room key ${roomKey}`,
                         );
 
-                        const { played_game_id } = await createGame(
+                        const { played_game_id } = await createDBGame(
                             player_id,
                             season_id,
                             game_id,

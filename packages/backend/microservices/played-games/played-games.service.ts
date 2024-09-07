@@ -39,7 +39,7 @@ export const setAttestationAndWithdrawRewards = async (
     return playedGameData;
 };
 
-export const createGame = async (
+export const createDBGame = async (
     player_1_id: MappedPlayedGame["player_1_id"],
     season_id: MappedPlayedGame["season_id"],
     game_id: MappedPlayedGame["game_id"],
@@ -81,7 +81,8 @@ export const addPlayer2ToGame = async (
             is_active: true,
         })
         .eq("played_game_id", played_game_id)
-        .select();
+        .select()
+        .single();
 
     if (error) {
         console.error(error);
