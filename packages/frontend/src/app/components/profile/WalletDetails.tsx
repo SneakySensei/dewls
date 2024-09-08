@@ -5,6 +5,7 @@ import BalanceIcon from "@/shared/icons/BalanceIcon";
 import CopyIcon from "@/shared/icons/CopyIcon";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
+import { truncate } from "@/utils/functions/truncate";
 import { toast } from "sonner";
 
 export function WalletDetails() {
@@ -28,7 +29,7 @@ export function WalletDetails() {
                 <div className="px-3 py-4">
                     <div className="flex items-center justify-between gap-x-2 border-b border-neutral-500 px-1 pb-3">
                         <p className="text-body-2 text-neutral-200">
-                            {user.data.wallet_address.toUpperCase()}
+                            {truncate(user.data.wallet_address).toUpperCase()}
                         </p>
                         <button
                             onClick={() => {
