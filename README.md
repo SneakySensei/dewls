@@ -33,6 +33,12 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 
 # 📺 **Previews**
 
+| ![Preview 1.1](./repo-assets/previews/1.png) | ![Preview 1.2](./repo-assets/previews/2.png) | ![Preview 1.3](./repo-assets/previews/3.png) |
+| -------------------------------------------- | -------------------------------------------- | -------------------------------------------- |
+| ![Preview 1.4](./repo-assets/previews/4.png) | ![Preview 1.5](./repo-assets/previews/5.png) | ![Preview 1.6](./repo-assets/previews/6.png) |
+| -------------------------------------------- | -------------------------------------------- | -------------------------------------------- |
+| ![Preview 1.7](./repo-assets/previews/7.png) | ![Preview 1.8](./repo-assets/previews/8.png) | ![Preview 1.8](./repo-assets/previews/9.png) |
+
 # 💻 **Tech Stack**
 
 - NextJS
@@ -54,7 +60,7 @@ DEWLS features a robust system architecture to support these actions, along with
 
 ### 1. **System Architecture Diagram**
 
-![System Architecture](./repo-assets/arch-diag.jpeg)
+![System Architecture](./repo-assets/Architecture.jpeg)
 
 ### 2. **Flow Diagram**
 
