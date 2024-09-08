@@ -64,7 +64,11 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 - Hedera HCSC
 - Hedera HTS
 - XMTP Subscribe
+- Framer Motion
 
+# :construction_worker: **Team Description**
+Our team has worked on various Web3 projects, including 'Servify' which won the 'Best Use of Push Notification' award at ETHIndia'23. 
+Not only this, we won 'Best Use of Router Protocol' at Unfold'23 for our project 'LenDen' as well. Our team is highly proficient in a variety of technologies, i.e. solidity for smart contract development, backend development with ExpressJS and NodeJS, utilize Supabase for secure database solutions. On the front end, we leverage NextJS for efficient interfaces, and our use of TypeScript ensures clean, scalable code. This expertise enables us to build innovative, decentralized applications with efficiency and precision. This time, we aim to deepen our Web3 knowledge, connect with like-minded individuals focused on decentralizing the internet, and enhance our skillset while participating in this online hackathon!
 # 📦 **Inside the box**
 
 DEWLS features a robust system architecture to support these actions, along with a streamlined user flow within the web application. The following diagrams explain the same:
@@ -75,7 +79,7 @@ DEWLS features a robust system architecture to support these actions, along with
 
 ### 2. **Flow Diagram**
 
-![Flow Diagram](./repo-assets/user-flow.png)
+![Flow Diagram](./repo-assets/flow-final.jpeg)
 
 # ⏭️ **What's next for DEWLS?**
 
