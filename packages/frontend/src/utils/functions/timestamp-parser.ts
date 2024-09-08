@@ -1,25 +1,10 @@
-const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-];
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+
+dayjs.extend(utc);
 
 export const timestampParser = (timestamp: string): string => {
     const date = new Date(timestamp);
 
-    const day = date.getUTCDate();
-    const month = months[date.getUTCMonth()];
-    const year = date.getUTCFullYear();
-
-    // Format the date as "DD MMM YYYY (UTC)"
-    return `${day} ${month} ${year} (UTC)`;
+    return dayjs(date).utc().format("DD MMM YYYY, hh:mm A UTC");
 };

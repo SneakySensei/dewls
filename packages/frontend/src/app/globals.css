@@ -3,6 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+    /* * {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        overflow-x: hidden;
+    } */
+
+    ::-webkit-scrollbar {
+        width: 8px;
+        @apply bg-neutral-500;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-neutral-400;
+    }
+
     .text-display-1,
     .text-display-2,
     .text-display-3 {

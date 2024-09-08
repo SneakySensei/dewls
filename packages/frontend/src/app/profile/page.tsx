@@ -20,10 +20,9 @@ const Profile: React.FC = () => {
     if (!user) return null;
 
     return (
-        <main className="flex flex-col gap-y-4 pb-10 text-neutral-100">
+        <main className="px-4">
             <ProfileHero />
             <WalletDetails />
-
             <SeasonStats />
         </main>
     );

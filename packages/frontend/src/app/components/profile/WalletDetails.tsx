@@ -15,58 +15,57 @@ export function WalletDetails() {
     if (!user) return null;
 
     return (
-        <>
-            <h3 className="mx-4 my-2 text-heading-3 text-neutral-300">
+        <section className="mt-6">
+            <h3 className="mb-4 text-heading-3 text-neutral-300">
                 Wallet Details
             </h3>
+            <ChainSelector />
 
-            <div className="px-4">
-                <ChainSelector />
-            </div>
-
-            <div className="mx-4 flex flex-col items-center justify-center rounded-lg border border-neutral-400">
-                <p className="w-full rounded-t-lg bg-neutral-600 px-4 py-3 text-body-1 text-neutral-100">
+            <article className="mt-4 rounded-lg border border-neutral-400">
+                <header className="w-full rounded-t-lg bg-neutral-600 px-3 py-2 text-body-1 font-medium">
                     Connected Wallet
-                </p>
-                <div className="my-2 flex w-[90%] items-center justify-between gap-x-2 border-b border-neutral-500 py-4">
-                    <p className="text-body-2 text-neutral-200">
-                        {user.data.wallet_address.toUpperCase()}
-                    </p>
-                    <button
-                        onClick={() => {
-                            navigator.clipboard.writeText(
-                                user.data.wallet_address,
-                            );
-                            toast("Copied to clipboard");
-                        }}
-                    >
-                        <CopyIcon className="cursor-pointer" />
-                    </button>
-                </div>
-                <div className="flex w-full justify-between gap-x-2 px-8 py-4">
-                    <div className="flex flex-col gap-2">
-                        <p className="flex items-center gap-1 text-body-2 text-neutral-200">
-                            <BalanceIcon />
-                            Balance
+                </header>
+                <div className="px-3 py-4">
+                    <div className="flex items-center justify-between gap-x-2 border-b border-neutral-500 px-1 pb-3">
+                        <p className="text-body-2 text-neutral-200">
+                            {user.data.wallet_address.toUpperCase()}
                         </p>
-                        <p className="text-body-1 text-neutral-100">
-                            {!selectedChain || chainBalance === null
-                                ? "..."
-                                : `${chainBalance} USDT`}{" "}
-                            <span className="text-neutral-300">|</span>{" "}
-                            {nativeBalance} {selectedChain?.ticker}
-                        </p>
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(
+                                    user.data.wallet_address,
+                                );
+                                toast("Copied to clipboard");
+                            }}
+                        >
+                            <CopyIcon className="size-4" />
+                        </button>
                     </div>
-                    <div className="flex flex-col gap-2 text-right">
-                        <p className="flex-1 text-body-2 text-neutral-200">
-                            Chain ID
-                        </p>
-                        <p className="flex-1 text-body-1 text-neutral-100">
-                            {selectedChain ? selectedChain.chainId : "..."}
-                        </p>
+                    <div className="mt-4 flex w-full justify-between gap-x-2">
+                        <div>
+                            <p className="flex items-center gap-x-0.5 text-body-2 font-medium text-neutral-200">
+                                <BalanceIcon className="size-4" />
+                                Balance
+                            </p>
+                            <p className="mt-0.5 text-body-1 font-medium">
+                                {!selectedChain || chainBalance === null
+                                    ? "..."
+                                    : `${chainBalance} USDT`}{" "}
+                                <span className="text-neutral-300">|</span>{" "}
+                                {nativeBalance} {selectedChain?.ticker}
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <p className="text-body-2 font-medium text-neutral-200">
+                                Chain ID
+                            </p>
+                            <p className="mt-0.5 text-body-1 font-medium">
+                                {selectedChain ? selectedChain.chainId : "..."}
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </>
+            </article>
+        </section>
     );
 }

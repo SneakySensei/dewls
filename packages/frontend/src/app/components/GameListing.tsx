@@ -33,7 +33,7 @@ export default function GameListing({ games }: Props) {
                         />
                     </label>
                 </section>
-                <section className="space-y-3 px-4 py-7">
+                <section className="space-y-3 px-4 py-6">
                     {filteredGames.map((game) => (
                         <GameCard
                             key={game.game_id}

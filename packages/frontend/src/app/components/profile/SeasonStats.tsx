@@ -1,5 +1,6 @@
 import SeasonsDropdown from "../shared/season-dropdown";
 import { GameHistory } from "./GameHistory";
+import EllipsisLoader from "@/shared/EllipsisLoader";
 import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
 import {
@@ -73,8 +74,8 @@ const SeasonStats: React.FC = () => {
     }, [selectedSeason, user]);
 
     return (
-        <div className="mx-4">
-            <h3 className="my-2 mb-6 text-heading-3 text-neutral-300">
+        <section className="mt-6">
+            <h3 className="mb-4 text-heading-3 text-neutral-300">
                 Season Stats
             </h3>
 
@@ -84,12 +85,13 @@ const SeasonStats: React.FC = () => {
             />
 
             {loading ? (
-                <p className="mb-2 rounded-lg bg-neutral-600 py-2 text-center text-body-3 text-neutral-200">
-                    Curating the statistics...
+                <p className="mt-4 rounded-lg bg-neutral-600 py-2 text-center text-body-3 text-neutral-200">
+                    Curating the statistics
+                    <EllipsisLoader />
                 </p>
             ) : (
                 <>
-                    <div className="mt-6 flex items-center justify-center gap-x-2 rounded-lg border border-neutral-400 p-4">
+                    <div className="mt-4 flex items-center justify-center gap-x-2 rounded-lg border border-neutral-400 p-3">
                         {[
                             {
                                 heading: "Won",
@@ -122,9 +124,10 @@ const SeasonStats: React.FC = () => {
                         ))}
                     </div>
 
-                    {playedGames.map((game, i: number) => (
-                        <>
-                            {i < 3 ? (
+                    <section className="mt-4 space-y-3">
+                        {playedGames
+                            .filter((game) => game.enemy_name)
+                            .map((game, i: number) => (
                                 <GameHistory
                                     key={game.played_game_id}
                                     playedGame={game}
@@ -132,12 +135,11 @@ const SeasonStats: React.FC = () => {
                                         game.winner_id === user?.data.player_id
                                     }
                                 />
-                            ) : null}
-                        </>
-                    ))}
+                            ))}
+                    </section>
                 </>
             )}
-        </div>
+        </section>
     );
 };
 

@@ -11,11 +11,11 @@ export const ProfileHero: React.FC = () => {
 
     return (
         <>
-            <h1 className="py-4 text-center font-display text-heading-1 font-bold tracking-widest">
+            <h1 className="py-6 text-center font-display text-heading-1 font-bold tracking-widest">
                 Profile
             </h1>
 
-            <div className="mt-4 flex w-full flex-col items-center gap-y-6">
+            <div className="mt-6 flex flex-col items-center text-center">
                 <figure className="relative h-20 w-20 object-cover">
                     <Image
                         alt=""
@@ -25,7 +25,7 @@ export const ProfileHero: React.FC = () => {
                     />
                 </figure>
 
-                <div className="flex flex-col items-center">
+                <div className="mt-3 flex flex-col items-center">
                     <h3 className="text-heading-3 text-neutral-100">
                         {user.data.name}
                     </h3>

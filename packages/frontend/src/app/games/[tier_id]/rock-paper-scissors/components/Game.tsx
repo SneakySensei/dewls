@@ -7,13 +7,12 @@ import AttestModal from "@/shared/AttestModal";
 import Countdown from "@/shared/Countdown";
 import LoseModal from "@/shared/LoseModal";
 import StakingModal from "@/shared/StakingModal";
-import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
+import { useActiveSeasonContext } from "@/utils/context/season.context";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
-import { MappedSeason, ResponseWithData } from "@/utils/types";
 import { RockPaperScissors } from "common";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 
 type Props = {
     tier_id: string;
@@ -70,9 +69,8 @@ export default function Game({ tier_id }: Props) {
     const { tiers } = useTierContext();
     const isFreeTier =
         tiers.find((tier) => tier.tier_id === tier_id)?.usd_amount === 0;
-    const [currentSeason, setCurrentSeason] = useState<MappedSeason | null>(
-        null,
-    );
+
+    const { activeSeason } = useActiveSeasonContext();
 
     const { user } = useWeb3AuthContext();
     const { selectedChain } = useSelectedChainContext();
@@ -284,19 +282,6 @@ export default function Game({ tier_id }: Props) {
     });
 
     useEffect(() => {
-        (async () => {
-            const seasonsRes = await fetch(
-                `${API_REST_BASE_URL}/seasons/current`,
-            );
-            const seasonsResponse =
-                (await seasonsRes.json()) as ResponseWithData<MappedSeason>;
-            if (seasonsResponse.success) {
-                setCurrentSeason(seasonsResponse.data);
-            }
-        })();
-    }, []);
-
-    useEffect(() => {
         if (!socket.connected || !selectedChain) return;
 
         const handleConnectError = (err: Error) => {
@@ -495,13 +480,13 @@ export default function Game({ tier_id }: Props) {
                     );
                 }}
             />
-            {currentSeason && (
+            {activeSeason && (
                 <AttestModal
                     open={
                         gameState.state === "gameEnd" &&
                         player_user_id === gameState.winner_id
                     }
-                    season_id={currentSeason?.season_id}
+                    season_id={activeSeason?.season_id}
                     player_id={
                         gameState.state === "gameEnd"
                             ? gameState.winner_id

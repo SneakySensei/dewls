@@ -15,7 +15,7 @@ export const GameHistory: React.FC<{
     if (!user) return null;
 
     return (
-        <div className="my-6 w-full rounded-lg border border-neutral-400">
+        <div className="w-full rounded-lg border border-neutral-400">
             <p className="w-full rounded-t-lg bg-neutral-600 px-4 py-2 text-body-1 font-medium text-neutral-100">
                 {playedGame.game_name}
             </p>
@@ -50,8 +50,8 @@ export const GameHistory: React.FC<{
 
                     <span className="text-neutral-500">|</span>
 
-                    <p className="text-neutral-100">
-                        <span className="text-neutral-300">Tier</span>{" "}
+                    <p className="flex items-baseline gap-x-1 text-neutral-100">
+                        <span className="text-neutral-300">Tier</span>
                         {playedGame.tier_name}
                     </p>
 

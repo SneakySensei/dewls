@@ -63,8 +63,8 @@ const SeasonsDropdown: React.FC<{
                             className={`${
                                 selectedSeason.season_id === season.season_id
                                     ? "bg-neutral-500 text-neutral-100"
-                                    : ""
-                            } my-4 flex w-full cursor-pointer items-center justify-between rounded-lg px-4 py-3 text-neutral-300 transition-all hover:text-neutral-100`}
+                                    : "text-neutral-300"
+                            } my-4 flex w-full cursor-pointer items-center justify-between rounded-lg px-4 py-3 transition-all hover:text-neutral-100`}
                             onClick={() => {
                                 setSelectedSeason(season);
                                 setDropdownOpen(false);
@@ -75,7 +75,7 @@ const SeasonsDropdown: React.FC<{
                             </p>
 
                             {season.ended_on > new Date().toISOString() ? (
-                                <span className="rounded-2xl bg-status-success px-3 py-1 text-body-4 font-medium leading-none text-neutral-500">
+                                <span className="rounded-2xl bg-status-success px-2 text-body-4 font-medium text-neutral-500">
                                     LIVE
                                 </span>
                             ) : (
@@ -94,7 +94,7 @@ const SeasonsDropdown: React.FC<{
                     <span>{selectedSeason.name}</span>
 
                     {selectedSeason.ended_on > new Date().toISOString() && (
-                        <span className="rounded-2xl bg-status-success px-3 py-1 text-body-4 font-medium leading-none text-neutral-500">
+                        <span className="rounded-2xl bg-status-success px-2 text-body-4 font-medium text-neutral-500">
                             LIVE
                         </span>
                     )}

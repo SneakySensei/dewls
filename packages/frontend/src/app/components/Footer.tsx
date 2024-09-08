@@ -1,117 +1,36 @@
-"use client";
-
-import anonImage from "@/assets/anon.png";
-import EllipsisLoader from "@/shared/EllipsisLoader";
-import { GamesIcon, TrophyIcon } from "@/shared/icons";
-import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
-import clsx from "clsx";
-import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
 export default function Footer() {
-    const { user, login, isAuthenticating } = useWeb3AuthContext();
-
-    const pathname = usePathname();
-
-    const isGamesListingPage = pathname === "/";
-    const isLeaderboardPage = pathname === "/leaderboard";
-    const isProfilePage = pathname === "/profile";
-
-    if (!(isGamesListingPage || isLeaderboardPage || isProfilePage))
-        return null;
-
-    const profileImage = (
-        <figure className="relative size-7">
-            <Image
-                src={
-                    user?.data.profile_photo
-                        ? user?.data.profile_photo
-                        : anonImage.src
-                }
-                fill
-                alt="Profile image"
-                className={clsx(
-                    "size-full rounded-full",
-                    !user?.data.profile_photo && "[image-rendering:pixelated]",
-                )}
-            />
-            {isAuthenticating && (
-                <div className="absolute bottom-full left-full -translate-x-1/3 translate-y-1/3 rounded-full border-2 border-neutral-900 bg-neutral-100 px-1 leading-none text-neutral-900">
-                    <EllipsisLoader char="·" />
-                </div>
-            )}
-        </figure>
-    );
-
     return (
-        <footer className="flex h-16 justify-evenly rounded-t-3xl bg-neutral-700">
-            <Link
-                href="/"
-                className={clsx(
-                    "relative grid place-items-center px-6 transition-all",
-                    isGamesListingPage
-                        ? "text-neutral-100"
-                        : "text-neutral-400",
-                )}
-            >
-                <AnimatePresence>
-                    {isGamesListingPage && (
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-gradient-active-tab"
-                        />
-                    )}
-                </AnimatePresence>
-                <GamesIcon className="size-7" />
-            </Link>
-            <Link
-                href="/leaderboard"
-                className={clsx(
-                    "relative grid place-items-center px-6 transition-all",
-                    isLeaderboardPage ? "text-neutral-100" : "text-neutral-400",
-                )}
-            >
-                <AnimatePresence>
-                    {isLeaderboardPage && (
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute inset-0 bg-gradient-active-tab"
-                        />
-                    )}
-                </AnimatePresence>
-                <TrophyIcon className="size-7" />
-            </Link>
-            {user ? (
-                <Link
-                    href="/profile"
-                    className="relative grid place-items-center px-6"
+        <footer className="px-4 pb-10 pt-20">
+            <h1 className="text-display-1 text-neutral-400">
+                Games that make <br />
+                connections{" "}
+                <svg
+                    width="49"
+                    height="28"
+                    viewBox="0 0 49 28"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="inline-block h-auto w-12"
                 >
-                    <AnimatePresence>
-                        {isProfilePage && (
-                            <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 bg-gradient-active-tab"
-                            />
-                        )}
-                    </AnimatePresence>
-                    {profileImage}
-                </Link>
-            ) : (
-                <button
-                    className="grid place-items-center px-6"
-                    onClick={() => login()}
-                >
-                    {profileImage}
-                </button>
-            )}
+                    <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M44.8144 4.05721C37.4887 20.9893 20.6579 29.0545 3.72715 21.3179C3.16352 21.0602 2.49777 21.3081 2.23957 21.8651C1.98219 22.4316 2.23013 23.0983 2.79376 23.3559C20.942 31.6574 39.0209 23.094 46.8739 4.95151C47.1199 4.386 46.8578 3.72044 46.2892 3.47277C45.7215 3.2346 45.0604 3.4917 44.8144 4.05721Z"
+                        fill="#2D2D3A"
+                    />
+                    <path
+                        d="M16.7284 13.2152C18.5268 13.0618 19.8605 11.4795 19.7071 9.68104C19.5537 7.88257 17.9714 6.54899 16.1729 6.70238C14.3744 6.85576 13.0408 8.43803 13.1942 10.2365C13.3476 12.035 14.9299 13.3686 16.7284 13.2152Z"
+                        fill="#2D2D3A"
+                    />
+                    <path
+                        d="M29.9141 8.60137C31.6774 8.45098 32.985 6.89963 32.8346 5.13631C32.6842 3.37299 31.1328 2.06547 29.3695 2.21586C27.6062 2.36625 26.2987 3.91759 26.4491 5.68091C26.5994 7.44423 28.1508 8.75175 29.9141 8.60137Z"
+                        fill="#2D2D3A"
+                    />
+                </svg>
+            </h1>
+            <div className="mt-[120px] text-center text-body-3 font-medium text-neutral-400">
+                Cooked with 🔥 by Bawarchis
+            </div>
         </footer>
     );
 }

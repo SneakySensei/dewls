@@ -48,6 +48,7 @@ export type Database = {
           icon_image: string
           max_occupancy: number
           name: string
+          published: boolean
           slug: string
         }
         Insert: {
@@ -58,6 +59,7 @@ export type Database = {
           icon_image: string
           max_occupancy?: number
           name: string
+          published?: boolean
           slug: string
         }
         Update: {
@@ -68,6 +70,7 @@ export type Database = {
           icon_image?: string
           max_occupancy?: number
           name?: string
+          published?: boolean
           slug?: string
         }
         Relationships: []

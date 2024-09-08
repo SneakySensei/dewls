@@ -7,15 +7,14 @@ import AttestModal from "@/shared/AttestModal";
 import LoseModal from "@/shared/LoseModal";
 import PlayerGameView from "@/shared/PlayerGameView";
 import StakingModal from "@/shared/StakingModal";
-import { API_REST_BASE_URL } from "@/utils/constants/api.constant";
+import { useActiveSeasonContext } from "@/utils/context/season.context";
 import { useSelectedChainContext } from "@/utils/context/selected-chain.context";
 import { useTierContext } from "@/utils/context/tiers.context";
 import { useWeb3AuthContext } from "@/utils/context/web3auth.context";
-import { ResponseWithData, MappedSeason } from "@/utils/types";
 import { ConnectFour } from "common";
 import { emptyBoard } from "common/connect-four";
 import dynamic from "next/dynamic";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 
 type Props = {
     tier_id: string;
@@ -76,8 +75,9 @@ export default dynamic(
             const isFreeTier =
                 tiers.find((tier) => tier.tier_id === tier_id)?.usd_amount ===
                 0;
-            const [currentSeason, setCurrentSeason] =
-                useState<MappedSeason | null>(null);
+
+            const { activeSeason } = useActiveSeasonContext();
+
             const { user } = useWeb3AuthContext();
             const { selectedChain } = useSelectedChainContext();
 
@@ -309,19 +309,6 @@ export default dynamic(
             } satisfies GameState);
 
             useEffect(() => {
-                (async () => {
-                    const seasonsRes = await fetch(
-                        `${API_REST_BASE_URL}/seasons/current`,
-                    );
-                    const seasonsResponse =
-                        (await seasonsRes.json()) as ResponseWithData<MappedSeason>;
-                    if (seasonsResponse.success) {
-                        setCurrentSeason(seasonsResponse.data);
-                    }
-                })();
-            }, []);
-
-            useEffect(() => {
                 if (!socket.connected || !selectedChain) return;
 
                 const handleConnectError = (err: Error) => {
@@ -544,13 +531,13 @@ export default dynamic(
                             // );
                         }}
                     />
-                    {currentSeason && (
+                    {activeSeason && (
                         <AttestModal
                             open={
                                 gameState.state === "gameEnd" &&
                                 player_user_id === gameState.winner_id
                             }
-                            season_id={currentSeason?.season_id}
+                            season_id={activeSeason?.season_id}
                             player_id={
                                 gameState.state === "gameEnd"
                                     ? gameState.player.player_id

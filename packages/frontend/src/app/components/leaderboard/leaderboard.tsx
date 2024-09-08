@@ -69,7 +69,7 @@ export const Leaderboard: React.FC = () => {
 
     return (
         <main className="gap-y-6 text-neutral-100">
-            <h1 className="py-4 text-center font-display text-heading-1 font-bold tracking-widest">
+            <h1 className="py-6 text-center font-display text-heading-1 font-bold tracking-widest">
                 Leaderboard
             </h1>
 
@@ -213,11 +213,11 @@ export const Leaderboard: React.FC = () => {
                                 )}
                             </div>
                         ) : (
-                            <div className="mb-4 h-48 w-full overflow-hidden rounded-xl border border-purple-800 bg-active-leaderboard bg-cover bg-center">
+                            <div className="mb-4 h-48 w-full overflow-hidden rounded-xl border border-purple-500 bg-active-leaderboard bg-cover bg-center">
                                 <figure className="mx-auto h-28 scale-[2]">
                                     <Lottie
                                         options={{
-                                            loop: true,
+                                            loop: false,
                                             autoplay: true,
                                             animationData: coinsLottie,
                                         }}
@@ -226,8 +226,8 @@ export const Leaderboard: React.FC = () => {
 
                                 <div className="mt-4 text-center">
                                     <p className="text-heading-1 font-semibold text-neutral-100">
-                                        $
-                                        {selectedSeason.reward_pool_usd.toLocaleString()}
+                                        {selectedSeason.reward_pool_usd.toLocaleString()}{" "}
+                                        USDT
                                     </p>
 
                                     <p className="mt-1 text-body-3 font-normal text-neutral-200">

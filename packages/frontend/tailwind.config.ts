@@ -70,7 +70,7 @@ const config: Config = {
                 "gradient-active-tab":
                     "radial-gradient(50% 64.29% at 50% 117.86%, rgba(139, 129, 248, 0.75) 0%, rgba(63, 46, 129, 0) 75%)",
                 "gradient-logo-glow":
-                    "radial-gradient(52.78% 67.86% at 50% 117.86%, rgba(139, 129, 248, 0.5) 0%, rgba(63, 46, 129, 0) 100%)",
+                    "radial-gradient(52.78% 67.86% at 50% 117.86%, rgba(139, 129, 248, 0.5) 0%, rgba(63, 46, 129, 0) 80%)",
                 "graident-button":
                     "linear-gradient(180deg, #7863F1 0%, #6A46E5 100%)",
                 "gradient-button-border":

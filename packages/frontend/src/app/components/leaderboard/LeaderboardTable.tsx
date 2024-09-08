@@ -13,8 +13,38 @@ const LeaderboardTable: React.FC<{
     const { user } = useWeb3AuthContext();
 
     const leaderboard = activeSeason
-        ? initialLeaderboard
-        : initialLeaderboard.slice(3);
+        ? initialLeaderboard.filter((item) => {
+              if (
+                  item.player_id === user?.data.player_id &&
+                  item.rank &&
+                  item.rank > 3
+              )
+                  return false;
+
+              return true;
+          })
+        : initialLeaderboard.slice(3).filter((item) => {
+              if (
+                  item.player_id === user?.data.player_id &&
+                  item.rank &&
+                  item.rank > 3
+              )
+                  return false;
+
+              return true;
+          });
+
+    const playerLeaderboardItem = initialLeaderboard.find(
+        (item) =>
+            item.player_id === user?.data.player_id &&
+            item.rank &&
+            item.rank > 3,
+    );
+
+    console.log("playerLeaderboardItem", playerLeaderboardItem);
+
+    if (playerLeaderboardItem)
+        leaderboard.splice(activeSeason ? 3 : 0, 0, playerLeaderboardItem);
 
     const headings = ["#", "User", "Won", "Played", "Score"];
 
@@ -47,7 +77,7 @@ const LeaderboardTable: React.FC<{
     );
 
     return (
-        <div className="mb-4 w-full rounded-lg pb-2 text-left">
+        <div className="mb-4 w-full rounded-lg bg-neutral-700 pb-2 text-left">
             <div className="grid grid-cols-12 gap-2 p-4 text-body-2 font-normal text-neutral-300">
                 {headings.map((heading, i) => (
                     <div
@@ -89,13 +119,13 @@ const LeaderboardTable: React.FC<{
                                     key={player_id}
                                     className={`${
                                         you
-                                            ? "border-brand-400 text-brand-400"
+                                            ? "border-brand-400 bg-[linear-gradient(90deg,rgba(139,129,248,0.2)_0.68%,rgba(139,129,248,0)_40.97%)] text-brand-400"
                                             : "border-neutral-600"
                                     } ${
                                         rankStyles
                                             ? rankingClasses.wrapper[rank - 1]
                                             : ""
-                                    } relative mb-4 grid grid-cols-12 items-center gap-2 rounded-lg border bg-neutral-600 py-4 text-center`}
+                                    } relative mb-4 grid grid-cols-12 items-center gap-2 rounded-lg border bg-neutral-600 py-3 text-center`}
                                 >
                                     {rankStyles ? (
                                         <>

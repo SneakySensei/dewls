@@ -20,7 +20,7 @@ export const GamePlayer: React.FC<{
             <figure
                 className={`${
                     won
-                        ? "border-semantic-launch shadow-md shadow-semantic-launch"
+                        ? "border-semantic-launch shadow-[0px_0px_12px_rgb(232,157,15,0.25)]"
                         : "border-transparent"
                 } rounded-full border`}
             >
@@ -28,8 +28,8 @@ export const GamePlayer: React.FC<{
                     <Image
                         alt=""
                         src={profile_photo}
-                        height={64}
-                        width={64}
+                        height={56}
+                        width={56}
                         className="border-6 rounded-full border-neutral-500 bg-neutral-500 p-2"
                     />
                 )}
@@ -37,7 +37,7 @@ export const GamePlayer: React.FC<{
 
             <div className="text-center">
                 <h3
-                    className={`${you ? "text-brand-400" : ""} text-body-1 font-medium`}
+                    className={`${you ? "text-brand-400" : ""} max-w-24 overflow-hidden text-ellipsis whitespace-nowrap text-body-1 font-medium`}
                 >
                     {name}
                 </h3>
