@@ -7,7 +7,6 @@ import { sepolia } from "viem/chains";
 export const getWalletClient = async (
     provider: IProvider,
 ): Promise<WalletClient> => {
-    console.log("provider", provider);
     const walletClient = createWalletClient({
         chain: sepolia,
         transport: custom(provider),
@@ -29,7 +28,10 @@ export const getTokenBalance = async (
     provider: IProvider,
     walletAddress: string,
     tokenAddress: string,
-): Promise<string> => {
+): Promise<{
+    token_balance: string;
+    native_balance: string;
+}> => {
     const walletClient = new ethers.BrowserProvider(provider);
     const contract = new ethers.Contract(
         tokenAddress,
@@ -37,6 +39,14 @@ export const getTokenBalance = async (
         walletClient.provider,
     );
     const balance = await contract.balanceOf(walletAddress);
+    const native_balance = await walletClient.getBalance(walletAddress);
 
-    return (Number(balance) / Math.pow(10, 6)).toString();
+    return {
+        token_balance: (Number(balance) / Math.pow(10, 6))
+            .toFixed(2)
+            .toString(),
+        native_balance: (Number(native_balance) / Math.pow(10, 18))
+            .toFixed(4)
+            .toString(),
+    };
 };

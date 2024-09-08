@@ -71,7 +71,6 @@ export class EthersService {
 
             await tx.wait();
 
-            console.log(tx);
             return tx;
         } catch (error) {
             console.error(error);

@@ -91,7 +91,6 @@ export class Broadcast {
                 conversation,
             );
         }
-        console.log("delaying after list");
         if (
             conversations.length / 2 >
             GENERAL_RATE_LIMIT - this.rateLimitAmount

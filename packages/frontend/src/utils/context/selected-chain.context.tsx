@@ -17,6 +17,7 @@ import {
 interface SelectedChainPropsContext {
     selectedChain: CustomChainConfig | null;
     chainBalance: string | null;
+    nativeBalance: string | null;
     chainChangeHandler: (chain: CustomChainConfig) => Promise<void>;
 }
 
@@ -32,6 +33,7 @@ export const SelectedChainContextProvider = ({
     const [selectedChain, setSelectedChain] =
         useState<CustomChainConfig | null>(CHAINS[0]);
     const [chainBalance, setChainBalance] = useState<string | null>(null);
+    const [nativeBalance, setNativeBalance] = useState<string | null>(null);
 
     useEffect(() => {
         (async () => {
@@ -40,14 +42,16 @@ export const SelectedChainContextProvider = ({
                     return;
                 }
                 setChainBalance(null);
-                const balance = await getTokenBalance(
-                    web3auth.provider!,
-                    user.data.wallet_address,
-                    Contracts.TOKEN_CONTRACT_ADDRESS[
-                        Number(selectedChain.chainId)
-                    ],
-                );
+                const { token_balance: balance, native_balance } =
+                    await getTokenBalance(
+                        web3auth.provider!,
+                        user.data.wallet_address,
+                        Contracts.TOKEN_CONTRACT_ADDRESS[
+                            Number(selectedChain.chainId)
+                        ],
+                    );
                 setChainBalance(balance);
+                setNativeBalance(native_balance);
             } catch (error) {
                 console.error(error);
             }
@@ -66,6 +70,7 @@ export const SelectedChainContextProvider = ({
             value={{
                 selectedChain,
                 chainBalance,
+                nativeBalance,
                 chainChangeHandler,
             }}
         >

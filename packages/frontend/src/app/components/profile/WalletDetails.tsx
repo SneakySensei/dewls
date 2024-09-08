@@ -9,7 +9,8 @@ import { toast } from "sonner";
 
 export function WalletDetails() {
     const { user } = useWeb3AuthContext();
-    const { selectedChain, chainBalance } = useSelectedChainContext();
+    const { selectedChain, chainBalance, nativeBalance } =
+        useSelectedChainContext();
 
     if (!user) return null;
 
@@ -51,7 +52,9 @@ export function WalletDetails() {
                         <p className="text-body-1 text-neutral-100">
                             {!selectedChain || chainBalance === null
                                 ? "..."
-                                : `${chainBalance} USDT`}
+                                : `${chainBalance} USDT`}{" "}
+                            <span className="text-neutral-300">|</span>{" "}
+                            {nativeBalance} {selectedChain?.ticker}
                         </p>
                     </div>
                     <div className="flex flex-col gap-2 text-right">

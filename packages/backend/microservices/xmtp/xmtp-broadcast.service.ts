@@ -97,7 +97,6 @@ export const sendBroadcast = async (text: string, address: string) => {
 
 export const getBroadcastLink = (broadcastId: string) => {
     if (broadcastEntities.entities[broadcastId] === undefined) {
-        console.log(broadcastEntities.ids);
         throw new Error("Broadcast not found");
     }
     const broadcast = broadcastEntities.entities[broadcastId];

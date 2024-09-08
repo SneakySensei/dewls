@@ -60,8 +60,6 @@ export const createDBGame = async (
         .select()
         .single();
 
-    console.log(data);
-
     if (error) {
         console.error(error);
         throw error;

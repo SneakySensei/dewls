@@ -31,8 +31,6 @@ export default memo(function Board({ gameState, onMove }: Props) {
         gameState.board,
     );
 
-    console.log("boardUpdate", newlyAddedPosition);
-
     const winningSet =
         gameState.state === "gameEnd"
             ? ConnectFour.getWinner(gameState.board, gameState.winner_id)?.map(

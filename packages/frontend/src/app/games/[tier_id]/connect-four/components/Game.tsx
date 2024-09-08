@@ -466,7 +466,6 @@ export default dynamic(
             const player = gameState.player;
             const enemy =
                 gameState.state === "initial" ? undefined : gameState.enemy;
-            console.log(gameState);
             return (
                 <main className="relative flex h-full flex-col justify-center bg-[radial-gradient(#ABABFC,#8B81F8,#7863F1,#3F2E81)] p-4">
                     <Board gameState={gameState} onMove={handleMove} />
