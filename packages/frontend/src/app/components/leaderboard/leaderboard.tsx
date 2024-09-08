@@ -40,6 +40,7 @@ export const Leaderboard: React.FC = () => {
                     return;
                 }
                 setLoading(true);
+                setLeaderboard(null);
 
                 const leaderboardRes = await fetch(
                     `${API_REST_BASE_URL}/leaderboard/${selectedSeason.season_id}`,
