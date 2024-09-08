@@ -61,6 +61,9 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 # 💥 **Contributors**
+<a href="https://github.comSneakySensei/dewls/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=SneakySensei/dewls" alt="Contributors">
+</a>
 
 # 🚨 **Forking this repo**
 
