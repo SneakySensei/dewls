@@ -37,7 +37,7 @@ export default memo(function NotFound() {
                 </figure>
 
                 <figcaption className="mt-8 text-center text-body-2 text-neutral-200">
-                    You've found a hidden corner of the arcade.
+                    You&apos;ve found a hidden corner of the arcade.
                 </figcaption>
             </div>
 
