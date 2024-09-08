@@ -29,7 +29,9 @@ export const Leaderboard: React.FC = () => {
         null,
     );
     const [loading, setLoading] = useState<boolean>(false);
-    const [leaderboard, setLeaderboard] = useState<MappedLeaderboard[]>([]);
+    const [leaderboard, setLeaderboard] = useState<MappedLeaderboard[] | null>(
+        null,
+    );
 
     useEffect(() => {
         (async () => {
@@ -90,112 +92,124 @@ export const Leaderboard: React.FC = () => {
                 </p>
             </div>
 
-            {selectedSeason && (
+            {selectedSeason && leaderboard && (
                 <>
                     <div className="mx-4 justify-center">
                         {!selectedSeasonActive ? (
                             <div className="grid h-80 grid-cols-3">
-                                <div className="flex flex-col justify-end truncate text-ellipsis bg-[linear-gradient(0deg,_rgba(204,204,204,0.2)_0%,_rgba(204,204,204,0)_56.58%)] px-2 pb-6 pt-16 text-center">
-                                    <RankTwo
-                                        className="mx-auto h-24 w-24"
-                                        profile_photo={
-                                            leaderboard[1].profile_photo!
-                                        }
-                                    />
+                                {leaderboard[1] ? (
+                                    <div className="flex flex-col justify-end truncate text-ellipsis bg-[linear-gradient(0deg,_rgba(204,204,204,0.2)_0%,_rgba(204,204,204,0)_56.58%)] px-2 pb-6 pt-16 text-center">
+                                        <RankTwo
+                                            className="mx-auto h-24 w-24"
+                                            profile_photo={
+                                                leaderboard[1].profile_photo!
+                                            }
+                                        />
 
-                                    <p className="w-full truncate text-ellipsis text-body-1 font-medium">
-                                        {leaderboard[1].name}
-                                    </p>
+                                        <p className="w-full truncate text-ellipsis text-body-1 font-medium">
+                                            {leaderboard[1].name}
+                                        </p>
 
-                                    <p className="w-full text-body-3 text-neutral-200">
-                                        {truncate(
-                                            leaderboard[1].wallet_address,
-                                        ).toUpperCase()}
-                                    </p>
+                                        <p className="w-full text-body-3 text-neutral-200">
+                                            {truncate(
+                                                leaderboard[1].wallet_address,
+                                            ).toUpperCase()}
+                                        </p>
 
-                                    <div className="flex w-full items-center justify-center gap-1 text-body-3 text-neutral-200">
-                                        <StarIcon solid />
-                                        {leaderboard[1].total_points?.toLocaleString()}
+                                        <div className="flex w-full items-center justify-center gap-1 text-body-3 text-neutral-200">
+                                            <StarIcon solid />
+                                            {leaderboard[1].total_points?.toLocaleString()}
+                                        </div>
+
+                                        <p
+                                            className={`mt-4 bg-[linear-gradient(180deg,_#F1F8FF_0%,_#7C8186_100%)] bg-clip-text text-heading-2 font-semibold text-transparent`}
+                                        >
+                                            $
+                                            {calculatePercentage(
+                                                selectedSeason.reward_pool_usd,
+                                                rankTwoRewardPercentage,
+                                            ).toLocaleString()}
+                                        </p>
                                     </div>
+                                ) : (
+                                    <span />
+                                )}
 
-                                    <p
-                                        className={`mt-4 bg-[linear-gradient(180deg,_#F1F8FF_0%,_#7C8186_100%)] bg-clip-text text-heading-2 font-semibold text-transparent`}
-                                    >
-                                        $
-                                        {calculatePercentage(
-                                            selectedSeason.reward_pool_usd,
-                                            rankTwoRewardPercentage,
-                                        ).toLocaleString()}
-                                    </p>
-                                </div>
+                                {leaderboard[0] ? (
+                                    <div className="flex flex-col justify-end truncate text-ellipsis bg-[linear-gradient(0deg,_rgba(246,216,135,0.24)_0%,_rgba(246,216,135,0)_95.04%)] px-2 pb-6 pt-16 text-center">
+                                        <RankOne
+                                            className="mx-auto h-28 w-28"
+                                            profile_photo={
+                                                leaderboard[0].profile_photo!
+                                            }
+                                        />
 
-                                <div className="flex flex-col justify-end truncate text-ellipsis bg-[linear-gradient(0deg,_rgba(246,216,135,0.24)_0%,_rgba(246,216,135,0)_95.04%)] px-2 pb-6 pt-16 text-center">
-                                    <RankOne
-                                        className="mx-auto h-28 w-28"
-                                        profile_photo={
-                                            leaderboard[0].profile_photo!
-                                        }
-                                    />
+                                        <p className="w-full truncate text-ellipsis text-body-1 font-medium">
+                                            {leaderboard[0].name}
+                                        </p>
 
-                                    <p className="w-full truncate text-ellipsis text-body-1 font-medium">
-                                        {leaderboard[0].name}
-                                    </p>
+                                        <p className="w-full text-body-3 text-neutral-200">
+                                            {truncate(
+                                                leaderboard[0].wallet_address,
+                                            ).toUpperCase()}
+                                        </p>
 
-                                    <p className="w-full text-body-3 text-neutral-200">
-                                        {truncate(
-                                            leaderboard[0].wallet_address,
-                                        ).toUpperCase()}
-                                    </p>
+                                        <div className="flex w-full items-center justify-center gap-1 text-body-3 text-neutral-200">
+                                            <StarIcon solid />
+                                            {leaderboard[0].total_points?.toLocaleString()}
+                                        </div>
 
-                                    <div className="flex w-full items-center justify-center gap-1 text-body-3 text-neutral-200">
-                                        <StarIcon solid />
-                                        {leaderboard[0].total_points?.toLocaleString()}
+                                        <p
+                                            className={`mt-12 bg-[linear-gradient(180deg,_#FCE19A_0%,_#BD9350_100%)] bg-clip-text text-heading-2 font-semibold text-transparent`}
+                                        >
+                                            $
+                                            {calculatePercentage(
+                                                selectedSeason.reward_pool_usd,
+                                                rankOwnRewardPercentage,
+                                            ).toLocaleString()}
+                                        </p>
                                     </div>
+                                ) : (
+                                    <span />
+                                )}
 
-                                    <p
-                                        className={`mt-12 bg-[linear-gradient(180deg,_#FCE19A_0%,_#BD9350_100%)] bg-clip-text text-heading-2 font-semibold text-transparent`}
-                                    >
-                                        $
-                                        {calculatePercentage(
-                                            selectedSeason.reward_pool_usd,
-                                            rankOwnRewardPercentage,
-                                        ).toLocaleString()}
-                                    </p>
-                                </div>
+                                {leaderboard[2] ? (
+                                    <div className="flex flex-col justify-end truncate text-ellipsis bg-[linear-gradient(0deg,_rgba(211,160,133,0.2)_0%,_rgba(211,160,133,0)_71.8%)] px-2 pb-6 pt-16 text-center">
+                                        <RankThree
+                                            className="mx-auto h-24 w-24"
+                                            profile_photo={
+                                                leaderboard[2].profile_photo!
+                                            }
+                                        />
 
-                                <div className="flex flex-col justify-end truncate text-ellipsis bg-[linear-gradient(0deg,_rgba(211,160,133,0.2)_0%,_rgba(211,160,133,0)_71.8%)] px-2 pb-6 pt-16 text-center">
-                                    <RankThree
-                                        className="mx-auto h-24 w-24"
-                                        profile_photo={
-                                            leaderboard[2].profile_photo!
-                                        }
-                                    />
+                                        <p className="w-full truncate text-ellipsis text-body-1 font-medium">
+                                            {leaderboard[2].name}
+                                        </p>
 
-                                    <p className="w-full truncate text-ellipsis text-body-1 font-medium">
-                                        {leaderboard[2].name}
-                                    </p>
+                                        <p className="w-full text-body-3 text-neutral-200">
+                                            {truncate(
+                                                leaderboard[2].wallet_address,
+                                            ).toUpperCase()}
+                                        </p>
 
-                                    <p className="w-full text-body-3 text-neutral-200">
-                                        {truncate(
-                                            leaderboard[2].wallet_address,
-                                        ).toUpperCase()}
-                                    </p>
+                                        <div className="flex w-full items-center justify-center gap-1 text-body-3 text-neutral-200">
+                                            <StarIcon solid />
+                                            {leaderboard[2].total_points?.toLocaleString()}
+                                        </div>
 
-                                    <div className="flex w-full items-center justify-center gap-1 text-body-3 text-neutral-200">
-                                        <StarIcon solid />
-                                        {leaderboard[2].total_points?.toLocaleString()}
+                                        <p
+                                            className={`mt-4 bg-[linear-gradient(180deg,_#FFDDC6_0%,_#9E7259_100%)] bg-clip-text text-heading-2 font-semibold text-transparent`}
+                                        >
+                                            $
+                                            {calculatePercentage(
+                                                selectedSeason.reward_pool_usd,
+                                                rankThreeRewardPercentage,
+                                            ).toLocaleString()}
+                                        </p>
                                     </div>
-
-                                    <p
-                                        className={`mt-4 bg-[linear-gradient(180deg,_#FFDDC6_0%,_#9E7259_100%)] bg-clip-text text-heading-2 font-semibold text-transparent`}
-                                    >
-                                        $
-                                        {calculatePercentage(
-                                            selectedSeason.reward_pool_usd,
-                                            rankThreeRewardPercentage,
-                                        ).toLocaleString()}
-                                    </p>
-                                </div>
+                                ) : (
+                                    <span />
+                                )}
                             </div>
                         ) : (
                             <div className="mb-4 h-48 w-full overflow-hidden rounded-xl border border-purple-800 bg-active-leaderboard bg-cover bg-center">
