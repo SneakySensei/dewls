@@ -25,9 +25,11 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 4. **Reward Pool:** Every game played by the players has a fixed percentage of the total amount wagered for the game in the `tier` that is added to the `season`'s Reward Pool. At the end of each season, this reward pool is distributed amongst the top three players.
 5. **Leaderboard:** Players are assigned a rank that changes on the players win. At the end of each `season`, the seasons reward pool is distributed amongst the top three players of the said season.
 
-# 💪 **Challenges Faced (and WAGMI!)**
 
 # 📺 **Previews**
+
+
+
 
 # 💻 **Tech Stack**
 
@@ -45,6 +47,16 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 - XMTP Subscribe
 
 # 📦 **Inside the box**
+DEWLS features a robust system architecture to support these actions, along with a streamlined user flow within the web application. The following diagrams explain the same:
+
+### 1. **System Architecture Diagram**
+
+![System Architecture](./repo-assets/arch-diag.jpeg)
+
+### 2. **Flow Diagram**
+
+![Flow Diagram](./repo-assets/user-flow.png)
+
 
 # ⏭️ **What's next for DEWLS?**
 
