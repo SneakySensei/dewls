@@ -25,11 +25,13 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 4. **Reward Pool:** Every game played by the players has a fixed percentage of the total amount wagered for the game in the `tier` that is added to the `season`'s Reward Pool. At the end of each season, this reward pool is distributed amongst the top three players.
 5. **Leaderboard:** Players are assigned a rank that changes on the players win. At the end of each `season`, the seasons reward pool is distributed amongst the top three players of the said season.
 
+# 💪 Challenges Faced (and WAGMI!)
+
+1. Working with WebSocket and Redis while ensuring atomic operations at high throughput.
+2. Making the multiplayer system highly secure by ensuring core game logic is handled server-side.
+3. Uploading bytecode to file service for HSCS (Hedera Smart Contract Service) was giving unknown and undocumented errors.
 
 # 📺 **Previews**
-
-
-
 
 # 💻 **Tech Stack**
 
@@ -47,6 +49,7 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 - XMTP Subscribe
 
 # 📦 **Inside the box**
+
 DEWLS features a robust system architecture to support these actions, along with a streamlined user flow within the web application. The following diagrams explain the same:
 
 ### 1. **System Architecture Diagram**
@@ -56,7 +59,6 @@ DEWLS features a robust system architecture to support these actions, along with
 ### 2. **Flow Diagram**
 
 ![Flow Diagram](./repo-assets/user-flow.png)
-
 
 # ⏭️ **What's next for DEWLS?**
 
@@ -73,6 +75,7 @@ DEWLS features a robust system architecture to support these actions, along with
 Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests to us.
 
 # 💥 **Contributors**
+
 <a href="https://github.comSneakySensei/dewls/graphs/contributors">
 <img src="https://contrib.rocks/image?repo=SneakySensei/dewls" alt="Contributors">
 </a>
