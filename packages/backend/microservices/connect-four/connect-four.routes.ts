@@ -270,10 +270,6 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                     return;
                 }
 
-                // validate invalid move
-                if (move.column < -1 || move.column >= ConnectFour.columnCount)
-                    return;
-
                 if (gameState.winner_id) {
                     return;
                 }
@@ -311,82 +307,93 @@ export const ConnectFourRoutes = async (socket: Socket, io: Namespace) => {
                     throw Error(`no active player for player ${player_id}`);
                 }
 
-                for (let row = ConnectFour.rowCount - 1; row >= 0; row--) {
-                    if (
-                        gameState.board[row][
-                            activePlayer.currentMove.column
-                        ] === null
-                    ) {
-                        gameState.board[row][activePlayer.currentMove.column] =
-                            activePlayer.player_id;
-                        break;
+                if (activePlayer.currentMove.column !== -1) {
+                    for (let row = ConnectFour.rowCount - 1; row >= 0; row--) {
+                        if (
+                            gameState.board[row][
+                                activePlayer.currentMove.column
+                            ] === null
+                        ) {
+                            gameState.board[row][
+                                activePlayer.currentMove.column
+                            ] = activePlayer.player_id;
+                            break;
+                        }
                     }
-                }
 
-                const win = ConnectFour.getWinner(gameState.board, player_id);
+                    const win = ConnectFour.getWinner(
+                        gameState.board,
+                        player_id,
+                    );
 
-                if (!win) {
-                    const tie = ConnectFour.checkTie(gameState.board);
+                    if (!win) {
+                        const tie = ConnectFour.checkTie(gameState.board);
 
-                    if (!tie) {
-                        const moveEndEvent: ConnectFour.MoveEndEvent = {
-                            type: "move-end",
-                            payload: gameState,
-                        };
-                        io.to(room_id).emit(
-                            moveEndEvent.type,
-                            moveEndEvent.payload,
+                        if (!tie) {
+                            const moveEndEvent: ConnectFour.MoveEndEvent = {
+                                type: "move-end",
+                                payload: gameState,
+                            };
+                            io.to(room_id).emit(
+                                moveEndEvent.type,
+                                moveEndEvent.payload,
+                            );
+                        } else {
+                            gameState.board = ConnectFour.emptyBoard;
+                            const tieEvent: ConnectFour.TieEvent = {
+                                type: "tie",
+                                payload: gameState,
+                            };
+                            io.to(room_id).emit(
+                                tieEvent.type,
+                                tieEvent.payload,
+                            );
+                        }
+
+                        gameState.player1.currentMove = null;
+                        gameState.player2.currentMove = null;
+
+                        await RedisClient.hset(
+                            room_id,
+                            stringifyObjectValues<ConnectFour.ServerGameState>(
+                                gameState,
+                            ),
                         );
+                        return;
                     } else {
-                        gameState.board = ConnectFour.emptyBoard;
-                        const tieEvent: ConnectFour.TieEvent = {
-                            type: "tie",
-                            payload: gameState,
-                        };
-                        io.to(room_id).emit(tieEvent.type, tieEvent.payload);
+                        gameState.winner_id = activePlayer.player_id;
                     }
-
-                    gameState.player1.currentMove = null;
-                    gameState.player2.currentMove = null;
-
-                    await RedisClient.hset(
-                        room_id,
-                        stringifyObjectValues<ConnectFour.ServerGameState>(
-                            gameState,
-                        ),
-                    );
                 } else {
-                    gameState.winner_id = activePlayer.player_id;
-
-                    const gameEndEvent: ConnectFour.GameEndEvent = {
-                        type: "game-end",
-                        payload:
-                            gameState as ConnectFour.GameEndEvent["payload"],
-                    };
-                    io.to(room_id).emit(
-                        gameEndEvent.type,
-                        gameEndEvent.payload,
-                    );
-
-                    const [{ player_1, player_2 }] = await Promise.all([
-                        fetchPlayersDetailsForPlayedGame(room_id),
-                        setWinnerToGame(room_id, gameState.winner_id),
-                    ]);
-
-                    await EthersService.endGame(
-                        room_id,
-                        gameState.winner_id === player_1.player_id
-                            ? player_1.wallet_address
-                            : player_2.wallet_address,
-                        gameState.winner_id === player_1.player_id
-                            ? player_2.wallet_address
-                            : player_1.wallet_address,
-                        chain_id,
-                    );
-
-                    await RedisClient.del(room_id);
-                    io.socketsLeave(room_id);
+                    gameState.winner_id =
+                        activePlayer.player_id === gameState.player1.player_id
+                            ? gameState.player2.player_id
+                            : gameState.player1.player_id;
                 }
+
+                const gameEndEvent: ConnectFour.GameEndEvent = {
+                    type: "game-end",
+                    payload: gameState as ConnectFour.GameEndEvent["payload"],
+                };
+                io.to(room_id).emit(gameEndEvent.type, gameEndEvent.payload);
+
+                const [{ player_1, player_2 }] = await Promise.all([
+                    fetchPlayersDetailsForPlayedGame(room_id),
+                    setWinnerToGame(room_id, gameState.winner_id),
+                ]);
+
+                await EthersService.endGame(
+                    room_id,
+                    gameState.winner_id === player_1.player_id
+                        ? player_1.wallet_address
+                        : player_2.wallet_address,
+                    gameState.winner_id === player_1.player_id
+                        ? player_2.wallet_address
+                        : player_1.wallet_address,
+                    chain_id,
+                );
+
+                await RedisClient.del(room_id);
+                io.socketsLeave(room_id);
             } catch (error) {
                 WSError(socket, error);
             }

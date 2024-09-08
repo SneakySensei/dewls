@@ -146,7 +146,29 @@ const checkDirection = (
   return a === user_id && a == b && a == c && a == d;
 };
 
-export const getWinner = (board: Board, user_id: string) => {
+export const getWinner = (
+  board: Board,
+  user_id: string
+):
+  | [
+      {
+        i: number;
+        j: number;
+      },
+      {
+        i: number;
+        j: number;
+      },
+      {
+        i: number;
+        j: number;
+      },
+      {
+        i: number;
+        j: number;
+      },
+    ]
+  | null => {
   // * INFO: check down
   for (let r = 0; r <= rowCount - winCount; r++)
     for (let c = 0; c < columnCount; c++)
