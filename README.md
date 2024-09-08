@@ -33,11 +33,22 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 
 # 📺 **Previews**
 
+## Application Snapshots
+
 | ![Preview 1.1](./repo-assets/previews/1.png) | ![Preview 1.2](./repo-assets/previews/2.png) | ![Preview 1.3](./repo-assets/previews/3.png) |
 | -------------------------------------------- | -------------------------------------------- | -------------------------------------------- |
 | ![Preview 1.4](./repo-assets/previews/4.png) | ![Preview 1.5](./repo-assets/previews/5.png) | ![Preview 1.6](./repo-assets/previews/6.png) |
-| -------------------------------------------- | -------------------------------------------- | -------------------------------------------- |
 | ![Preview 1.7](./repo-assets/previews/7.png) | ![Preview 1.8](./repo-assets/previews/8.png) | ![Preview 1.8](./repo-assets/previews/9.png) |
+
+## Attestation and Explorer URLs
+
+1.https://explorer.testnet.rootstock.io/address/0x79a24817ac317549a2d1e00109f0fa7424e45838
+
+2.https://explorer-holesky.morphl2.io/address/0xfCC7234233082346398D2087f790C48677b8DdA6
+
+3.https://hashscan.io/testnet/contract/0.0.4805992
+
+4.https://testnet-scan.sign.global/schema/onchain_evm_11155111_0xa3
 
 # 💻 **Tech Stack**
 
