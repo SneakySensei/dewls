@@ -50,6 +50,10 @@ Traditional arcade gaming lacks a mechanism for players to bet across various ch
 
 4.https://testnet-scan.sign.global/schema/onchain_evm_11155111_0xa3
 
+## Designs
+
+1. https://www.figma.com/design/Tv1T1xkR3B3w6v0LKvO9pq/ETHOnline'24?node-id=36-1921&t=aBuY2YwXkXf6wIHz-1
+
 # 💻 **Tech Stack**
 
 - NextJS
